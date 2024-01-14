@@ -3,7 +3,7 @@ plugins {
     id("maven-publish")
 }
 
-group = "dev.rollczi"
+group = "com.eternalcode"
 version = "1.0.0-SNAPSHOT"
 
 java {
