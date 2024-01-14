@@ -3,6 +3,7 @@ package dev.rollczi.multification;
 import dev.rollczi.multification.adventure.AudienceConverter;
 import dev.rollczi.multification.locate.LocaleProvider;
 import dev.rollczi.multification.notice.Notice;
+import dev.rollczi.multification.shared.Replacer;
 import dev.rollczi.multification.translation.TranslationProvider;
 import dev.rollczi.multification.viewer.ViewerProvider;
 import java.util.ArrayList;
@@ -91,6 +92,11 @@ class MultificationTest {
         protected @NotNull LocaleProvider<Viewer> localeProvider() {
             return viewer -> viewer.locale();
         }
+
+        @Override
+        protected @NotNull Replacer<Viewer> globalReplacer() {
+            return (viewer, text) -> text.replace("{global}", "-GLOBAL-");
+        }
     }
 
     @Test
@@ -104,19 +110,21 @@ class MultificationTest {
             .console()
             .notice(myMessages -> myMessages.someMessage())
             .notice(Notice.chat(OTHER_MESSAGE))
+            .notice(Notice.chat("{inner} {global}"))
+            .placeholder("{inner}", "-INNER-")
             .send();
 
         assertThat(AudienceMock.getMessages(LUCKI_UUID))
-            .containsExactly(UK_MESSAGE, OTHER_MESSAGE);
+            .containsExactly(UK_MESSAGE, OTHER_MESSAGE, "-INNER- -GLOBAL-");
 
         assertThat(AudienceMock.getMessages(ROLLCZI_UUID))
-            .containsExactly(JAPAN_MESSAGE, OTHER_MESSAGE);
+            .containsExactly(JAPAN_MESSAGE, OTHER_MESSAGE, "-INNER- -GLOBAL-");
 
         assertThat(AudienceMock.getMessages(CUSTOM_PLAYER))
-            .containsExactly(US_MESSAGE, OTHER_MESSAGE);
+            .containsExactly(US_MESSAGE, OTHER_MESSAGE, "-INNER- -GLOBAL-");
 
         assertThat(AudienceMock.getMessages(Viewer.CONSOLE.uuid()))
-            .containsExactly(DEFAULT_MESSAGE, OTHER_MESSAGE);
+            .containsExactly(DEFAULT_MESSAGE, OTHER_MESSAGE, "-INNER- -GLOBAL-");
     }
 
 }
