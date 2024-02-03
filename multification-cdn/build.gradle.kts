@@ -11,7 +11,3 @@ dependencies {
 
     api("net.dzikoysk:cdn:1.14.4")
 }
-
-multificationPublish {
-    artifactId = "multification-cdn"
-}
