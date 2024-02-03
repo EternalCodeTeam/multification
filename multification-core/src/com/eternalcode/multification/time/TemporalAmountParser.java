@@ -26,8 +26,8 @@ import java.util.function.Predicate;
  * </p>
  * <p>
  *     This class is immutable.
- *     You can create new instance using constructor {@link PeriodParser#PeriodParser()} or {@link DurationParser#DurationParser()}.
- *     You can also use {@link DurationParser#DATE_TIME_UNITS}, {@link PeriodParser#DATE_UNITS} and {@link DurationParser#TIME_UNITS}.
+ *     You can create new instance using constructor {@link DurationParser#DurationParser()}.
+ *     You can also use {@link DurationParser#DATE_TIME_UNITS} and {@link DurationParser#TIME_UNITS}.
  *     You can add new units using {@link #withUnit(String, ChronoUnit)}.
  * </p>
  * <p>
