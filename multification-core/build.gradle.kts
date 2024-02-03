@@ -8,5 +8,5 @@ plugins {
 
 dependencies {
     api("net.kyori:adventure-api:4.14.0")
-    api("org.jetbrains:annotations:24.0.1")
+    api("org.jetbrains:annotations:24.1.0")
 }
