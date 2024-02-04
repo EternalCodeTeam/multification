@@ -32,19 +32,19 @@ import org.jetbrains.annotations.CheckReturnValue;
 @SuppressWarnings("UnstableApiUsage")
 public class NoticeBroadcastImpl<Viewer, Translation, B extends NoticeBroadcast<Viewer, Translation, B>> implements NoticeBroadcast<Viewer, Translation, B> {
 
-    private final AsyncExecutor asyncExecutor;
-    private final TranslationProvider<Translation> translationProvider;
-    private final ViewerProvider<Viewer> viewerProvider;
-    private final PlatformBroadcaster platformBroadcaster;
-    private final LocaleProvider<Viewer> localeProvider;
-    private final AudienceConverter<Viewer> audienceConverter;
-    private final Replacer<Viewer> globalReplacer;
+    protected final AsyncExecutor asyncExecutor;
+    protected final TranslationProvider<Translation> translationProvider;
+    protected final ViewerProvider<Viewer> viewerProvider;
+    protected final PlatformBroadcaster platformBroadcaster;
+    protected final LocaleProvider<Viewer> localeProvider;
+    protected final AudienceConverter<Viewer> audienceConverter;
+    protected final Replacer<Viewer> globalReplacer;
 
-    private final List<Viewer> viewers = new ArrayList<>();
-    private final List<NoticeProvider<Translation>> notifications = new ArrayList<>();
+    protected final List<Viewer> viewers = new ArrayList<>();
+    protected final List<NoticeProvider<Translation>> notifications = new ArrayList<>();
 
-    private final Map<String, TextMessageProvider<Translation>> placeholders = new HashMap<>();
-    private final List<Formatter> formatters = new ArrayList<>();
+    protected final Map<String, TextMessageProvider<Translation>> placeholders = new HashMap<>();
+    protected final List<Formatter> formatters = new ArrayList<>();
 
     public NoticeBroadcastImpl(
         AsyncExecutor asyncExecutor,
