@@ -180,6 +180,14 @@ public class Notice {
             return this.withPart(new NoticePart<>(NoticeType.SOUND, new Music(sound, category, pitch, volume)));
         }
 
+        public Builder sound(@KeyPattern String sound, Sound.Source category, float pitch, float volume) {
+            return this.withPart(new NoticePart<>(NoticeType.SOUND, new Music(() -> Key.key(sound), category, pitch, volume)));
+        }
+
+        public Builder sound(@KeyPattern String sound, float pitch, float volume) {
+            return this.withPart(new NoticePart<>(NoticeType.SOUND, new Music(() -> Key.key(sound), null, pitch, volume)));
+        }
+
     }
 
 }
