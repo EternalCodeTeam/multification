@@ -5,6 +5,8 @@ import static com.eternalcode.multification.notice.NoticeContent.Music;
 import static com.eternalcode.multification.notice.NoticeContent.None;
 import static com.eternalcode.multification.notice.NoticeContent.Text;
 import static com.eternalcode.multification.notice.NoticeContent.Times;
+
+import com.eternalcode.multification.notice.NoticeContent;
 import com.eternalcode.multification.notice.NoticePart;
 import com.eternalcode.multification.notice.NoticeType;
 import com.eternalcode.multification.time.DurationParser;
@@ -20,8 +22,8 @@ import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.reflect.TargetType;
 import net.dzikoysk.cdn.serdes.Composer;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import panda.std.Result;
 
 public class MultificationNoticeCdnComposer implements Composer<Notice> {
@@ -127,22 +129,22 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
             }
 
             if (part.content() instanceof Music music) {
-                Sound.Source category = music.category();
+                SoundCategory category = music.category();
 
                 Entry entry = category == null
                     ?
                     new Entry(context.description, key, new Piece(MUSIC_WITHOUT_CATEGORY.formatted(
-                        music.sound().key().value(),
+                        music.sound().name(),
                         String.valueOf(music.pitch()),
                         String.valueOf(music.volume())
                     )))
                     :
-                    new Entry(context.description, key, new Piece(MUSIC_WITH_CATEGORY.formatted(
-                        music.sound().key().value(),
-                        category.name(),
-                        String.valueOf(music.pitch()),
-                        String.valueOf(music.volume())
-                    )));
+                        new Entry(context.description, key, new Piece(MUSIC_WITH_CATEGORY.formatted(
+                            music.sound().name(),
+                            category.name(),
+                            String.valueOf(music.pitch()),
+                            String.valueOf(music.volume())
+                        )));
 
                 section.append(entry);
                 continue;
@@ -252,8 +254,8 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
                         return Result.error(new IllegalStateException("Invalid music format"));
                     }
 
-                    Sound.Type sound = () -> Key.key(music[0]);
-                    Sound.Source category = music.length == 3 ? null : Sound.Source.valueOf(music[1]);
+                    Sound sound = Sound.valueOf(music[0]);
+                    SoundCategory category = music.length == 3 ? null : SoundCategory.valueOf(music[1]);
                     float pitch = Float.parseFloat(music[music.length - 2]);
                     float volume = Float.parseFloat(music[music.length - 1]);
 

@@ -12,10 +12,13 @@ import net.dzikoysk.cdn.Cdn;
 import net.dzikoysk.cdn.CdnFactory;
 import net.dzikoysk.cdn.reflect.Visibility;
 import net.dzikoysk.cdn.source.Source;
-import net.kyori.adventure.sound.Sound;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -183,7 +186,7 @@ class NoticeComposerTest {
     }
 
     static class ConfigSound {
-        Notice notice = Notice.sound("block_anvil_land", Sound.Source.MASTER, 1.0f, 1.0f);
+        Notice notice = Notice.sound(Sound.BLOCK_ANVIL_LAND, SoundCategory.MASTER, 1.0f, 1.0f);
     }
     @Test
     @DisplayName("Should serialize sound notice with sound property")
@@ -191,7 +194,7 @@ class NoticeComposerTest {
         ConfigSound configSound = assertRender(new ConfigSound(),
             """
                 notice:
-                  sound: "block_anvil_land MASTER 1.0 1.0"
+                  sound: "BLOCK_ANVIL_LAND MASTER 1.0 1.0"
                 """);
 
         assertEquals(1, configSound.notice.parts().size());
@@ -199,14 +202,14 @@ class NoticeComposerTest {
         NoticePart<?> part = configSound.notice.parts().get(0);
         Music sound = assertInstanceOf(Music.class, part.content());
         assertEquals(NoticeType.SOUND, part.type());
-        assertEquals("block_anvil_land", sound.sound().key().value());
-        assertEquals(Sound.Source.MASTER, sound.category());
+        assertEquals(Sound.BLOCK_ANVIL_LAND, sound.sound());
+        assertEquals(SoundCategory.MASTER, sound.category());
         assertEquals(1.0f, sound.volume());
         assertEquals(1.0f, sound.pitch());
     }
 
     static class ConfigSoundWithoutCategory {
-        Notice notice = Notice.sound("block_anvil_land", 1.0f, 1.0f);
+        Notice notice = Notice.sound(Sound.BLOCK_ANVIL_LAND, 1.0f, 1.0f);
     }
     @Test
     @DisplayName("Should serialize sound notice without category property")
@@ -214,7 +217,7 @@ class NoticeComposerTest {
         ConfigSoundWithoutCategory configSoundWithoutCategory = assertRender(new ConfigSoundWithoutCategory(),
             """
                 notice:
-                  sound: "block_anvil_land 1.0 1.0"
+                  sound: "BLOCK_ANVIL_LAND 1.0 1.0"
                 """);
 
         assertEquals(1, configSoundWithoutCategory.notice.parts().size());
@@ -222,7 +225,7 @@ class NoticeComposerTest {
         NoticePart<?> part = configSoundWithoutCategory.notice.parts().get(0);
         Music sound = assertInstanceOf(Music.class, part.content());
         assertEquals(NoticeType.SOUND, part.type());
-        assertEquals("block_anvil_land", sound.sound().key().value());
+        assertEquals(Sound.BLOCK_ANVIL_LAND, sound.sound());
         assertNull(sound.category());
         assertEquals(1.0f, sound.volume());
         assertEquals(1.0f, sound.pitch());
