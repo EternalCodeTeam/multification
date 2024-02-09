@@ -14,7 +14,9 @@ import static com.eternalcode.multification.notice.NoticeContent.Text;
 import static com.eternalcode.multification.notice.NoticeContent.Times;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.KeyPattern;
-import net.kyori.adventure.sound.Sound;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.block.data.type.Bed.Part;
 
 public class Notice {
 
@@ -86,27 +88,15 @@ public class Notice {
             .build();
     }
 
-    public static Notice sound(Sound.Type sound, Sound.Source category, float volume, float pitch) {
+    public static Notice sound(Sound sound, SoundCategory category, float volume, float pitch) {
         return Notice.builder()
             .sound(sound, category, pitch, volume)
             .build();
     }
 
-    public static Notice sound(Sound.Type sound, float volume, float pitch) {
+    public static Notice sound(Sound sound, float volume, float pitch) {
         return Notice.builder()
             .sound(sound, pitch, volume)
-            .build();
-    }
-
-    public static Notice sound(@KeyPattern String sound, Sound.Source category, float volume, float pitch) {
-        return Notice.builder()
-            .sound(() -> Key.key(sound), category, pitch, volume)
-            .build();
-    }
-
-    public static Notice sound(@KeyPattern String sound, float volume, float pitch) {
-        return Notice.builder()
-            .sound(() -> Key.key(sound), pitch, volume)
             .build();
     }
 
@@ -172,20 +162,12 @@ public class Notice {
             return this.withPart(new NoticePart<>(NoticeType.TITLE_TIMES, new Times(in, stay, out)));
         }
 
-        public Builder sound(Sound.Type sound, float pitch, float volume) {
+        public Builder sound(Sound sound, float pitch, float volume) {
             return this.withPart(new NoticePart<>(NoticeType.SOUND, new Music(sound, null, pitch, volume)));
         }
 
-        public Builder sound(Sound.Type sound, Sound.Source category, float pitch, float volume) {
+        public Builder sound(Sound sound, SoundCategory category, float pitch, float volume) {
             return this.withPart(new NoticePart<>(NoticeType.SOUND, new Music(sound, category, pitch, volume)));
-        }
-
-        public Builder sound(@KeyPattern String sound, Sound.Source category, float pitch, float volume) {
-            return this.withPart(new NoticePart<>(NoticeType.SOUND, new Music(() -> Key.key(sound), category, pitch, volume)));
-        }
-
-        public Builder sound(@KeyPattern String sound, float pitch, float volume) {
-            return this.withPart(new NoticePart<>(NoticeType.SOUND, new Music(() -> Key.key(sound), null, pitch, volume)));
         }
 
     }
