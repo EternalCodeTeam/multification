@@ -19,10 +19,16 @@ class PlatformBroadcasterImpl implements PlatformBroadcaster {
         NoticeType.CHAT,       this.text((audience, message) -> audience.sendMessage(message)),
         NoticeType.ACTION_BAR, this.text((audience, message) -> audience.sendActionBar(message)),
         NoticeType.TITLE,      this.text((audience, title) -> {
-            audience.sendTitlePart(TitlePart.TITLE, title);
             audience.sendTitlePart(TitlePart.SUBTITLE, Component.empty());
         }),
         NoticeType.SUBTITLE,   this.text((audience, subtitle) -> {
+            audience.sendTitlePart(TitlePart.SUBTITLE, subtitle);
+        }),
+        NoticeType.TITLE_WITH_EMPTY_SUBTITLE, this.text((audience, title) -> {
+            audience.sendTitlePart(TitlePart.TITLE, title);
+            audience.sendTitlePart(TitlePart.SUBTITLE, Component.empty());
+        }),
+        NoticeType.SUBTITLE_WITH_EMPTY_TITLE, this.text((audience, subtitle) -> {
             audience.sendTitlePart(TitlePart.TITLE, Component.empty());
             audience.sendTitlePart(TitlePart.SUBTITLE, subtitle);
         }),
