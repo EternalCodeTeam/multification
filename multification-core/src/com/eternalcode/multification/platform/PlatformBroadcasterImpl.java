@@ -6,6 +6,7 @@ import com.eternalcode.multification.notice.NoticePart;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.Sound.Source;
 import net.kyori.adventure.text.Component;
@@ -77,9 +78,10 @@ class PlatformBroadcasterImpl implements PlatformBroadcaster {
     static class SoundNoticePartAnnouncer implements NoticePartAnnouncer<NoticeContent.Music> {
         @Override
         public void announce(Audience audience, NoticeContent.Music music) {
+            String soundKey = music.sound().getKey().getKey();
             Sound sound = music.category() != null
-                ? Sound.sound(music.sound(), music.category(), music.volume(), music.pitch())
-                : Sound.sound(music.sound(), Source.MASTER, music.volume(), music.pitch());
+                ? Sound.sound(Key.key(soundKey), Source.valueOf(music.category().name()), music.volume(), music.pitch())
+                : Sound.sound(Key.key(soundKey), Source.MASTER, music.volume(), music.pitch());
 
             audience.playSound(sound);
         }
