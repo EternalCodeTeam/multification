@@ -27,6 +27,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.CheckReturnValue;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -255,6 +256,14 @@ public class NoticeBroadcastImpl<Viewer, Translation, B extends NoticeBroadcast<
                     Audience audience = audienceConverter.convert(viewer);
 
                     for (NoticePart<?> part : notice.parts()) {
+                        if (part.type() == NoticeType.SUBTITLE) {
+                            List<NoticeType> typesOfNotice = notice.parts().stream().map(noticePart -> noticePart.type()).toList();
+
+                            if (!typesOfNotice.contains(NoticeType.TITLE)) {
+                                part = new NoticePart<>(NoticeType.SUBTITLE_WITH_EMPTY_TITLE, part.content());
+                            }
+                        }
+
                         part = this.formatter(part, message -> translatedFormatter.format(message, viewer));
 
                         this.platformBroadcaster.announce(audience, part);

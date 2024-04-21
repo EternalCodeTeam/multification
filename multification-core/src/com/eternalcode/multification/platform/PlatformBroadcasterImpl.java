@@ -25,9 +25,6 @@ class PlatformBroadcasterImpl implements PlatformBroadcaster {
         NoticeType.SUBTITLE,   this.text((audience, subtitle) -> {
             audience.sendTitlePart(TitlePart.SUBTITLE, subtitle);
         }),
-        NoticeType.TITLE_WITH_EMPTY_SUBTITLE, this.text((audience, title) -> {
-            audience.sendTitlePart(TitlePart.TITLE, title);
-        }),
         NoticeType.SUBTITLE_WITH_EMPTY_TITLE, this.text((audience, subtitle) -> {
             audience.sendTitlePart(TitlePart.TITLE, Component.empty());
             audience.sendTitlePart(TitlePart.SUBTITLE, subtitle);
