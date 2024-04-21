@@ -82,6 +82,32 @@ public class Notice {
             .build();
     }
 
+    public static Notice titleWithEmptySubtitle(String title) {
+        return Notice.builder()
+            .titleWithEmptySubtitle(title)
+            .build();
+    }
+
+    public static Notice titleWithEmptySubtitle(String title, Duration fadeIn, Duration stay, Duration fadeOut) {
+        return Notice.builder()
+            .titleWithEmptySubtitle(title)
+            .times(fadeIn, stay, fadeOut)
+            .build();
+    }
+
+    public static Notice subtitleWithEmptyTitle(String subtitle) {
+        return Notice.builder()
+                .subtitleWithEmptyTitle(subtitle)
+                .build();
+    }
+
+    public static Notice subtitleWithEmptyTitle(String subtitle, Duration fadeIn, Duration stay, Duration fadeOut) {
+        return Notice.builder()
+            .subtitleWithEmptyTitle(subtitle)
+            .times(fadeIn, stay, fadeOut)
+            .build();
+    }
+
     public static Notice hideTitle() {
         return Notice.builder()
             .hideTitle()
@@ -160,6 +186,14 @@ public class Notice {
 
         public Builder times(Duration in, Duration stay, Duration out) {
             return this.withPart(new NoticePart<>(NoticeType.TITLE_TIMES, new Times(in, stay, out)));
+        }
+
+        public Builder titleWithEmptySubtitle(String title) {
+            return this.withPart(new NoticePart<>(NoticeType.TITLE_WITH_EMPTY_SUBTITLE, new Text(List.of(title))));
+        }
+
+        public Builder subtitleWithEmptyTitle(String subtitle) {
+            return this.withPart(new NoticePart<>(NoticeType.SUBTITLE_WITH_EMPTY_TITLE, new Text(List.of(subtitle))));
         }
 
         public Builder sound(Sound sound, float pitch, float volume) {
