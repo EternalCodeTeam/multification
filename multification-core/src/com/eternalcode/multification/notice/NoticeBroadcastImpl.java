@@ -27,7 +27,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.CheckReturnValue;
 
 @SuppressWarnings("UnstableApiUsage")
