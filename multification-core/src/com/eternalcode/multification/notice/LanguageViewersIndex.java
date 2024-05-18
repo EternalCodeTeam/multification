@@ -9,11 +9,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-class LanguageViewersIndex<Viewer> {
+class LanguageViewersIndex<VIEWER> {
 
-    private final Map<Locale, Set<Viewer>> viewersByLanguage;
+    private final Map<Locale, Set<VIEWER>> viewersByLanguage;
 
-    private LanguageViewersIndex(Map<Locale, Set<Viewer>> viewersByLanguage) {
+    private LanguageViewersIndex(Map<Locale, Set<VIEWER>> viewersByLanguage) {
         this.viewersByLanguage = viewersByLanguage;
     }
 
@@ -21,14 +21,14 @@ class LanguageViewersIndex<Viewer> {
         return this.viewersByLanguage.keySet();
     }
 
-    Set<Viewer> getViewers(Locale language) {
+    Set<VIEWER> getViewers(Locale language) {
         return this.viewersByLanguage.get(language);
     }
 
-    static <Viewer> LanguageViewersIndex<Viewer> of(LocaleProvider<Viewer> localeProvider, Collection<Viewer> viewers) {
-        Map<Locale, Set<Viewer>> viewersByLanguage = new HashMap<>();
+    static <V> LanguageViewersIndex<V> of(LocaleProvider<V> localeProvider, Collection<V> viewers) {
+        Map<Locale, Set<V>> viewersByLanguage = new HashMap<>();
 
-        for (Viewer viewer : viewers) {
+        for (V viewer : viewers) {
             viewersByLanguage
                 .computeIfAbsent(localeProvider.provide(viewer), key -> new HashSet<>())
                 .add(viewer);

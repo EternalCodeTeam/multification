@@ -3,14 +3,14 @@ package com.eternalcode.multification.viewer;
 import java.util.Collection;
 import java.util.UUID;
 
-public interface ViewerProvider<Viewer> {
+public interface ViewerProvider<VIEWER> {
 
-    Viewer console();
+    VIEWER console();
 
-    Viewer player(UUID uuid);
+    VIEWER player(UUID uuid);
 
-    Collection<Viewer> onlinePlayers();
+    Collection<VIEWER> onlinePlayers();
 
-    Collection<Viewer> all();
+    Collection<VIEWER> all();
 
 }
