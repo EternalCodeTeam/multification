@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.CheckReturnValue;
 
 @SuppressWarnings("UnstableApiUsage")
-public interface NoticeBroadcast<Viewer, Translation, B extends NoticeBroadcast<Viewer, Translation, B>> {
+public interface NoticeBroadcast<VIEWER, TRANSLATION, B extends NoticeBroadcast<VIEWER, TRANSLATION, B>> {
 
     @CheckReturnValue
     B player(UUID player);
@@ -22,7 +22,7 @@ public interface NoticeBroadcast<Viewer, Translation, B extends NoticeBroadcast<
     B players(Iterable<UUID> players);
 
     @CheckReturnValue
-    B viewer(Viewer viewer);
+    B viewer(VIEWER viewer);
 
     @CheckReturnValue
     B console();
@@ -37,7 +37,7 @@ public interface NoticeBroadcast<Viewer, Translation, B extends NoticeBroadcast<
     B notice(Notice notification);
 
     @CheckReturnValue
-    B notice(NoticeProvider<Translation> extractor);
+    B notice(NoticeProvider<TRANSLATION> extractor);
 
     @CheckReturnValue
     B notice(NoticeType type, String... text);
@@ -46,16 +46,16 @@ public interface NoticeBroadcast<Viewer, Translation, B extends NoticeBroadcast<
     B notice(NoticeType type, Collection<String> text);
 
     @CheckReturnValue
-    B notice(NoticeType type, TextMessageProvider<Translation> extractor);
+    B notice(NoticeType type, TextMessageProvider<TRANSLATION> extractor);
 
     @CheckReturnValue
-    B noticeChat(TextMessageProvider<Translation> extractor);
+    B noticeChat(TextMessageProvider<TRANSLATION> extractor);
 
     @CheckReturnValue
-    B noticeChat(Function<Translation, List<String>> function);
+    B noticeChat(Function<TRANSLATION, List<String>> function);
 
     @CheckReturnValue
-    B noticeOptional(OptionalNoticeProvider<Translation> extractor);
+    B noticeOptional(OptionalNoticeProvider<TRANSLATION> extractor);
 
     @CheckReturnValue
     B placeholder(String from, String to);
@@ -67,7 +67,7 @@ public interface NoticeBroadcast<Viewer, Translation, B extends NoticeBroadcast<
     B placeholder(String from, Supplier<String> to);
 
     @CheckReturnValue
-    B placeholder(String from, TextMessageProvider<Translation> extractor);
+    B placeholder(String from, TextMessageProvider<TRANSLATION> extractor);
 
     @CheckReturnValue
     B formatter(Formatter... formatters);

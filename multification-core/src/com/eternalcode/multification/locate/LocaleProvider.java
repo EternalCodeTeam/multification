@@ -4,9 +4,9 @@ import java.util.Locale;
 import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface
-public interface LocaleProvider<Viewer> {
+public interface LocaleProvider<VIEWER> {
 
     @NotNull
-    Locale provide(Viewer viewer);
+    Locale provide(VIEWER viewer);
 
 }

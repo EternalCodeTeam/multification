@@ -17,7 +17,7 @@ import org.jetbrains.annotations.CheckReturnValue;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("UnstableApiUsage")
-public abstract class Multification<Viewer, Translation> {
+public abstract class Multification<VIEWER, TRANSLATION> {
 
     public static final PlatformBroadcaster DEFAULT_BROADCASTER = PlatformBroadcaster.withPlainSerializer();
     public static final AsyncExecutor DEFAULT_EXECUTOR = runnable -> runnable.run();
@@ -25,7 +25,7 @@ public abstract class Multification<Viewer, Translation> {
     public static final LocaleProvider<?> LOCALE_PROVIDER = v -> Locale.ROOT;
 
     @CheckReturnValue
-    public NoticeBroadcast<Viewer, Translation, ?> create() {
+    public NoticeBroadcast<VIEWER, TRANSLATION, ?> create() {
         return new NoticeBroadcastImpl<>(
             this.asyncExecutor(),
             this.translationProvider(),
@@ -38,13 +38,13 @@ public abstract class Multification<Viewer, Translation> {
     }
 
     @NotNull
-    protected abstract ViewerProvider<Viewer> viewerProvider();
+    protected abstract ViewerProvider<VIEWER> viewerProvider();
 
     @NotNull
-    protected abstract TranslationProvider<Translation> translationProvider();
+    protected abstract TranslationProvider<TRANSLATION> translationProvider();
 
     @NotNull
-    protected abstract AudienceConverter<Viewer> audienceConverter();
+    protected abstract AudienceConverter<VIEWER> audienceConverter();
 
     @NotNull
     protected PlatformBroadcaster platformBroadcaster() {
@@ -53,8 +53,8 @@ public abstract class Multification<Viewer, Translation> {
 
     @SuppressWarnings("unchecked")
     @NotNull
-    protected Replacer<Viewer> globalReplacer() {
-        return (Replacer<Viewer>) DEFAULT_REPLACER;
+    protected Replacer<VIEWER> globalReplacer() {
+        return (Replacer<VIEWER>) DEFAULT_REPLACER;
     }
 
     @NotNull
@@ -64,11 +64,11 @@ public abstract class Multification<Viewer, Translation> {
 
     @SuppressWarnings("unchecked")
     @NotNull
-    protected LocaleProvider<Viewer> localeProvider() {
-        return (LocaleProvider<Viewer>) LOCALE_PROVIDER;
+    protected LocaleProvider<VIEWER> localeProvider() {
+        return (LocaleProvider<VIEWER>) LOCALE_PROVIDER;
     }
 
-    public void player(UUID player, NoticeProvider<Translation> extractor, Formatter... formatters) {
+    public void player(UUID player, NoticeProvider<TRANSLATION> extractor, Formatter... formatters) {
         this.create()
             .player(player)
             .notice(extractor)
@@ -76,7 +76,7 @@ public abstract class Multification<Viewer, Translation> {
             .send();
     }
 
-    public void players(Iterable<UUID> players, NoticeProvider<Translation> extractor, Formatter... formatters) {
+    public void players(Iterable<UUID> players, NoticeProvider<TRANSLATION> extractor, Formatter... formatters) {
         this.create()
             .players(players)
             .notice(extractor)
@@ -84,7 +84,7 @@ public abstract class Multification<Viewer, Translation> {
             .send();
     }
 
-    public void viewer(Viewer viewer, NoticeProvider<Translation> extractor, Formatter... formatters) {
+    public void viewer(VIEWER viewer, NoticeProvider<TRANSLATION> extractor, Formatter... formatters) {
         this.create()
             .viewer(viewer)
             .notice(extractor)
@@ -93,7 +93,7 @@ public abstract class Multification<Viewer, Translation> {
     }
 
 
-    public void console(NoticeProvider<Translation> extractor, Formatter... formatters) {
+    public void console(NoticeProvider<TRANSLATION> extractor, Formatter... formatters) {
         this.create()
             .console()
             .notice(extractor)
@@ -101,7 +101,7 @@ public abstract class Multification<Viewer, Translation> {
             .send();
     }
 
-    public void all(NoticeProvider<Translation> extractor, Formatter... formatters) {
+    public void all(NoticeProvider<TRANSLATION> extractor, Formatter... formatters) {
         this.create()
             .all()
             .notice(extractor)

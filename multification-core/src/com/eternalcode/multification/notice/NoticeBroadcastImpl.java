@@ -30,29 +30,29 @@ import net.kyori.adventure.audience.Audience;
 import org.jetbrains.annotations.CheckReturnValue;
 
 @SuppressWarnings("UnstableApiUsage")
-public class NoticeBroadcastImpl<Viewer, Translation, B extends NoticeBroadcast<Viewer, Translation, B>> implements NoticeBroadcast<Viewer, Translation, B> {
+public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<VIEWER, TRANSLATION, B>> implements NoticeBroadcast<VIEWER, TRANSLATION, B> {
 
     protected final AsyncExecutor asyncExecutor;
-    protected final TranslationProvider<Translation> translationProvider;
-    protected final ViewerProvider<Viewer> viewerProvider;
+    protected final TranslationProvider<TRANSLATION> translationProvider;
+    protected final ViewerProvider<VIEWER> viewerProvider;
     protected final PlatformBroadcaster platformBroadcaster;
-    protected final LocaleProvider<Viewer> localeProvider;
-    protected final AudienceConverter<Viewer> audienceConverter;
-    protected final Replacer<Viewer> globalReplacer;
+    protected final LocaleProvider<VIEWER> localeProvider;
+    protected final AudienceConverter<VIEWER> audienceConverter;
+    protected final Replacer<VIEWER> globalReplacer;
 
-    protected final List<Viewer> viewers = new ArrayList<>();
-    protected final List<NoticeProvider<Translation>> notifications = new ArrayList<>();
+    protected final List<VIEWER> viewers = new ArrayList<>();
+    protected final List<NoticeProvider<TRANSLATION>> notifications = new ArrayList<>();
 
-    protected final Map<String, TextMessageProvider<Translation>> placeholders = new HashMap<>();
+    protected final Map<String, TextMessageProvider<TRANSLATION>> placeholders = new HashMap<>();
     protected final List<Formatter> formatters = new ArrayList<>();
 
     public NoticeBroadcastImpl(
-        AsyncExecutor asyncExecutor,
-        TranslationProvider<Translation> translationProvider,
-        ViewerProvider<Viewer> viewerProvider,
-        PlatformBroadcaster platformBroadcaster,
-        LocaleProvider<Viewer> localeProvider,
-        AudienceConverter<Viewer> audienceConverter, Replacer<Viewer> replacer
+            AsyncExecutor asyncExecutor,
+            TranslationProvider<TRANSLATION> translationProvider,
+            ViewerProvider<VIEWER> viewerProvider,
+            PlatformBroadcaster platformBroadcaster,
+            LocaleProvider<VIEWER> localeProvider,
+            AudienceConverter<VIEWER> audienceConverter, Replacer<VIEWER> replacer
     ) {
         this.asyncExecutor = asyncExecutor;
         this.translationProvider = translationProvider;
@@ -73,7 +73,7 @@ public class NoticeBroadcastImpl<Viewer, Translation, B extends NoticeBroadcast<
     @Override
     @CheckReturnValue
     public B players(Iterable<UUID> players) {
-        Set<Viewer> viewers = new HashSet<>();
+        Set<VIEWER> viewers = new HashSet<>();
 
         for (UUID player : players) {
             viewers.add(this.viewerProvider.player(player));
@@ -85,7 +85,7 @@ public class NoticeBroadcastImpl<Viewer, Translation, B extends NoticeBroadcast<
 
     @Override
     @CheckReturnValue
-    public B viewer(Viewer viewer) {
+    public B viewer(VIEWER viewer) {
         this.viewers.add(viewer);
         return this.getThis();
     }
@@ -113,15 +113,15 @@ public class NoticeBroadcastImpl<Viewer, Translation, B extends NoticeBroadcast<
 
     @Override
     @CheckReturnValue
-    public B noticeChat(TextMessageProvider<Translation> extractor) {
+    public B noticeChat(TextMessageProvider<TRANSLATION> extractor) {
         this.notifications.add(translation -> Notice.chat(extractor.extract(translation)));
         return this.getThis();
     }
 
     @Override
     @CheckReturnValue
-    public B noticeChat(Function<Translation, List<String>> function) {
-        TextMessageProvider<Translation> translatedMessageExtractor = translation -> {
+    public B noticeChat(Function<TRANSLATION, List<String>> function) {
+        TextMessageProvider<TRANSLATION> translatedMessageExtractor = translation -> {
             List<String> apply = function.apply(translation);
 
             return String.join("\n", apply);
@@ -140,7 +140,7 @@ public class NoticeBroadcastImpl<Viewer, Translation, B extends NoticeBroadcast<
 
     @Override
     @CheckReturnValue
-    public B noticeOptional(OptionalNoticeProvider<Translation> extractor) {
+    public B noticeOptional(OptionalNoticeProvider<TRANSLATION> extractor) {
         this.notifications.add(translation -> {
             Optional<Notice> apply = extractor.extract(translation);
 
@@ -155,7 +155,7 @@ public class NoticeBroadcastImpl<Viewer, Translation, B extends NoticeBroadcast<
 
     @Override
     @CheckReturnValue
-    public B notice(NoticeProvider<Translation> extractor) {
+    public B notice(NoticeProvider<TRANSLATION> extractor) {
         this.notifications.add(extractor);
         return this.getThis();
     }
@@ -176,7 +176,7 @@ public class NoticeBroadcastImpl<Viewer, Translation, B extends NoticeBroadcast<
     }
 
     @Override
-    public B notice(NoticeType type, TextMessageProvider<Translation> extractor) {
+    public B notice(NoticeType type, TextMessageProvider<TRANSLATION> extractor) {
         this.notifications.add(translation -> {
             List<String> list = Collections.singletonList(extractor.extract(translation));
             NoticeContent.Text content = new NoticeContent.Text(list);
@@ -213,7 +213,7 @@ public class NoticeBroadcastImpl<Viewer, Translation, B extends NoticeBroadcast<
 
     @Override
     @CheckReturnValue
-    public B placeholder(String from, TextMessageProvider<Translation> extractor) {
+    public B placeholder(String from, TextMessageProvider<TRANSLATION> extractor) {
         this.placeholders.put(from, extractor);
         return this.getThis();
     }
@@ -232,13 +232,13 @@ public class NoticeBroadcastImpl<Viewer, Translation, B extends NoticeBroadcast<
 
     @Override
     public void send() {
-        LanguageViewersIndex<Viewer> viewersIndex = LanguageViewersIndex.of(this.localeProvider, this.viewers);
+        LanguageViewersIndex<VIEWER> viewersIndex = LanguageViewersIndex.of(this.localeProvider, this.viewers);
         TranslatedNoticesIndex translatedNoticesIndex = this.prepareTranslatedNotices(viewersIndex.getLocales());
 
         this.sendTranslatedMessages(viewersIndex, translatedNoticesIndex);
     }
 
-    private void sendTranslatedMessages(LanguageViewersIndex<Viewer> viewersIndex, TranslatedNoticesIndex translatedNoticesIndex) {
+    private void sendTranslatedMessages(LanguageViewersIndex<VIEWER> viewersIndex, TranslatedNoticesIndex translatedNoticesIndex) {
         for (Locale language : viewersIndex.getLocales()) {
             List<Notice> notificationsForLang = translatedNoticesIndex.forLanguage(language);
 
@@ -249,9 +249,9 @@ public class NoticeBroadcastImpl<Viewer, Translation, B extends NoticeBroadcast<
             TranslatedFormatter translatedFormatter = this.prepareFormatterForLanguage(language);
 
             for (Notice notice : notificationsForLang) {
-                Set<Viewer> languageViewers = viewersIndex.getViewers(language);
+                Set<VIEWER> languageViewers = viewersIndex.getViewers(language);
 
-                for (Viewer viewer : languageViewers) {
+                for (VIEWER viewer : languageViewers) {
                     Audience audience = audienceConverter.convert(viewer);
 
                     for (NoticePart<?> part : notice.parts()) {
@@ -281,10 +281,10 @@ public class NoticeBroadcastImpl<Viewer, Translation, B extends NoticeBroadcast<
 
     private TranslatedNoticesIndex prepareTranslatedNotices(Set<Locale> languages) {
         return TranslatedNoticesIndex.of(languages, language -> {
-            Translation translation = this.translationProvider.provide(language);
+            TRANSLATION translation = this.translationProvider.provide(language);
             List<Notice> notificationsForLanguage = new ArrayList<>();
 
-            for (NoticeProvider<Translation> extractor : this.notifications) {
+            for (NoticeProvider<TRANSLATION> extractor : this.notifications) {
                 notificationsForLanguage.add(extractor.extract(translation));
             }
 
@@ -293,10 +293,10 @@ public class NoticeBroadcastImpl<Viewer, Translation, B extends NoticeBroadcast<
     }
 
     protected TranslatedFormatter prepareFormatterForLanguage(Locale language) {
-        Translation translation = this.translationProvider.provide(language);
+        TRANSLATION translation = this.translationProvider.provide(language);
         Formatter translatedFormatter = new Formatter();
 
-        for (Map.Entry<String, TextMessageProvider<Translation>> entry : this.placeholders.entrySet()) {
+        for (Map.Entry<String, TextMessageProvider<TRANSLATION>> entry : this.placeholders.entrySet()) {
             translatedFormatter.register(entry.getKey(), () -> entry.getValue().extract(translation));
         }
 
@@ -311,7 +311,7 @@ public class NoticeBroadcastImpl<Viewer, Translation, B extends NoticeBroadcast<
             this.translatedPlaceholders = translatedPlaceholders;
         }
 
-        public String format(String text, Viewer viewer) {
+        public String format(String text, VIEWER viewer) {
             text = NoticeBroadcastImpl.this.globalReplacer.apply(viewer, text);
             text = this.translatedPlaceholders.format(text);
 
