@@ -11,8 +11,6 @@ public enum NoticeType {
     TITLE(Text.class, "title"),
     SUBTITLE(Text.class, "subtitle"),
 
-    // TODO: Find a better sotultion, minecraft sends subtitle/title only when the second part also contains some part
-    TITLE_WITH_EMPTY_SUBTITLE(Text.class, "titleWithEmptySubtitle"),
     SUBTITLE_WITH_EMPTY_TITLE(Text.class, "subtitleWithEmptyTitle"),
     TITLE_TIMES(Times.class, "times"),
     TITLE_HIDE(None.class, "titleHide"),
