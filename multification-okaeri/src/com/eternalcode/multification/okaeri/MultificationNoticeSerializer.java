@@ -92,8 +92,8 @@ public class MultificationNoticeSerializer implements ObjectSerializer<Notice> {
         if (keys.size() == SINGLE_SERIALIZE_DESERIALIZE_PART && data.isValue()) {
             Object value = data.getValueRaw();
 
-            if (value instanceof String) {
-                List<String> messages = Collections.singletonList((String) value);
+            if (value instanceof String stringValue) {
+                List<String> messages = Collections.singletonList(stringValue);
                 builder.withPart(new NoticePart<>(NoticeType.CHAT, new Text(messages)));
             }
 
