@@ -2,8 +2,8 @@ package com.eternalcode.multification.adventure;
 
 import net.kyori.adventure.audience.Audience;
 
-public interface AudienceConverter<Viewer> {
+public interface AudienceConverter<VIEWER> {
 
-    Audience convert(Viewer viewer);
+    Audience convert(VIEWER viewer);
 
 }

@@ -4,9 +4,9 @@ import java.util.Locale;
 import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface
-public interface TranslationProvider<Translation> {
+public interface TranslationProvider<TRANSLATION> {
 
     @NotNull
-    Translation provide(Locale locale);
+    TRANSLATION provide(Locale locale);
 
 }

@@ -1,8 +1,8 @@
 package com.eternalcode.multification.shared;
 
 @FunctionalInterface
-public interface Replacer<Viewer> {
+public interface Replacer<VIEWER> {
 
-    String apply(Viewer viewer, String text);
+    String apply(VIEWER viewer, String text);
 
 }
