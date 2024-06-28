@@ -1,18 +1,17 @@
 package com.eternalcode.multification.cdn;
 
+import com.eternalcode.multification.Multification;
 import com.eternalcode.multification.notice.Notice;
-import static com.eternalcode.multification.notice.NoticeContent.Music;
-import static com.eternalcode.multification.notice.NoticeContent.None;
-import static com.eternalcode.multification.notice.NoticeContent.Text;
-import static com.eternalcode.multification.notice.NoticeContent.Times;
+import com.eternalcode.multification.notice.resolver.NoticeDeserializeResult;
+import com.eternalcode.multification.notice.resolver.NoticeContent;
+import com.eternalcode.multification.notice.NoticeKey;
+import com.eternalcode.multification.notice.resolver.NoticeResolverRegistry;
+import com.eternalcode.multification.notice.resolver.NoticeSerdesResult;
+import com.eternalcode.multification.notice.resolver.chat.ChatContent;
 
-import com.eternalcode.multification.notice.NoticeContent;
 import com.eternalcode.multification.notice.NoticePart;
-import com.eternalcode.multification.notice.NoticeType;
-import com.eternalcode.multification.time.DurationParser;
-import com.eternalcode.multification.time.TemporalAmountParser;
-import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.CdnUtils;
 import net.dzikoysk.cdn.model.Element;
@@ -22,18 +21,21 @@ import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.reflect.TargetType;
 import net.dzikoysk.cdn.serdes.Composer;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import panda.std.Result;
 
 public class MultificationNoticeCdnComposer implements Composer<Notice> {
 
     private static final String EMPTY_NOTICE = "[]";
-    private static final String TIMES = "%s %s %s";
-    private static final String MUSIC_WITH_CATEGORY = "%s %s %s %s";
-    private static final String MUSIC_WITHOUT_CATEGORY = "%s %s %s";
 
-    private static final TemporalAmountParser<Duration> DURATION_PARSER = DurationParser.TIME_UNITS;
+    private final NoticeResolverRegistry noticeRegistry;
+
+    public MultificationNoticeCdnComposer(Multification<?, ?> multification) {
+        this.noticeRegistry = multification.getNoticeRegistry();
+    }
+
+    public MultificationNoticeCdnComposer(NoticeResolverRegistry noticeRegistry) {
+        this.noticeRegistry = noticeRegistry;
+    }
 
     @Override
     public Result<? extends Element<?>, ? extends Exception> serialize(CdnSettings settings, List<String> description, String key, TargetType type, Notice entity) {
@@ -61,15 +63,15 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
 
         NoticePart<?> part = parts.get(0);
 
-        if (part.type() != NoticeType.CHAT) {
+        if (!NoticeKey.CHAT.equals(part.noticeKey())) {
             return Result.error(new IllegalStateException("Notice is not chat"));
         }
 
-        if (!(part.content() instanceof Text text)) {
+        if (!(part.content() instanceof ChatContent chat)) {
             return Result.error(new IllegalStateException("Notice is not text"));
         }
 
-        List<String> messages = text.messages();
+        List<String> messages = chat.messages();
 
         if (messages.isEmpty()) {
             return Result.ok(empty(context));
@@ -87,70 +89,20 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
         Section section = new Section(context.description, context.key);
 
         for (NoticePart<?> part : parts) {
-            String key = part.type().getKey();
+            String key = part.noticeKey().key();
+            NoticeSerdesResult result = noticeRegistry.serialize(part);
 
-            if (part.content() instanceof Text text) {
-                List<String> messages = text.messages();
-
-                if (messages.isEmpty()) {
-                    continue;
-                }
-
-                if (messages.size() == 1) {
-                    section.append(oneLine(key, List.of(), messages.get(0)));
-                    continue;
-                }
-
-                section.append(toSection(key, List.of(), messages));
+            if (result instanceof NoticeSerdesResult.Single single) {
+                section.append(new Entry(context.description, key, single.element()));
                 continue;
             }
 
-            if (part.content() instanceof Times times) {
-                String textTimes = TIMES.formatted(
-                    DURATION_PARSER.format(times.fadeIn()),
-                    DURATION_PARSER.format(times.stay()),
-                    DURATION_PARSER.format(times.fadeOut())
-                );
-
-                section.append(new Entry(context.description, key, new Piece(textTimes)));
+            if (result instanceof NoticeSerdesResult.Multi multi) {
+                section.append(toSection(key, context.description, multi.elements()));
                 continue;
             }
 
-            if (part.content() instanceof None) {
-                for (NoticeType type : NoticeType.values()) {
-                    if (type != part.type()) {
-                        continue;
-                    }
-
-                    section.append(new Entry(context.description, key, "true"));
-                }
-
-                continue;
-            }
-
-            if (part.content() instanceof Music music) {
-                SoundCategory category = music.category();
-
-                Entry entry = category == null
-                    ?
-                    new Entry(context.description, key, new Piece(MUSIC_WITHOUT_CATEGORY.formatted(
-                        music.sound().name(),
-                        String.valueOf(music.pitch()),
-                        String.valueOf(music.volume())
-                    )))
-                    :
-                        new Entry(context.description, key, new Piece(MUSIC_WITH_CATEGORY.formatted(
-                            music.sound().name(),
-                            category.name(),
-                            String.valueOf(music.pitch()),
-                            String.valueOf(music.volume())
-                        )));
-
-                section.append(entry);
-                continue;
-            }
-
-            return Result.error(new UnsupportedOperationException("Unsupported notice type: " + part.type()));
+            return Result.error(new UnsupportedOperationException("Unsupported notice type: " + part.noticeKey() + ": " + part.content()));
         }
 
         return Result.ok(section);
@@ -199,14 +151,21 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
     }
 
     private Result<Notice, Exception> deserializeAll(DeserializeContext context) {
+        // - "Hello, world!"
         if (context.source() instanceof Piece piece) {
             return Result.ok(Notice.chat(CdnUtils.destringify(piece.getValue())));
         }
 
+        // example: "Hello, world!"
         if (context.source() instanceof Entry entry) {
             return Result.ok(Notice.chat(CdnUtils.destringify(entry.getPieceValue())));
         }
 
+        /*
+        example:
+           - "Hello, world!"
+           action-bar: "Hello, world!"
+         */
         if (context.source() instanceof Section section) {
             return this.deserializeSection(section);
         }
@@ -218,57 +177,26 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
         Notice.Builder builder = Notice.builder();
 
         for (Element<?> element : section.getValue()) {
+            // - "Hello, world!"
             if (element instanceof Piece piece) {
                 builder.chat(this.deserializePiece(piece));
                 continue;
             }
 
+            // actionbar: "Hello, world!"
             if (element instanceof Entry entry) {
                 String value = this.deserializePiece(entry.getValue());
-                NoticeType noticeType = NoticeType.fromKey(entry.getName());
+                String key = entry.getName();
 
-                if (noticeType.contentType() == Text.class) {
-                    builder.withPart(new NoticePart<>(noticeType, new Text(List.of(value))));
-                    continue;
+                NoticeSerdesResult.Single result = new NoticeSerdesResult.Single(value);
+                Optional<NoticeDeserializeResult<?>> optional = this.noticeRegistry.deserialize(key, result);
+
+                if (optional.isEmpty()) {
+                    return Result.error(new IllegalStateException("Unsupported notice type: " + key + ": " + value));
                 }
 
-                if (noticeType.contentType() == Times.class) {
-                    String[] times = value.split(" ");
-
-                    if (times.length != 3) {
-                        return Result.error(new IllegalStateException("Invalid times format"));
-                    }
-
-                    Duration fadeIn = DURATION_PARSER.parse(times[0]);
-                    Duration stay = DURATION_PARSER.parse(times[1]);
-                    Duration fadeOut = DURATION_PARSER.parse(times[2]);
-
-                    builder.withPart(new NoticePart<>(noticeType, new Times(fadeIn, stay, fadeOut)));
-                    continue;
-                }
-
-                if (noticeType.contentType() == Music.class) {
-                    String[] music = value.split(" ");
-
-                    if (music.length < 3 || music.length > 4) {
-                        return Result.error(new IllegalStateException("Invalid music format"));
-                    }
-
-                    Sound sound = Sound.valueOf(music[0]);
-                    SoundCategory category = music.length == 3 ? null : SoundCategory.valueOf(music[1]);
-                    float pitch = Float.parseFloat(music[music.length - 2]);
-                    float volume = Float.parseFloat(music[music.length - 1]);
-
-                    builder.withPart(new NoticePart<>(noticeType, new Music(sound, category, pitch, volume)));
-                    continue;
-                }
-
-                if (noticeType.contentType() == None.class) {
-                    builder.withPart(new NoticePart<>(noticeType, None.INSTANCE));
-                    continue;
-                }
-
-                return Result.error(new UnsupportedOperationException("Unsupported notice type: " + noticeType));
+                this.withPart(builder, optional.get());
+                continue;
             }
 
             if (element instanceof Section subSection) {
@@ -289,6 +217,10 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
         return Result.ok(builder.build());
     }
 
+    private <T extends NoticeContent> void withPart(Notice.Builder builder, NoticeDeserializeResult<T> result) {
+        builder.withPart(result.noticeKey(), result.content());
+    }
+
     private String deserializePiece(Piece piece) {
         String value = piece.getValue();
 
@@ -299,8 +231,7 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
         return CdnUtils.destringify(value.trim());
     }
 
-    record DeserializeContext(CdnSettings settings, Element<?> source, TargetType type, Notice defaultValue,
-                              boolean entryAsRecord) {
+    record DeserializeContext(CdnSettings settings, Element<?> source, TargetType type, Notice defaultValue, boolean entryAsRecord) {
     }
 
 }

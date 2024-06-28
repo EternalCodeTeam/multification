@@ -1,11 +1,11 @@
-package com.eternalcode.multification.platform;
+package com.eternalcode.multification.adventure;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
-class PlainComponentSerializer implements ComponentSerializer<Component, Component, String> {
+public class PlainComponentSerializer implements ComponentSerializer<Component, Component, String> {
     @Override
     public @NotNull Component deserialize(@NotNull String input) {
         return Component.text(input);

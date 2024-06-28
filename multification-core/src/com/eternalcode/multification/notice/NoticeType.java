@@ -1,22 +1,29 @@
 package com.eternalcode.multification.notice;
 
-import static com.eternalcode.multification.notice.NoticeContent.Music;
-import static com.eternalcode.multification.notice.NoticeContent.None;
-import static com.eternalcode.multification.notice.NoticeContent.Text;
-import static com.eternalcode.multification.notice.NoticeContent.Times;
+import com.eternalcode.multification.notice.resolver.NoticeContent;
+import com.eternalcode.multification.notice.resolver.actionbar.ActionbarContent;
+import com.eternalcode.multification.notice.resolver.sound.SoundAdventure;
+import com.eternalcode.multification.notice.resolver.chat.ChatContent;
+import com.eternalcode.multification.notice.resolver.title.TitleContent;
+import com.eternalcode.multification.notice.resolver.title.TitleHide;
+import com.eternalcode.multification.notice.resolver.title.TitleTimes;
+import org.jetbrains.annotations.ApiStatus;
 
-public enum NoticeType {
-    CHAT(Text.class, "chat"),
-    ACTION_BAR(Text.class, "actionbar"),
-    TITLE(Text.class, "title"),
-    SUBTITLE(Text.class, "subtitle"),
+@Deprecated
+@ApiStatus.ScheduledForRemoval(inVersion = "1.1.0")
+public enum NoticeType implements NoticeKey {
+    CHAT(ChatContent.class, NoticeKey.CHAT.key()),
+    ACTION_BAR(ActionbarContent.class, NoticeKey.ACTION_BAR.key()),
+    TITLE(TitleContent.class, NoticeKey.TITLE.key()),
+    SUBTITLE(TitleContent.class, NoticeKey.SUBTITLE.key()),
 
     // TODO: Find a better sotultion, minecraft sends subtitle/title only when the second part also contains some part
-    TITLE_WITH_EMPTY_SUBTITLE(Text.class, "titleWithEmptySubtitle"),
-    SUBTITLE_WITH_EMPTY_TITLE(Text.class, "subtitleWithEmptyTitle"),
-    TITLE_TIMES(Times.class, "times"),
-    TITLE_HIDE(None.class, "titleHide"),
-    SOUND(Music.class, "sound");
+    TITLE_WITH_EMPTY_SUBTITLE(TitleContent.class, "titleWithEmptySubtitle"),
+    SUBTITLE_WITH_EMPTY_TITLE(TitleContent.class, "subtitleWithEmptyTitle"),
+
+    TITLE_TIMES(TitleTimes.class, NoticeKey.TITLE_TIMES.key()),
+    TITLE_HIDE(TitleHide.class, NoticeKey.TITLE_HIDE.key()),
+    SOUND(SoundAdventure.class, NoticeKey.SOUND.key());
 
     private final Class<?> inputType;
     private final String name;
@@ -26,14 +33,26 @@ public enum NoticeType {
         this.name = name;
     }
 
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "1.1.0")
     public String getKey() {
         return this.name;
     }
 
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "1.1.0")
     public Class<?> contentType() {
         return this.inputType;
     }
 
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "1.1.0")
+    public <T extends NoticeContent> NoticeKey<T> toNoticeKey() {
+        return NoticeKey.of(this.getKey(), (Class<T>) contentType());
+    }
+
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "1.1.0")
     public static NoticeType fromKey(String key) {
         for (NoticeType type : values()) {
             if (type.getKey().equals(key)) {
@@ -42,6 +61,16 @@ public enum NoticeType {
         }
 
         throw new IllegalArgumentException("Unknown notice type: " + key);
+    }
+
+    @Override
+    public String key() {
+        return this.getKey();
+    }
+
+    @Override
+    public Class<?> type() {
+        return this.contentType();
     }
 
 }
