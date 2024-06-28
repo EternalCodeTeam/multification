@@ -11,6 +11,7 @@ repositories {
     mavenCentral()
     maven("https://repo.panda-lang.org/releases/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://repo.stellardrift.ca/repository/snapshots/")
 }
 
 dependencies {
