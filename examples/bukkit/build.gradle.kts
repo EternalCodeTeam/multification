@@ -9,15 +9,15 @@ version = "1.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    maven { url = uri("https://repo.panda-lang.org/releases/") }
-    maven { url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") }
+    maven("https://repo.panda-lang.org/releases/")
+    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
 }
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
 
-    implementation("net.kyori:adventure-platform-bukkit:4.3.0")
-    implementation("net.kyori:adventure-text-minimessage:4.14.0")
+    implementation("net.kyori:adventure-platform-bukkit:${Versions.ADVENTURE_PLATFORM_BUKKIT}")
+    implementation("net.kyori:adventure-text-minimessage:${Versions.ADVENTURE_API}")
     implementation("dev.rollczi:litecommands-bukkit:3.4.1")
     // implementation("com.eternalcode:multification-bukkit:1.0.3") // <-- uncomment in your project
     // implementation("com.eternalcode:multification-cdn:1.0.3") // <-- uncomment in your project
@@ -27,7 +27,7 @@ dependencies {
 }
 
 val pluginName = "ExamplePlugin"
-val packageName = "com.eternalcode.multification.example"
+val packageName = "com.eternalcode.example.bukkit"
 
 bukkit {
     main = "$packageName.$pluginName"
@@ -45,6 +45,7 @@ tasks.shadowJar {
         "net.dzikoysk.cdn",
         "panda.std",
         "panda.utilities",
+        "net.kyori",
     ).forEach { relocate(it, "$packageName.libs.$it") }
 }
 

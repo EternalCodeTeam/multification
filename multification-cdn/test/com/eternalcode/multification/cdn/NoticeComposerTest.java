@@ -1,9 +1,9 @@
 package com.eternalcode.multification.cdn;
 
-import com.eternalcode.multification.bukkit.notice.BukkitNotice;
-import com.eternalcode.multification.bukkit.notice.BukkitNoticeKey;
-import com.eternalcode.multification.bukkit.notice.resolver.sound.SoundBukkit;
-import com.eternalcode.multification.bukkit.notice.resolver.sound.SoundBukkitResolver;
+import com.eternalcode.example.bukkit.notice.BukkitNotice;
+import com.eternalcode.example.bukkit.notice.BukkitNoticeKey;
+import com.eternalcode.example.bukkit.notice.resolver.sound.SoundBukkit;
+import com.eternalcode.example.bukkit.notice.resolver.sound.SoundBukkitResolver;
 import com.eternalcode.multification.notice.Notice;
 import com.eternalcode.multification.notice.NoticeKey;
 import com.eternalcode.multification.notice.resolver.NoticeResolverDefaults;
@@ -240,6 +240,32 @@ class NoticeComposerTest {
         assertNull(sound.category());
         assertEquals(1.0f, sound.volume());
         assertEquals(1.0f, sound.pitch());
+    }
+
+
+    static class ConfigSoundShort {
+        Notice notice = BukkitNotice.sound(Sound.BLOCK_ANVIL_LAND);
+    }
+    @Test
+    @DisplayName("Should serialize sound notice without volume and pitch")
+    void serializeSoundNoticeWithoutVolumeAndPitch() {
+        ConfigSoundShort configSoundShort = assertRender(new ConfigSoundShort(),
+            """
+                notice:
+                  sound: "BLOCK_ANVIL_LAND"
+                """);
+
+        assertEquals(1, configSoundShort.notice.parts().size());
+
+        NoticePart<?> part = configSoundShort.notice.parts().get(0);
+        SoundBukkit sound = assertInstanceOf(SoundBukkit.class, part.content());
+        assertEquals(BukkitNoticeKey.SOUND, part.noticeKey());
+        assertEquals(Sound.BLOCK_ANVIL_LAND, sound.sound());
+        assertNull(sound.category());
+        assertEquals(1.0f, sound.volumeOrDefault());
+        assertEquals(1.0f, sound.pitchOrDefault());
+        assertEquals(-1.0f, sound.volume());
+        assertEquals(-1.0f, sound.pitch());
     }
 
 

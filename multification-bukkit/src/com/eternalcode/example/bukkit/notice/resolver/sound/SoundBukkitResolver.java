@@ -1,6 +1,6 @@
-package com.eternalcode.multification.bukkit.notice.resolver.sound;
+package com.eternalcode.example.bukkit.notice.resolver.sound;
 
-import com.eternalcode.multification.bukkit.notice.BukkitNoticeKey;
+import com.eternalcode.example.bukkit.notice.BukkitNoticeKey;
 import com.eternalcode.multification.notice.NoticeKey;
 import com.eternalcode.multification.notice.resolver.NoticeSerdesResult;
 import com.eternalcode.multification.notice.resolver.NoticeResolver;
@@ -14,8 +14,9 @@ import org.bukkit.SoundCategory;
 
 public class SoundBukkitResolver implements NoticeResolver<SoundBukkit> {
 
-    private static final String MUSIC_WITH_CATEGORY = "%s %s %s %s";
-    private static final String MUSIC_WITHOUT_CATEGORY = "%s %s %s";
+    private static final String MUSIC = "%s";
+    private static final String MUSIC_WITH_PITCH_VOLUME = "%s %s %s";
+    private static final String MUSIC_FULL = "%s %s %s %s";
 
     @Override
     public NoticeKey<SoundBukkit> noticeKey() {
@@ -25,9 +26,12 @@ public class SoundBukkitResolver implements NoticeResolver<SoundBukkit> {
     @Override
     public void send(Audience audience, ComponentSerializer<Component, Component, String> componentSerializer, SoundBukkit content) {
         String soundKey = content.sound().getKey().getKey();
-        Sound sound = content.category() != null
-            ? Sound.sound(Key.key(soundKey), Sound.Source.valueOf(content.category().name()), content.volume(), content.pitch())
-            : Sound.sound(Key.key(soundKey), Sound.Source.MASTER, content.volume(), content.pitch());
+        Sound sound = Sound.sound(
+            Key.key(soundKey),
+            Sound.Source.valueOf(content.toKyoriCategory().name()),
+            content.volumeOrDefault(),
+            content.pitchOrDefault()
+        );
 
         audience.playSound(sound);
     }
@@ -35,14 +39,18 @@ public class SoundBukkitResolver implements NoticeResolver<SoundBukkit> {
     @Override
     public NoticeSerdesResult serialize(SoundBukkit content) {
         if (content.category() == null) {
-            return new NoticeSerdesResult.Single(String.format(MUSIC_WITHOUT_CATEGORY,
+            if (content.pitch() == SoundBukkit.PITCH_UNSET || content.volume() == SoundBukkit.VOLUME_UNSET) {
+                return new NoticeSerdesResult.Single(String.format(MUSIC, content.sound().name()));
+            }
+
+            return new NoticeSerdesResult.Single(String.format(MUSIC_WITH_PITCH_VOLUME,
                 content.sound().name(),
                 content.pitch(),
                 content.volume()
             ));
         }
 
-        return new NoticeSerdesResult.Single(String.format(MUSIC_WITH_CATEGORY,
+        return new NoticeSerdesResult.Single(String.format(MUSIC_FULL,
             content.sound().name(),
             content.category().name(),
             content.pitch(),
@@ -60,8 +68,12 @@ public class SoundBukkitResolver implements NoticeResolver<SoundBukkit> {
 
         String[] music = firstElement.get().split(" ");
 
-        if (music.length < 3 || music.length > 4) {
-            throw new IllegalStateException("Invalid music format: " + firstElement.get());
+        if (music.length == 1) {
+            return Optional.of(new SoundBukkit(org.bukkit.Sound.valueOf(music[0]), null, SoundBukkit.PITCH_UNSET, SoundBukkit.VOLUME_UNSET));
+        }
+
+        if (music.length != 4 && music.length != 3) {
+            throw new IllegalArgumentException("Invalid sound format: " + firstElement.get());
         }
 
         org.bukkit.Sound sound = org.bukkit.Sound.valueOf(music[0]);

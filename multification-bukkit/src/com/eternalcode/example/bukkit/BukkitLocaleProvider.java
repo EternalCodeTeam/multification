@@ -1,4 +1,4 @@
-package com.eternalcode.multification.bukkit;
+package com.eternalcode.example.bukkit;
 
 import com.eternalcode.multification.locate.LocaleProvider;
 import java.util.Locale;

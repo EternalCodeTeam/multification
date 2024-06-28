@@ -1,6 +1,6 @@
-package com.eternalcode.multification.bukkit.notice;
+package com.eternalcode.example.bukkit.notice;
 
-import com.eternalcode.multification.bukkit.notice.resolver.sound.SoundBukkit;
+import com.eternalcode.example.bukkit.notice.resolver.sound.SoundBukkit;
 import com.eternalcode.multification.notice.resolver.NoticeContent;
 import com.eternalcode.multification.notice.NoticeKey;
 

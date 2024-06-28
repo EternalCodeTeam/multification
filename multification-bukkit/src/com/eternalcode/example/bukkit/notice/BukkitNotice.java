@@ -1,8 +1,7 @@
-package com.eternalcode.multification.bukkit.notice;
+package com.eternalcode.example.bukkit.notice;
 
-import com.eternalcode.multification.bukkit.notice.resolver.sound.SoundBukkit;
+import com.eternalcode.example.bukkit.notice.resolver.sound.SoundBukkit;
 import com.eternalcode.multification.notice.Notice;
-import com.eternalcode.multification.notice.NoticePart;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 
@@ -20,6 +19,12 @@ public class BukkitNotice {
             .build();
     }
 
+    public static Notice sound(Sound sound) {
+        return BukkitNotice.builder()
+            .sound(sound)
+            .build();
+    }
+
     public static BukkitNotice.Builder builder() {
         return new Builder();
     }
@@ -32,6 +37,10 @@ public class BukkitNotice {
 
         public Builder sound(Sound sound, float volume, float pitch) {
             return this.withPart(BukkitNoticeKey.SOUND, new SoundBukkit(sound, null, pitch, volume));
+        }
+
+        public Builder sound(Sound sound) {
+            return this.withPart(BukkitNoticeKey.SOUND, new SoundBukkit(sound, null, SoundBukkit.PITCH_UNSET, SoundBukkit.VOLUME_UNSET));
         }
 
         @Override

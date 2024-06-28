@@ -1,4 +1,4 @@
-package com.eternalcode.multification.bukkit;
+package com.eternalcode.example.bukkit;
 
 import com.eternalcode.multification.viewer.ViewerProvider;
 import java.util.ArrayList;

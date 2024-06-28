@@ -1,9 +1,9 @@
-package dev.rollczi.example.bukkit.multification;
+package com.eternalcode.example.bukkit.multification;
 
 import com.eternalcode.multification.adventure.AudienceConverter;
-import com.eternalcode.multification.bukkit.BukkitMultification;
+import com.eternalcode.example.bukkit.BukkitMultification;
 import com.eternalcode.multification.translation.TranslationProvider;
-import dev.rollczi.example.bukkit.config.MessagesConfig;
+import com.eternalcode.example.bukkit.config.MessagesConfig;
 import net.kyori.adventure.platform.AudienceProvider;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;

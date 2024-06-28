@@ -7,6 +7,6 @@ plugins {
 }
 
 dependencies {
-    compileOnlyApi("net.kyori:adventure-api:4.17.0")
+    compileOnlyApi("net.kyori:adventure-api:${Versions.ADVENTURE_API}")
     api("org.jetbrains:annotations:24.1.0")
 }

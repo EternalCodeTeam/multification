@@ -1,4 +1,4 @@
-package dev.rollczi.example.bukkit.config;
+package com.eternalcode.example.bukkit.config;
 
 import com.eternalcode.multification.cdn.MultificationNoticeCdnComposer;
 import com.eternalcode.multification.notice.Notice;

@@ -33,7 +33,6 @@ public class TitleHideResolver implements NoticeResolver<TitleHide> {
 
         return firstElement
             .map(value -> new TitleHide(Boolean.parseBoolean(value)));
-
     }
 
 }
