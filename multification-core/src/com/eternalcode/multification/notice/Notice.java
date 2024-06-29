@@ -1,5 +1,10 @@
 package com.eternalcode.multification.notice;
 
+import com.eternalcode.multification.notice.resolver.NoticeContent;
+import com.eternalcode.multification.notice.resolver.actionbar.ActionbarContent;
+import com.eternalcode.multification.notice.resolver.chat.ChatContent;
+import com.eternalcode.multification.notice.resolver.title.TitleContent;
+import com.eternalcode.multification.notice.resolver.title.TitleHide;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,21 +13,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.eternalcode.multification.notice.NoticeContent.Music;
-import static com.eternalcode.multification.notice.NoticeContent.None;
-import static com.eternalcode.multification.notice.NoticeContent.Text;
-import static com.eternalcode.multification.notice.NoticeContent.Times;
+import com.eternalcode.multification.notice.resolver.sound.SoundAdventure;
+import com.eternalcode.multification.notice.resolver.title.TitleTimes;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.key.KeyPattern;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
-import org.bukkit.block.data.type.Bed.Part;
+import net.kyori.adventure.sound.Sound;
 
 public class Notice {
 
-    private final Map<NoticeType, NoticePart<?>> parts = new LinkedHashMap<>();
+    private final Map<NoticeKey<?>, NoticePart<?>> parts = new LinkedHashMap<>();
 
-    private Notice(Map<NoticeType, NoticePart<?>> parts) {
+    protected Notice(Map<NoticeKey<?>, NoticePart<?>> parts) {
         this.parts.putAll(parts);
     }
 
@@ -31,9 +31,9 @@ public class Notice {
             .toList();
     }
 
-    public static <T extends NoticeContent> Notice of(NoticeType type, T content) {
+    public static <T extends NoticeContent> Notice of(NoticeKey<T> key, T content) {
         return Notice.builder()
-            .withPart(new NoticePart<>(type, content))
+            .withPart(key, content)
             .build();
     }
 
@@ -88,13 +88,13 @@ public class Notice {
             .build();
     }
 
-    public static Notice sound(Sound sound, SoundCategory category, float volume, float pitch) {
+    public static Notice sound(Key sound, Sound.Source category, float volume, float pitch) {
         return Notice.builder()
             .sound(sound, category, pitch, volume)
             .build();
     }
 
-    public static Notice sound(Sound sound, float volume, float pitch) {
+    public static Notice sound(Key sound, float volume, float pitch) {
         return Notice.builder()
             .sound(sound, pitch, volume)
             .build();
@@ -108,66 +108,83 @@ public class Notice {
         return new Builder();
     }
 
-    public static class Builder {
-        private final Map<NoticeType, NoticePart<?>> parts = new LinkedHashMap<>();
-
-        public Builder withPart(NoticePart<?> part) {
-            this.parts.put(part.type(), part);
+    public static class Builder extends BaseBuilder<Builder> {
+        @Override
+        protected Builder getThis() {
             return this;
         }
+    }
+
+    public abstract static class BaseBuilder<B extends BaseBuilder<B>> {
+        protected final Map<NoticeKey<?>, NoticePart<?>> parts = new LinkedHashMap<>();
+
+        public B withPart(NoticePart<?> part) {
+            this.parts.put(part.noticeKey(), part);
+            return this.getThis();
+        }
+
+        public <T extends NoticeContent> B withPart(NoticeKey<T> key, T content) {
+            return this.withPart(new NoticePart<>(key, content));
+        }
+
+        abstract protected B getThis();
 
         public Notice build() {
             return new Notice(this.parts);
         }
 
-        public Builder chat(String... messages) {
+        public B chat(String... messages) {
             return this.chat(List.of(messages));
         }
 
-        public Builder chat(Collection<String> messages) {
-            NoticePart<?> removed = this.parts.remove(NoticeType.CHAT);
+        public B chat(Collection<String> messages) {
+            NoticePart<?> removed = this.parts.remove(NoticeKey.CHAT);
             List<String> newMessages = new ArrayList<>();
 
-            if (removed != null && removed.content() instanceof Text text) {
-                newMessages.addAll(text.messages());
+            if (removed != null && removed.content() instanceof ChatContent chat) {
+                newMessages.addAll(chat.messages());
             }
 
             newMessages.addAll(messages);
 
-            return this.withPart(new NoticePart<>(NoticeType.CHAT, new Text(Collections.unmodifiableList(newMessages))));
+            return this.withPart(NoticeKey.CHAT, new ChatContent(Collections.unmodifiableList(newMessages)));
         }
 
-        public Builder actionBar(String message) {
-            return this.withPart(new NoticePart<>(NoticeType.ACTION_BAR, new Text(List.of(message))));
+        public B actionBar(String message) {
+            return this.withPart(NoticeKey.ACTION_BAR, new ActionbarContent(message));
         }
 
-        public Builder title(String title) {
-            return this.withPart(new NoticePart<>(NoticeType.TITLE, new Text(List.of(title))));
+        public B title(String title) {
+            return this.withPart(NoticeKey.TITLE, new TitleContent(title));
         }
 
-        public Builder title(String title, String subtitle) {
-            return this.withPart(new NoticePart<>(NoticeType.TITLE, new Text(List.of(title))))
-                .withPart(new NoticePart<>(NoticeType.SUBTITLE, new Text(List.of(subtitle))));
+        public B title(String title, String subtitle) {
+            return this.withPart(NoticeKey.TITLE, new TitleContent(title))
+                .withPart(NoticeKey.SUBTITLE, new TitleContent(subtitle));
         }
 
-        public Builder subtitle(String subtitle) {
-            return this.withPart(new NoticePart<>(NoticeType.SUBTITLE, new Text(List.of(subtitle))));
+        public B subtitle(String subtitle) {
+            return this.withPart(NoticeKey.SUBTITLE, new TitleContent(subtitle));
         }
 
-        public Builder hideTitle() {
-            return this.withPart(new NoticePart<>(NoticeType.TITLE_HIDE, None.INSTANCE));
+        public B hideTitle() {
+            return this.withPart(NoticeKey.TITLE_HIDE, new TitleHide(true));
         }
 
-        public Builder times(Duration in, Duration stay, Duration out) {
-            return this.withPart(new NoticePart<>(NoticeType.TITLE_TIMES, new Times(in, stay, out)));
+        public B hideTitle(boolean hide) {
+            return this.withPart(NoticeKey.TITLE_HIDE, new TitleHide(hide));
         }
 
-        public Builder sound(Sound sound, float pitch, float volume) {
-            return this.withPart(new NoticePart<>(NoticeType.SOUND, new Music(sound, null, pitch, volume)));
+        public B times(Duration in, Duration stay, Duration out) {
+            return this.withPart(NoticeKey.TITLE_TIMES, new TitleTimes(in, stay, out));
         }
 
-        public Builder sound(Sound sound, SoundCategory category, float pitch, float volume) {
-            return this.withPart(new NoticePart<>(NoticeType.SOUND, new Music(sound, category, pitch, volume)));
+        public B sound(Key sound, float pitch, float volume) {
+            return this.withPart(NoticeKey.SOUND, new SoundAdventure(sound, null, pitch, volume));
+        }
+
+        public B sound(Key sound, Sound.Source category, float pitch, float volume) {
+            return this.withPart(NoticeKey.SOUND, new SoundAdventure(sound, category, pitch, volume));
         }
 
     }

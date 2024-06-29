@@ -1,6 +1,7 @@
 package com.eternalcode.multification.notice;
 
 import com.eternalcode.multification.notice.provider.TextMessageProvider;
+import com.eternalcode.multification.notice.resolver.text.TextContent;
 import com.eternalcode.multification.shared.Formatter;
 import com.eternalcode.multification.notice.provider.NoticeProvider;
 import com.eternalcode.multification.notice.provider.OptionalNoticeProvider;
@@ -12,7 +13,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.CheckReturnValue;
 
-@SuppressWarnings("UnstableApiUsage")
 public interface NoticeBroadcast<VIEWER, TRANSLATION, B extends NoticeBroadcast<VIEWER, TRANSLATION, B>> {
 
     @CheckReturnValue
@@ -40,13 +40,13 @@ public interface NoticeBroadcast<VIEWER, TRANSLATION, B extends NoticeBroadcast<
     B notice(NoticeProvider<TRANSLATION> extractor);
 
     @CheckReturnValue
-    B notice(NoticeType type, String... text);
+    B notice(NoticeKey<TextContent> type, String... text);
 
     @CheckReturnValue
-    B notice(NoticeType type, Collection<String> text);
+    B notice(NoticeKey<TextContent> type, Collection<String> text);
 
     @CheckReturnValue
-    B notice(NoticeType type, TextMessageProvider<TRANSLATION> extractor);
+    B notice(NoticeKey<TextContent> type, TextMessageProvider<TRANSLATION> extractor);
 
     @CheckReturnValue
     B noticeChat(TextMessageProvider<TRANSLATION> extractor);

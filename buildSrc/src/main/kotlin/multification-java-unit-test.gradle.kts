@@ -1,14 +1,14 @@
 plugins {
-    id("java-library")
+    `java-library`
 }
 
 dependencies {
-    testImplementation("org.mockito:mockito-core:5.12.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
-    testImplementation("org.assertj:assertj-core:3.26.0")
-    testImplementation("org.awaitility:awaitility:4.2.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
+    testImplementation("org.mockito:mockito-core:${Versions.MOCKITO_CORE}")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT_JUPITER}")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:${Versions.JUNIT_JUPITER}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT_JUPITER}")
+    testImplementation("org.assertj:assertj-core:${Versions.ASSERTJ_CORE}")
+    testImplementation("org.awaitility:awaitility:${Versions.AWAITILITY}")
 }
 
 tasks.getByName<Test>("test") {

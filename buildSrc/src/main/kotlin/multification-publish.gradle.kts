@@ -1,10 +1,10 @@
 plugins {
-    id("java-library")
-    id("maven-publish")
+    `java-library`
+    `maven-publish`
 }
 
 group = "com.eternalcode"
-version = "1.0.3-SNAPSHOT"
+version = "1.1.0"
 
 java {
     withSourcesJar()
