@@ -7,6 +7,7 @@ import com.eternalcode.multification.notice.resolver.NoticeContent;
 import com.eternalcode.multification.notice.NoticeKey;
 import com.eternalcode.multification.notice.resolver.NoticeResolverRegistry;
 import com.eternalcode.multification.notice.resolver.NoticeSerdesResult;
+import com.eternalcode.multification.notice.resolver.NoticeSerdesResult.Multiple;
 import com.eternalcode.multification.notice.resolver.chat.ChatContent;
 
 import com.eternalcode.multification.notice.NoticePart;
@@ -97,8 +98,8 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
                 continue;
             }
 
-            if (result instanceof NoticeSerdesResult.Multi multi) {
-                section.append(toSection(key, context.description, multi.elements()));
+            if (result instanceof Multiple multiple) {
+                section.append(toSection(key, context.description, multiple.elements()));
                 continue;
             }
 

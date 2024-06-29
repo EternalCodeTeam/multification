@@ -2,12 +2,15 @@ package com.eternalcode.multification.okaeri;
 
 import com.eternalcode.multification.notice.Notice;
 import com.eternalcode.multification.notice.Notice.Builder;
-import com.eternalcode.multification.notice.NoticeContent.Music;
-import com.eternalcode.multification.notice.NoticeContent.None;
-import com.eternalcode.multification.notice.NoticeContent.Text;
-import com.eternalcode.multification.notice.NoticeContent.Times;
+import com.eternalcode.multification.notice.NoticeKey;
 import com.eternalcode.multification.notice.NoticePart;
-import com.eternalcode.multification.notice.NoticeType;
+import com.eternalcode.multification.notice.resolver.NoticeContent;
+import com.eternalcode.multification.notice.resolver.NoticeDeserializeResult;
+import com.eternalcode.multification.notice.resolver.NoticeResolverRegistry;
+import com.eternalcode.multification.notice.resolver.NoticeSerdesResult;
+import com.eternalcode.multification.notice.resolver.NoticeSerdesResult.Multiple;
+import com.eternalcode.multification.notice.resolver.NoticeSerdesResult.Single;
+import com.eternalcode.multification.notice.resolver.chat.ChatContent;
 import eu.okaeri.configs.schema.GenericsDeclaration;
 import eu.okaeri.configs.serdes.DeserializationData;
 import eu.okaeri.configs.serdes.ObjectSerializer;
@@ -15,29 +18,16 @@ import eu.okaeri.configs.serdes.SerializationData;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.NotNull;
 
-@Experimental
 public class MultificationNoticeSerializer implements ObjectSerializer<Notice> {
 
     private static final int SINGLE_SERIALIZE_DESERIALIZE_PART = 1;
 
-    private static boolean serializeSingleChat(SerializationData data, NoticePart<?> part) {
-        if (part.type() == NoticeType.CHAT) {
-            Text text = (Text) part.content();
-            List<String> messages = text.messages();
+    private final NoticeResolverRegistry noticeRegistry;
 
-            if (messages.size() == SINGLE_SERIALIZE_DESERIALIZE_PART) {
-                data.setValue(messages.get(0));
-                return true;
-            }
-
-            data.setValue(messages);
-            return true;
-        }
-
-        return false;
+    public MultificationNoticeSerializer(NoticeResolverRegistry noticeRegistry) {
+        this.noticeRegistry = noticeRegistry;
     }
 
     @Override
@@ -49,92 +39,104 @@ public class MultificationNoticeSerializer implements ObjectSerializer<Notice> {
     public void serialize(Notice notice, @NotNull SerializationData data, @NotNull GenericsDeclaration generics) {
         List<NoticePart<?>> parts = notice.parts();
 
-        if (parts.size() == SINGLE_SERIALIZE_DESERIALIZE_PART) {
-            NoticePart<?> part = parts.get(0);
+        boolean isChatBeautifulSerialized = trySerializeChatBeautiful(data, notice);
 
-            if (serializeSingleChat(data, part)) {
-                return;
-            }
+        if (isChatBeautifulSerialized) {
+            return;
         }
 
         for (NoticePart<?> part : parts) {
-            String key = part.type().getKey();
+            NoticeSerdesResult result = this.noticeRegistry.serialize(part);
 
-            if (part.content() instanceof Text text) {
-                List<String> messages = text.messages();
-                data.add(key, messages);
+            if (result instanceof NoticeSerdesResult.Single single) {
+                data.add(part.noticeKey().key(), single.element());
                 continue;
             }
 
-            if (part.content() instanceof Times times) {
-                data.add(key, times);
-                continue;
-            }
-
-            if (part.content() instanceof None none) {
-                data.add(key, none);
-                continue;
-            }
-
-            if (part.content() instanceof Music music) {
-                data.add(key, music);
+            if (result instanceof Multiple multiple) {
+                data.add(part.noticeKey().key(), multiple.elements());
             }
         }
     }
 
     @Override
     public Notice deserialize(DeserializationData data, @NotNull GenericsDeclaration generics) {
-
         Builder builder = Notice.builder();
 
-        Set<String> keys = data.asMap().keySet();
-
-        if (keys.size() == SINGLE_SERIALIZE_DESERIALIZE_PART && data.isValue()) {
+        if (data.isValue()) {
             Object value = data.getValueRaw();
 
             if (value instanceof String stringValue) {
                 List<String> messages = Collections.singletonList(stringValue);
-                builder.withPart(new NoticePart<>(NoticeType.CHAT, new Text(messages)));
+                builder.withPart(NoticeKey.CHAT, new ChatContent(messages));
             }
 
             if (value instanceof List) {
                 List<String> messages = data.getValueAsList(String.class);
-                builder.withPart(new NoticePart<>(NoticeType.CHAT, new Text(messages)));
+                builder.withPart(NoticeKey.CHAT, new ChatContent(messages));
             }
 
             return builder.build();
         }
 
+        Set<String> keys = data.asMap().keySet();
+
         for (String key : keys) {
             Object value = data.getRaw(key);
 
-            NoticeType noticeType = NoticeType.fromKey(key);
+            if (value instanceof String stringValue) {
+                NoticeDeserializeResult<?> noticeResult = this.noticeRegistry.deserialize(key, new Single(stringValue))
+                        .orElseThrow(() -> new UnsupportedOperationException(
+                                "Unsupported notice key: " + key + " with value: " + stringValue));
 
-            if (noticeType.contentType() == Text.class) {
-                builder.withPart(new NoticePart<>(noticeType, new Text((List<String>) value)));
+                this.withPart(builder, noticeResult);
                 continue;
             }
 
-            if (noticeType.contentType() == Times.class) {
-                Times times = data.get(key, Times.class);
-                builder.withPart(new NoticePart<>(noticeType, times));
+            if (value instanceof List) {
+                List<String> messages = data.getAsList(key, String.class);
+
+                NoticeDeserializeResult<?> noticeResult = this.noticeRegistry.deserialize(key, new Multiple(messages))
+                        .orElseThrow(() -> new UnsupportedOperationException(
+                                "Unsupported notice key: " + key + " with values: " + messages));
+
+                this.withPart(builder, noticeResult);
                 continue;
             }
 
-            if (noticeType.contentType() == Music.class) {
-                Music music = data.get(key, Music.class);
-                builder.withPart(new NoticePart<>(noticeType, music));
-                continue;
-            }
-
-            if (noticeType.contentType() == None.class) {
-                builder.withPart(new NoticePart<>(noticeType, None.INSTANCE));
-                continue;
-            }
-
-            throw new UnsupportedOperationException("Unsupported notice type: " + noticeType);
+            throw new UnsupportedOperationException(
+                    "Unsupported notice type: " + value.getClass() + " for key: " + key);
         }
 
         return builder.build();
+    }
+
+    private <T extends NoticeContent> void withPart(Builder builder, NoticeDeserializeResult<T> noticeResult) {
+        builder.withPart(noticeResult.noticeKey(), noticeResult.content());
+    }
+
+    private static boolean trySerializeChatBeautiful(SerializationData data, Notice notice) {
+        List<NoticePart<?>> parts = notice.parts();
+
+        if (parts.size() != 1) {
+            return false;
+        }
+
+        NoticePart<?> part = parts.get(0);
+
+        if (part.noticeKey() != NoticeKey.CHAT) {
+            return false;
+        }
+
+        ChatContent chat = (ChatContent) part.content();
+        List<String> messages = chat.contents();
+
+        if (messages.size() == SINGLE_SERIALIZE_DESERIALIZE_PART) {
+            data.setValue(messages.get(0));
+            return true;
+        }
+
+        data.setValue(messages);
+        return true;
     }
 }

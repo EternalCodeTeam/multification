@@ -1,15 +1,20 @@
 package com.eternalcode.multification.okaeri;
+import com.eternalcode.multification.notice.resolver.NoticeResolverRegistry;
 import eu.okaeri.configs.serdes.OkaeriSerdesPack;
 import eu.okaeri.configs.serdes.SerdesRegistry;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.NotNull;
 
-@Experimental
 public class MultificationSerdesPack implements OkaeriSerdesPack {
+
+    private final NoticeResolverRegistry noticeRegistry;
+
+    public MultificationSerdesPack(NoticeResolverRegistry noticeRegistry) {
+        this.noticeRegistry = noticeRegistry;
+    }
+
     @Override
     public void register(@NotNull SerdesRegistry registry) {
-        registry.register(new MultificationTimesTransformer());
-        registry.register(new MultificationMusicTransformer());
-        registry.register(new MultificationNoticeSerializer());
+        registry.register(new MultificationNoticeSerializer(this.noticeRegistry));
     }
 }

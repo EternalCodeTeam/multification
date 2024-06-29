@@ -2,6 +2,7 @@ package com.eternalcode.multification.notice.resolver.chat;
 
 import com.eternalcode.multification.notice.NoticeKey;
 import com.eternalcode.multification.notice.resolver.NoticeSerdesResult;
+import com.eternalcode.multification.notice.resolver.NoticeSerdesResult.Multiple;
 import com.eternalcode.multification.notice.resolver.text.TextContentResolver;
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +51,7 @@ public class ChatResolver implements TextContentResolver<ChatContent> {
             return new NoticeSerdesResult.Single(messages.get(0));
         }
 
-        return new NoticeSerdesResult.Multi(messages);
+        return new Multiple(messages);
     }
 
     @Override
