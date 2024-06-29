@@ -1,11 +1,19 @@
 package com.eternalcode.multification.cdn;
 
+import com.eternalcode.example.bukkit.notice.BukkitNotice;
+import com.eternalcode.example.bukkit.notice.BukkitNoticeKey;
+import com.eternalcode.example.bukkit.notice.resolver.sound.SoundBukkit;
+import com.eternalcode.example.bukkit.notice.resolver.sound.SoundBukkitResolver;
 import com.eternalcode.multification.notice.Notice;
-import com.eternalcode.multification.notice.NoticeType;
-import static com.eternalcode.multification.notice.NoticeContent.Music;
-import static com.eternalcode.multification.notice.NoticeContent.None;
-import static com.eternalcode.multification.notice.NoticeContent.Text;
-import static com.eternalcode.multification.notice.NoticeContent.Times;
+import com.eternalcode.multification.notice.NoticeKey;
+import com.eternalcode.multification.notice.resolver.NoticeResolverDefaults;
+import com.eternalcode.multification.notice.resolver.NoticeResolverRegistry;
+import com.eternalcode.multification.notice.resolver.actionbar.ActionbarContent;
+import com.eternalcode.multification.notice.resolver.chat.ChatContent;
+import com.eternalcode.multification.notice.resolver.title.TitleContent;
+import com.eternalcode.multification.notice.resolver.title.TitleHide;
+import com.eternalcode.multification.notice.resolver.sound.SoundAdventure;
+import com.eternalcode.multification.notice.resolver.title.TitleTimes;
 import com.eternalcode.multification.notice.NoticePart;
 import java.time.Duration;
 import net.dzikoysk.cdn.Cdn;
@@ -13,6 +21,7 @@ import net.dzikoysk.cdn.CdnFactory;
 import net.dzikoysk.cdn.reflect.Visibility;
 import net.dzikoysk.cdn.source.Source;
 
+import net.kyori.adventure.key.Key;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -25,12 +34,14 @@ import org.junit.jupiter.api.Test;
 @SuppressWarnings("FieldMayBeFinal")
 class NoticeComposerTest {
 
+    private static final NoticeResolverRegistry registry = NoticeResolverDefaults.createRegistry()
+        .registerResolver(new SoundBukkitResolver());
+
     private static final Cdn cdn = CdnFactory.createYamlLike()
         .getSettings()
-        .withComposer(Notice.class, new MultificationNoticeCdnComposer())
+        .withComposer(Notice.class, new MultificationNoticeCdnComposer(registry))
         .withMemberResolver(Visibility.PACKAGE_PRIVATE)
         .build();
-
 
     static class ConfigEmpty {
         Notice notice = Notice.empty();
@@ -64,9 +75,9 @@ class NoticeComposerTest {
         assertEquals(1, oneLineChat.notice.parts().size());
 
         NoticePart<?> part = oneLineChat.notice.parts().get(0);
-        Text text = assertInstanceOf(Text.class, part.content());
-        assertEquals(NoticeType.CHAT, part.type());
-        assertEquals("Hello world", text.messages().get(0));
+        ChatContent chat = assertInstanceOf(ChatContent.class, part.content());
+        assertEquals(NoticeKey.CHAT, part.noticeKey());
+        assertEquals("Hello world", chat.messages().get(0));
     }
 
 
@@ -86,10 +97,10 @@ class NoticeComposerTest {
         assertEquals(1, configMultiLineChat.notice.parts().size());
 
         NoticePart<?> part = configMultiLineChat.notice.parts().get(0);
-        Text text = assertInstanceOf(Text.class, part.content());
-        assertEquals(NoticeType.CHAT, part.type());
-        assertEquals("First line", text.messages().get(0));
-        assertEquals("Second line", text.messages().get(1));
+        ChatContent chat = assertInstanceOf(ChatContent.class, part.content());
+        assertEquals(NoticeKey.CHAT, part.noticeKey());
+        assertEquals("First line", chat.messages().get(0));
+        assertEquals("Second line", chat.messages().get(1));
     }
 
     static class ConfigSimpleTitle {
@@ -107,9 +118,9 @@ class NoticeComposerTest {
         assertEquals(1, configSimpleTitle.notice.parts().size());
 
         NoticePart<?> part = configSimpleTitle.notice.parts().get(0);
-        Text title = assertInstanceOf(Text.class, part.content());
-        assertEquals(NoticeType.TITLE, part.type());
-        assertEquals("Hello world", title.messages().get(0));
+        TitleContent title = assertInstanceOf(TitleContent.class, part.content());
+        assertEquals(NoticeKey.TITLE, part.noticeKey());
+        assertEquals("Hello world", title.content());
     }
 
     static  class ConfigFullTitle {
@@ -129,18 +140,18 @@ class NoticeComposerTest {
         assertEquals(3, configFullTitle.notice.parts().size());
 
         NoticePart<?> titlePart = configFullTitle.notice.parts().get(0);
-        Text title = assertInstanceOf(Text.class, titlePart.content());
-        assertEquals(NoticeType.TITLE, titlePart.type());
-        assertEquals("Title", title.messages().get(0));
+        TitleContent title = assertInstanceOf(TitleContent.class, titlePart.content());
+        assertEquals(NoticeKey.TITLE, titlePart.noticeKey());
+        assertEquals("Title", title.content());
 
         NoticePart<?> subtitlePart = configFullTitle.notice.parts().get(1);
-        Text subtitle = assertInstanceOf(Text.class, subtitlePart.content());
-        assertEquals(NoticeType.SUBTITLE, subtitlePart.type());
-        assertEquals("Subtitle", subtitle.messages().get(0));
+        TitleContent subtitle = assertInstanceOf(TitleContent.class, subtitlePart.content());
+        assertEquals(NoticeKey.SUBTITLE, subtitlePart.noticeKey());
+        assertEquals("Subtitle", subtitle.content());
 
         NoticePart<?> timesPart = configFullTitle.notice.parts().get(2);
-        Times times = assertInstanceOf(Times.class, timesPart.content());
-        assertEquals(NoticeType.TITLE_TIMES, timesPart.type());
+        TitleTimes times = assertInstanceOf(TitleTimes.class, timesPart.content());
+        assertEquals(NoticeKey.TITLE_TIMES, timesPart.noticeKey());
         assertEquals(1, times.fadeIn().getSeconds());
         assertEquals(2, times.stay().getSeconds());
         assertEquals(1, times.fadeOut().getSeconds());
@@ -161,9 +172,9 @@ class NoticeComposerTest {
         assertEquals(1, configSimpleActionBar.notice.parts().size());
 
         NoticePart<?> part = configSimpleActionBar.notice.parts().get(0);
-        Text text = assertInstanceOf(Text.class, part.content());
-        assertEquals(NoticeType.ACTION_BAR, part.type());
-        assertEquals("Hello world", text.messages().get(0));
+        ActionbarContent actionbarContent = assertInstanceOf(ActionbarContent.class, part.content());
+        assertEquals(NoticeKey.ACTION_BAR, part.noticeKey());
+        assertEquals("Hello world", actionbarContent.content());
     }
 
     static class ConfigHideTitle {
@@ -175,18 +186,18 @@ class NoticeComposerTest {
         ConfigHideTitle configHideTitle = assertRender(new ConfigHideTitle(),
             """
                 notice:
-                  titleHide: true
+                  hideTitle: true
                 """);
 
         assertEquals(1, configHideTitle.notice.parts().size());
 
         NoticePart<?> part = configHideTitle.notice.parts().get(0);
-        assertInstanceOf(None.class, part.content());
-        assertEquals(NoticeType.TITLE_HIDE, part.type());
+        assertInstanceOf(TitleHide.class, part.content());
+        assertEquals(NoticeKey.TITLE_HIDE, part.noticeKey());
     }
 
     static class ConfigSound {
-        Notice notice = Notice.sound(Sound.BLOCK_ANVIL_LAND, SoundCategory.MASTER, 1.0f, 1.0f);
+        Notice notice = BukkitNotice.sound(Sound.BLOCK_ANVIL_LAND, SoundCategory.MASTER, 1.0f, 1.0f);
     }
     @Test
     @DisplayName("Should serialize sound notice with sound property")
@@ -200,8 +211,8 @@ class NoticeComposerTest {
         assertEquals(1, configSound.notice.parts().size());
 
         NoticePart<?> part = configSound.notice.parts().get(0);
-        Music sound = assertInstanceOf(Music.class, part.content());
-        assertEquals(NoticeType.SOUND, part.type());
+        SoundBukkit sound = assertInstanceOf(SoundBukkit.class, part.content());
+        assertEquals(BukkitNoticeKey.SOUND, part.noticeKey());
         assertEquals(Sound.BLOCK_ANVIL_LAND, sound.sound());
         assertEquals(SoundCategory.MASTER, sound.category());
         assertEquals(1.0f, sound.volume());
@@ -209,7 +220,7 @@ class NoticeComposerTest {
     }
 
     static class ConfigSoundWithoutCategory {
-        Notice notice = Notice.sound(Sound.BLOCK_ANVIL_LAND, 1.0f, 1.0f);
+        Notice notice = BukkitNotice.sound(Sound.BLOCK_ANVIL_LAND, 1.0f, 1.0f);
     }
     @Test
     @DisplayName("Should serialize sound notice without category property")
@@ -223,9 +234,82 @@ class NoticeComposerTest {
         assertEquals(1, configSoundWithoutCategory.notice.parts().size());
 
         NoticePart<?> part = configSoundWithoutCategory.notice.parts().get(0);
-        Music sound = assertInstanceOf(Music.class, part.content());
-        assertEquals(NoticeType.SOUND, part.type());
+        SoundBukkit sound = assertInstanceOf(SoundBukkit.class, part.content());
+        assertEquals(BukkitNoticeKey.SOUND, part.noticeKey());
         assertEquals(Sound.BLOCK_ANVIL_LAND, sound.sound());
+        assertNull(sound.category());
+        assertEquals(1.0f, sound.volume());
+        assertEquals(1.0f, sound.pitch());
+    }
+
+
+    static class ConfigSoundShort {
+        Notice notice = BukkitNotice.sound(Sound.BLOCK_ANVIL_LAND);
+    }
+    @Test
+    @DisplayName("Should serialize sound notice without volume and pitch")
+    void serializeSoundNoticeWithoutVolumeAndPitch() {
+        ConfigSoundShort configSoundShort = assertRender(new ConfigSoundShort(),
+            """
+                notice:
+                  sound: "BLOCK_ANVIL_LAND"
+                """);
+
+        assertEquals(1, configSoundShort.notice.parts().size());
+
+        NoticePart<?> part = configSoundShort.notice.parts().get(0);
+        SoundBukkit sound = assertInstanceOf(SoundBukkit.class, part.content());
+        assertEquals(BukkitNoticeKey.SOUND, part.noticeKey());
+        assertEquals(Sound.BLOCK_ANVIL_LAND, sound.sound());
+        assertNull(sound.category());
+        assertEquals(1.0f, sound.volumeOrDefault());
+        assertEquals(1.0f, sound.pitchOrDefault());
+        assertEquals(-1.0f, sound.volume());
+        assertEquals(-1.0f, sound.pitch());
+    }
+
+
+    static class ConfigSoundAdventure {
+        Notice notice = Notice.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.experience_orb.pickup"), net.kyori.adventure.sound.Sound.Source.MASTER, 1.0f, 1.0f);
+    }
+    @Test
+    @DisplayName("Should serialize adventure sound notice with sound property")
+    void serializeSoundNoticeWithSoundAdventureProperty() {
+        ConfigSoundAdventure configSound = assertRender(new ConfigSoundAdventure(),
+            """
+                notice:
+                  sound: "entity.experience_orb.pickup MASTER 1.0 1.0"
+                """);
+
+        assertEquals(1, configSound.notice.parts().size());
+
+        NoticePart<?> part = configSound.notice.parts().get(0);
+        SoundAdventure sound = assertInstanceOf(SoundAdventure.class, part.content());
+        assertEquals(NoticeKey.SOUND, part.noticeKey());
+        assertEquals("entity.experience_orb.pickup", sound.sound().value());
+        assertEquals(net.kyori.adventure.sound.Sound.Source.MASTER, sound.category());
+        assertEquals(1.0f, sound.volume());
+        assertEquals(1.0f, sound.pitch());
+    }
+
+    static class ConfigSoundAdventureWithoutCategory {
+        Notice notice = Notice.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.experience_orb.pickup"), 1.0f, 1.0f);
+    }
+    @Test
+    @DisplayName("Should serialize adventure sound notice without category property")
+    void serializeSoundNoticeWithoutCategoryAdventureProperty() {
+        ConfigSoundAdventureWithoutCategory configSound = assertRender(new ConfigSoundAdventureWithoutCategory(),
+            """
+                notice:
+                  sound: "entity.experience_orb.pickup 1.0 1.0"
+                """);
+
+        assertEquals(1, configSound.notice.parts().size());
+
+        NoticePart<?> part = configSound.notice.parts().get(0);
+        SoundAdventure sound = assertInstanceOf(SoundAdventure.class, part.content());
+        assertEquals(NoticeKey.SOUND, part.noticeKey());
+        assertEquals("entity.experience_orb.pickup", sound.sound().value());
         assertNull(sound.category());
         assertEquals(1.0f, sound.volume());
         assertEquals(1.0f, sound.pitch());

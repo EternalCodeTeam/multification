@@ -1,7 +1,10 @@
 package com.eternalcode.multification.notice;
 
 import com.eternalcode.multification.locate.LocaleProvider;
+import com.eternalcode.multification.notice.resolver.NoticeContent;
+import com.eternalcode.multification.notice.resolver.NoticeResolverRegistry;
 import com.eternalcode.multification.notice.provider.TextMessageProvider;
+import com.eternalcode.multification.notice.resolver.text.TextContent;
 import com.eternalcode.multification.shared.Formatter;
 import com.eternalcode.multification.translation.TranslationProvider;
 import com.eternalcode.multification.viewer.ViewerProvider;
@@ -29,7 +32,6 @@ import java.util.function.UnaryOperator;
 import net.kyori.adventure.audience.Audience;
 import org.jetbrains.annotations.CheckReturnValue;
 
-@SuppressWarnings("UnstableApiUsage")
 public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<VIEWER, TRANSLATION, B>> implements NoticeBroadcast<VIEWER, TRANSLATION, B> {
 
     protected final AsyncExecutor asyncExecutor;
@@ -39,6 +41,7 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
     protected final LocaleProvider<VIEWER> localeProvider;
     protected final AudienceConverter<VIEWER> audienceConverter;
     protected final Replacer<VIEWER> globalReplacer;
+    protected final NoticeResolverRegistry noticeRegistry;
 
     protected final List<VIEWER> viewers = new ArrayList<>();
     protected final List<NoticeProvider<TRANSLATION>> notifications = new ArrayList<>();
@@ -47,12 +50,13 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
     protected final List<Formatter> formatters = new ArrayList<>();
 
     public NoticeBroadcastImpl(
-            AsyncExecutor asyncExecutor,
-            TranslationProvider<TRANSLATION> translationProvider,
-            ViewerProvider<VIEWER> viewerProvider,
-            PlatformBroadcaster platformBroadcaster,
-            LocaleProvider<VIEWER> localeProvider,
-            AudienceConverter<VIEWER> audienceConverter, Replacer<VIEWER> replacer
+        AsyncExecutor asyncExecutor,
+        TranslationProvider<TRANSLATION> translationProvider,
+        ViewerProvider<VIEWER> viewerProvider,
+        PlatformBroadcaster platformBroadcaster,
+        LocaleProvider<VIEWER> localeProvider,
+        AudienceConverter<VIEWER> audienceConverter, Replacer<VIEWER> replacer,
+        NoticeResolverRegistry noticeRegistry
     ) {
         this.asyncExecutor = asyncExecutor;
         this.translationProvider = translationProvider;
@@ -61,6 +65,7 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
         this.localeProvider = localeProvider;
         this.audienceConverter = audienceConverter;
         this.globalReplacer = replacer;
+        this.noticeRegistry = noticeRegistry;
     }
 
     @Override
@@ -161,25 +166,25 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
     }
 
     @Override
-    public B notice(NoticeType type, String... text) {
-        NoticeContent.Text content = new NoticeContent.Text(List.of(text));
+    public B notice(NoticeKey<TextContent> type, String... text) {
+        TextContent content = noticeRegistry.createTextNotice(type, List.of(text));
         this.notifications.add(translation -> Notice.of(type, content));
 
         return this.getThis();
     }
 
     @Override
-    public B notice(NoticeType type, Collection<String> text) {
-        NoticeContent.Text content = new NoticeContent.Text(new ArrayList<>(text));
+    public B notice(NoticeKey<TextContent> type, Collection<String> text) {
+        TextContent content = noticeRegistry.createTextNotice(type, new ArrayList<>(text));
         this.notifications.add(translation -> Notice.of(type, content));
         return this.getThis();
     }
 
     @Override
-    public B notice(NoticeType type, TextMessageProvider<TRANSLATION> extractor) {
+    public B notice(NoticeKey<TextContent> type, TextMessageProvider<TRANSLATION> extractor) {
         this.notifications.add(translation -> {
             List<String> list = Collections.singletonList(extractor.extract(translation));
-            NoticeContent.Text content = new NoticeContent.Text(list);
+            TextContent content = noticeRegistry.createTextNotice(type, list);
 
             return Notice.of(type, content);
         });
@@ -255,7 +260,7 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
                     Audience audience = audienceConverter.convert(viewer);
 
                     for (NoticePart<?> part : notice.parts()) {
-                        part = this.formatter(part, message -> translatedFormatter.format(message, viewer));
+                        part = this.applyText(part, message -> translatedFormatter.format(message, viewer));
 
                         this.platformBroadcaster.announce(audience, part);
                     }
@@ -265,15 +270,9 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
     }
 
     @SuppressWarnings("unchecked")
-    protected <T extends NoticeContent> NoticePart<T> formatter(NoticePart<T> part, UnaryOperator<String> function) {
-        if (part.content() instanceof NoticeContent.Text text) {
-            List<String> messages = text.messages().stream()
-                .map(function)
-                .toList();
-
-            NoticeContent.Text context = new NoticeContent.Text(messages);
-
-            part = new NoticePart<>(part.type(), (T) context);
+    protected <T extends NoticeContent> NoticePart<T> applyText(NoticePart<T> part, UnaryOperator<String> function) {
+        if (part.content() instanceof TextContent) {
+            return (NoticePart<T>) noticeRegistry.applyText((NoticePart<TextContent>) part, function);
         }
 
         return part;
