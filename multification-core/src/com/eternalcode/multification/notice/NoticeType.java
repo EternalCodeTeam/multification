@@ -10,7 +10,7 @@ import com.eternalcode.multification.notice.resolver.title.TitleTimes;
 import org.jetbrains.annotations.ApiStatus;
 
 @Deprecated
-@ApiStatus.ScheduledForRemoval(inVersion = "1.1.0")
+@ApiStatus.ScheduledForRemoval(inVersion = "1.2.0")
 public enum NoticeType implements NoticeKey {
     CHAT(ChatContent.class, NoticeKey.CHAT.key()),
     ACTION_BAR(ActionbarContent.class, NoticeKey.ACTION_BAR.key()),
@@ -34,25 +34,25 @@ public enum NoticeType implements NoticeKey {
     }
 
     @Deprecated
-    @ApiStatus.ScheduledForRemoval(inVersion = "1.1.0")
+    @ApiStatus.ScheduledForRemoval(inVersion = "1.2.0")
     public String getKey() {
         return this.name;
     }
 
     @Deprecated
-    @ApiStatus.ScheduledForRemoval(inVersion = "1.1.0")
+    @ApiStatus.ScheduledForRemoval(inVersion = "1.2.0")
     public Class<?> contentType() {
         return this.inputType;
     }
 
     @Deprecated
-    @ApiStatus.ScheduledForRemoval(inVersion = "1.1.0")
+    @ApiStatus.ScheduledForRemoval(inVersion = "1.2.0")
     public <T extends NoticeContent> NoticeKey<T> toNoticeKey() {
         return NoticeKey.of(this.getKey(), (Class<T>) contentType());
     }
 
     @Deprecated
-    @ApiStatus.ScheduledForRemoval(inVersion = "1.1.0")
+    @ApiStatus.ScheduledForRemoval(inVersion = "1.2.0")
     public static NoticeType fromKey(String key) {
         for (NoticeType type : values()) {
             if (type.getKey().equals(key)) {
