@@ -25,7 +25,7 @@ public sealed interface NoticeSerdesResult {
         }
     }
 
-    record Multi(List<String> elements) implements NoticeSerdesResult {
+    record Multiple(List<String> elements) implements NoticeSerdesResult {
         @Override
         public List<String> anyElements() {
             return elements;
