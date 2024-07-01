@@ -14,6 +14,7 @@ dependencies {
     api("eu.okaeri:okaeri-configs-yaml-snakeyaml:${okaeriConfigsVersion}")
     api("eu.okaeri:okaeri-configs-serdes-commons:${okaeriConfigsVersion}")
 
-    compileOnly("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")
-    testImplementation("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")
+    testImplementation(project(":multification-bukkit"))
+    testImplementation("org.spigotmc:spigot-api:${Versions.SPIGOT_API}")
+    testImplementation("net.kyori:adventure-api:${Versions.ADVENTURE_API}")
 }

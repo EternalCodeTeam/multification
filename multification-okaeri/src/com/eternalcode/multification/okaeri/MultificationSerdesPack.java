@@ -1,4 +1,5 @@
 package com.eternalcode.multification.okaeri;
+import com.eternalcode.multification.Multification;
 import com.eternalcode.multification.notice.resolver.NoticeResolverRegistry;
 import eu.okaeri.configs.serdes.OkaeriSerdesPack;
 import eu.okaeri.configs.serdes.SerdesRegistry;
@@ -11,6 +12,10 @@ public class MultificationSerdesPack implements OkaeriSerdesPack {
 
     public MultificationSerdesPack(NoticeResolverRegistry noticeRegistry) {
         this.noticeRegistry = noticeRegistry;
+    }
+
+    public MultificationSerdesPack(Multification<?, ?> multification) {
+        this.noticeRegistry = multification.getNoticeRegistry();
     }
 
     @Override
