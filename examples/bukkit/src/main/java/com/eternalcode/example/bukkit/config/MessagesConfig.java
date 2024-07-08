@@ -1,6 +1,6 @@
 package com.eternalcode.example.bukkit.config;
 
-import com.eternalcode.example.bukkit.notice.BukkitNotice;
+import com.eternalcode.multification.bukkit.notice.BukkitNotice;
 import com.eternalcode.multification.notice.Notice;
 import net.dzikoysk.cdn.entity.Description;
 import org.bukkit.Sound;

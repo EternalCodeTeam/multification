@@ -1,4 +1,4 @@
-package com.eternalcode.example.bukkit.notice.resolver.sound;
+package com.eternalcode.multification.bukkit.notice.resolver.sound;
 
 import com.eternalcode.multification.notice.resolver.NoticeContent;
 import net.kyori.adventure.sound.Sound.Source;

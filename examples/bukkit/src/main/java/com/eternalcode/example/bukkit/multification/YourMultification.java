@@ -1,7 +1,7 @@
 package com.eternalcode.example.bukkit.multification;
 
 import com.eternalcode.multification.adventure.AudienceConverter;
-import com.eternalcode.example.bukkit.BukkitMultification;
+import com.eternalcode.multification.bukkit.BukkitMultification;
 import com.eternalcode.multification.translation.TranslationProvider;
 import com.eternalcode.example.bukkit.config.MessagesConfig;
 import net.kyori.adventure.platform.AudienceProvider;
