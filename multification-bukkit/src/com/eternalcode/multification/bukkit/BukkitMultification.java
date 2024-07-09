@@ -1,6 +1,5 @@
 package com.eternalcode.multification.bukkit;
 
-import com.eternalcode.example.bukkit.BukkitViewerProvider;
 import com.eternalcode.multification.Multification;
 import com.eternalcode.multification.bukkit.notice.resolver.sound.SoundBukkitResolver;
 import com.eternalcode.multification.executor.AsyncExecutor;
