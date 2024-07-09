@@ -1,9 +1,9 @@
 package com.eternalcode.multification.cdn;
 
-import com.eternalcode.example.bukkit.notice.BukkitNotice;
-import com.eternalcode.example.bukkit.notice.BukkitNoticeKey;
-import com.eternalcode.example.bukkit.notice.resolver.sound.SoundBukkit;
-import com.eternalcode.example.bukkit.notice.resolver.sound.SoundBukkitResolver;
+import com.eternalcode.multification.bukkit.notice.BukkitNotice;
+import com.eternalcode.multification.bukkit.notice.BukkitNoticeKey;
+import com.eternalcode.multification.bukkit.notice.resolver.sound.SoundBukkit;
+import com.eternalcode.multification.bukkit.notice.resolver.sound.SoundBukkitResolver;
 import com.eternalcode.multification.notice.Notice;
 import com.eternalcode.multification.notice.NoticeKey;
 import com.eternalcode.multification.notice.resolver.NoticeResolverDefaults;
