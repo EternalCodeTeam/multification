@@ -39,7 +39,7 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
     }
 
     @Override
-    public Result<? extends Element<?>, ? extends Exception> serialize(CdnSettings settings, List<String> description, String key, TargetType type, Notice entity) {
+    public Resul<? extends Element<?>, ? extends Exception> serialize(CdnSettings settings, List<String> description, String key, TargetType type, Notice entity) {
         SerializeContext context = new SerializeContext(settings, description, key, type, entity);
 
         return this.serializeEmpty(context)
@@ -94,12 +94,12 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
             NoticeSerdesResult result = noticeRegistry.serialize(part);
 
             if (result instanceof NoticeSerdesResult.Single single) {
-                section.append(new Entry(context.description, key, single.element()));
+                section.append(new Entry(List.of(), key, single.element()));
                 continue;
             }
 
             if (result instanceof Multiple multiple) {
-                section.append(toSection(key, context.description, multiple.elements()));
+                section.append(toSection(key, List.of(), multiple.elements()));
                 continue;
             }
 
