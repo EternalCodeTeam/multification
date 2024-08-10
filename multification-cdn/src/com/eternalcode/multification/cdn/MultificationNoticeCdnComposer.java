@@ -39,7 +39,8 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
     }
 
     @Override
-    public Resul<? extends Element<?>, ? extends Exception> serialize(CdnSettings settings, List<String> description, String key, TargetType type, Notice entity) {
+    public Result<? extends Element<?>, ? extends Exception> serialize(CdnSettings settings, List<String> description
+            , String key, TargetType type, Notice entity) {
         SerializeContext context = new SerializeContext(settings, description, key, type, entity);
 
         return this.serializeEmpty(context)
