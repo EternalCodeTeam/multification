@@ -17,6 +17,7 @@ public class TimesResolver implements NoticeResolver<TitleTimes> {
 
     private static final TemporalAmountParser<Duration> DURATION_PARSER = DurationParser.TIME_UNITS;
     private static final String TIMES_FORMAT = "%s %s %s";
+    private static final String ZERO_TIME = "0s";
 
     @Override
     public NoticeKey<TitleTimes> noticeKey() {
@@ -35,9 +36,9 @@ public class TimesResolver implements NoticeResolver<TitleTimes> {
     @Override
     public NoticeSerdesResult serialize(TitleTimes content) {
         return new NoticeSerdesResult.Single(String.format(TIMES_FORMAT,
-            DURATION_PARSER.format(content.fadeIn()),
-            DURATION_PARSER.format(content.stay()),
-            DURATION_PARSER.format(content.fadeOut())
+            this.formatDuration(content.fadeIn()),
+            this.formatDuration(content.stay()),
+            this.formatDuration(content.fadeOut())
         ));
     }
 
@@ -62,4 +63,10 @@ public class TimesResolver implements NoticeResolver<TitleTimes> {
         ));
     }
 
+    private String formatDuration(Duration duration) {
+        if (duration.isNegative() || duration.isZero()) {
+            return ZERO_TIME;
+        }
+        return DURATION_PARSER.format(duration);
+    }
 }
