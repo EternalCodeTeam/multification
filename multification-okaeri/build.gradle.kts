@@ -10,7 +10,7 @@ dependencies {
     api(project(":multification-core"))
 
     // okaeri configs
-    val okaeriConfigsVersion = "5.0.0-beta.5"
+    val okaeriConfigsVersion = "5.0.5"
     api("eu.okaeri:okaeri-configs-yaml-snakeyaml:${okaeriConfigsVersion}")
     api("eu.okaeri:okaeri-configs-serdes-commons:${okaeriConfigsVersion}")
 
