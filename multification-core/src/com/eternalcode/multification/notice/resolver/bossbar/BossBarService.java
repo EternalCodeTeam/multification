@@ -1,7 +1,5 @@
 package com.eternalcode.multification.notice.resolver.bossbar;
 
-import com.eternalcode.commons.scheduler.Scheduler;
-import com.eternalcode.commons.scheduler.Task;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -9,15 +7,14 @@ import net.kyori.adventure.text.serializer.ComponentSerializer;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class BossBarService {
 
     private final Duration REFRESH_DURATION = Duration.ofMillis(500);
-    private final Scheduler scheduler;
-
-    public BossBarService(Scheduler scheduler) {
-        this.scheduler = scheduler;
-    }
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(8);
 
     void sendBossBar(
             ComponentSerializer<Component, Component, String> serializer,
@@ -32,23 +29,24 @@ public class BossBarService {
         Instant now = Instant.now();
         Instant expiration = now.plus(duration);
 
-        if (content.progress().isPresent()) {
-            this.scheduler.laterSync(() -> viewer.hideBossBar(bossBar), duration);
+        if (content.progress().isEmpty()) {
+            updateProgress(expiration, duration, bossBar);
+        }
+
+        this.scheduler.schedule(() -> viewer.hideBossBar(bossBar), duration.toMillis(), TimeUnit.MILLISECONDS);
+    }
+
+    private void updateProgress(Instant expiration, Duration duration, BossBar bossBar) {
+        if (Instant.now().isAfter(expiration)) {
             return;
         }
 
-        Task task = this.scheduler.timerSync(() -> {
-            Duration remaining = Duration.between(Instant.now(), expiration);
-            float progress = 1 - (float) remaining.getSeconds() / duration.getSeconds();
+        Duration remaining = Duration.between(Instant.now(), expiration);
+        float progress = 1 - (float) remaining.getSeconds() / duration.getSeconds();
 
-            bossBar.progress(progress);
-        }, Duration.ofMillis(10L), REFRESH_DURATION);
+        bossBar.progress(progress);
 
-        this.scheduler.laterSync(() -> {
-            viewer.hideBossBar(bossBar);
-
-            task.cancel();
-        }, duration);
+        this.scheduler.schedule(() -> updateProgress(expiration, duration, bossBar), 500L, TimeUnit.MILLISECONDS);
     }
 
 }

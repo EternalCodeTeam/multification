@@ -10,5 +10,4 @@ repositories {
     maven("https://repo.panda-lang.org/releases/") // expressible
     maven("https://repo.stellardrift.ca/repository/snapshots/")
     maven("https://storehouse.okaeri.eu/repository/maven-public/") // okaeri configs
-    maven("https://repo.eternalcode.pl/releases") // eternalcode
 }
