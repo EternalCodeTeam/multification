@@ -18,7 +18,7 @@ public final class NoticeResolverDefaults {
     private NoticeResolverDefaults() {
     }
 
-    public static NoticeResolverRegistry createRegistry(Scheduler scheduler) {
+    public static NoticeResolverRegistry createRegistry() {
         return new NoticeResolverRegistry()
             .registerResolver(new ChatResolver())
             .registerResolver(new TitleResolver())
@@ -29,7 +29,7 @@ public final class NoticeResolverDefaults {
             .registerResolver(new TitleHideResolver())
             .registerResolver(new SoundAdventureResolver())
             .registerResolver(new ActionbarResolver())
-            .registerResolver(new BossBarResolver(new BossBarService(scheduler)))
+            .registerResolver(new BossBarResolver(new BossBarService()))
         ;
     }
 
