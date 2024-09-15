@@ -1,6 +1,5 @@
 package com.eternalcode.multification.notice;
 
-import com.eternalcode.commons.scheduler.Scheduler;
 import com.eternalcode.multification.locate.LocaleProvider;
 import com.eternalcode.multification.notice.resolver.NoticeContent;
 import com.eternalcode.multification.notice.resolver.NoticeResolverRegistry;
@@ -35,7 +34,7 @@ import org.jetbrains.annotations.CheckReturnValue;
 
 public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<VIEWER, TRANSLATION, B>> implements NoticeBroadcast<VIEWER, TRANSLATION, B> {
 
-    protected final Scheduler scheduler;
+    protected final AsyncExecutor asyncExecutor;
     protected final TranslationProvider<TRANSLATION> translationProvider;
     protected final ViewerProvider<VIEWER> viewerProvider;
     protected final PlatformBroadcaster platformBroadcaster;
@@ -51,15 +50,15 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
     protected final List<Formatter> formatters = new ArrayList<>();
 
     public NoticeBroadcastImpl(
-        Scheduler scheduler,
-        TranslationProvider<TRANSLATION> translationProvider,
-        ViewerProvider<VIEWER> viewerProvider,
-        PlatformBroadcaster platformBroadcaster,
-        LocaleProvider<VIEWER> localeProvider,
-        AudienceConverter<VIEWER> audienceConverter, Replacer<VIEWER> replacer,
-        NoticeResolverRegistry noticeRegistry
+            AsyncExecutor asyncExecutor,
+            TranslationProvider<TRANSLATION> translationProvider,
+            ViewerProvider<VIEWER> viewerProvider,
+            PlatformBroadcaster platformBroadcaster,
+            LocaleProvider<VIEWER> localeProvider,
+            AudienceConverter<VIEWER> audienceConverter, Replacer<VIEWER> replacer,
+            NoticeResolverRegistry noticeRegistry
     ) {
-        this.scheduler = scheduler;
+        this.asyncExecutor = asyncExecutor;
         this.translationProvider = translationProvider;
         this.viewerProvider = viewerProvider;
         this.platformBroadcaster = platformBroadcaster;
@@ -233,7 +232,7 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
 
     @Override
     public void sendAsync() {
-        this.scheduler.async(() -> send());
+        this.asyncExecutor.execute(() -> send());
     }
 
     @Override
