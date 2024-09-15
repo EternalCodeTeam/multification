@@ -1,5 +1,6 @@
 package com.eternalcode.multification.notice;
 
+import com.eternalcode.commons.scheduler.Scheduler;
 import com.eternalcode.multification.locate.LocaleProvider;
 import com.eternalcode.multification.notice.resolver.NoticeContent;
 import com.eternalcode.multification.notice.resolver.NoticeResolverRegistry;
@@ -34,7 +35,7 @@ import org.jetbrains.annotations.CheckReturnValue;
 
 public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<VIEWER, TRANSLATION, B>> implements NoticeBroadcast<VIEWER, TRANSLATION, B> {
 
-    protected final AsyncExecutor asyncExecutor;
+    protected final Scheduler scheduler;
     protected final TranslationProvider<TRANSLATION> translationProvider;
     protected final ViewerProvider<VIEWER> viewerProvider;
     protected final PlatformBroadcaster platformBroadcaster;
@@ -50,7 +51,7 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
     protected final List<Formatter> formatters = new ArrayList<>();
 
     public NoticeBroadcastImpl(
-        AsyncExecutor asyncExecutor,
+        Scheduler scheduler,
         TranslationProvider<TRANSLATION> translationProvider,
         ViewerProvider<VIEWER> viewerProvider,
         PlatformBroadcaster platformBroadcaster,
@@ -58,7 +59,7 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
         AudienceConverter<VIEWER> audienceConverter, Replacer<VIEWER> replacer,
         NoticeResolverRegistry noticeRegistry
     ) {
-        this.asyncExecutor = asyncExecutor;
+        this.scheduler = scheduler;
         this.translationProvider = translationProvider;
         this.viewerProvider = viewerProvider;
         this.platformBroadcaster = platformBroadcaster;
@@ -232,7 +233,7 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
 
     @Override
     public void sendAsync() {
-        this.asyncExecutor.execute(() -> send());
+        this.scheduler.async(() -> send());
     }
 
     @Override
