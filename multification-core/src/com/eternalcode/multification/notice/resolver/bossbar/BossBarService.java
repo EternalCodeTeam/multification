@@ -1,42 +1,54 @@
 package com.eternalcode.multification.notice.resolver.bossbar;
 
+import com.eternalcode.commons.scheduler.Scheduler;
+import com.eternalcode.commons.scheduler.Task;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.ComponentSerializer;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class BossBarService {
 
-    private final Map<UUID, BossBarEntity> bossBars = new ConcurrentHashMap<>();
-    private final Map<BossBar, Instant> bossBarExpiration = new ConcurrentHashMap<>();
+    private final Duration REFRESH_DURATION = Duration.ofMillis(500);
+    private final Scheduler scheduler;
 
-    void add(BossBar bossBar, Duration duration) {
-        UUID uuid = UUID.randomUUID();
-
-        this.bossBars.put(uuid, new BossBarEntity(uuid, bossBar, duration, Instant.now().plus(duration)));
-        this.bossBarExpiration.put(bossBar, Instant.now().plus(duration));
+    public BossBarService(Scheduler scheduler) {
+        this.scheduler = scheduler;
     }
 
-    void remove(UUID uuid) {
-        this.bossBars.remove(uuid);
-    }
+    void sendBossBar(
+            ComponentSerializer<Component, Component, String> serializer,
+            BossBarContent content,
+            Audience viewer
+    ) {
+        BossBar bossBar = BossBar.bossBar(serializer.deserialize(content.message()), (float) content.progress().orElse(1.0), content.color(), content.overlay());
+        viewer.showBossBar(bossBar);
 
-    boolean hasBossBar(UUID uuid) {
-        return this.bossBars.containsKey(uuid);
-    }
+        Duration duration = content.duration();
 
-    Optional<BossBarEntity> getBossBar(UUID uuid) {
-        return Optional.ofNullable(this.bossBars.get(uuid));
-    }
+        Instant now = Instant.now();
+        Instant expiration = now.plus(duration);
 
-    Collection<BossBarEntity> getBossBars() {
-        return Collections.unmodifiableCollection(this.bossBars.values());
+        if (content.progress().isPresent()) {
+            this.scheduler.laterSync(() -> viewer.hideBossBar(bossBar), duration);
+            return;
+        }
+
+        Task task = this.scheduler.timerSync(() -> {
+            Duration remaining = Duration.between(Instant.now(), expiration);
+            float progress = 1 - (float) remaining.getSeconds() / duration.getSeconds();
+
+            bossBar.progress(progress);
+        }, Duration.ofMillis(10L), REFRESH_DURATION);
+
+        this.scheduler.laterSync(() -> {
+            viewer.hideBossBar(bossBar);
+
+            task.cancel();
+        }, duration);
     }
 
 }

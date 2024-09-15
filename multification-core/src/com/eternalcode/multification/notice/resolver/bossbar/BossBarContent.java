@@ -1,15 +1,12 @@
 package com.eternalcode.multification.notice.resolver.bossbar;
 
-import com.eternalcode.multification.notice.resolver.text.TextContent;
+import com.eternalcode.multification.notice.resolver.NoticeContent;
 import net.kyori.adventure.bossbar.BossBar;
 
 import java.time.Duration;
-import java.util.List;
+import java.util.OptionalDouble;
 
-public record BossBarContent(String content, double progress, BossBar.Color color, BossBar.Overlay overlay, Duration duration) implements TextContent {
+public record BossBarContent(String message, OptionalDouble progress, BossBar.Color color, BossBar.Overlay overlay, Duration duration) implements NoticeContent {
 
-    @Override
-    public List<String> contents() {
-        return List.of(this.content);
-    }
+
 }

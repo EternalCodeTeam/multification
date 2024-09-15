@@ -31,7 +31,7 @@ public abstract class BukkitMultification<TRANSLATION> extends Multification<Com
     }
 
     @Override
-    protected @NotNull AsyncExecutor asyncExecutor() {
+    protected @NotNull AsyncExecutor scheduler() {
         return (runnable) -> Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getProvidingPlugin(BukkitMultification.class), runnable);
     }
 

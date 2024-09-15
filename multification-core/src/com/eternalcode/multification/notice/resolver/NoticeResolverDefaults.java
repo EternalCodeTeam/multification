@@ -1,6 +1,9 @@
 package com.eternalcode.multification.notice.resolver;
 
+import com.eternalcode.commons.scheduler.Scheduler;
 import com.eternalcode.multification.notice.resolver.actionbar.ActionbarResolver;
+import com.eternalcode.multification.notice.resolver.bossbar.BossBarResolver;
+import com.eternalcode.multification.notice.resolver.bossbar.BossBarService;
 import com.eternalcode.multification.notice.resolver.chat.ChatResolver;
 import com.eternalcode.multification.notice.resolver.sound.SoundAdventureResolver;
 import com.eternalcode.multification.notice.resolver.title.SubtitleResolver;
@@ -15,7 +18,7 @@ public final class NoticeResolverDefaults {
     private NoticeResolverDefaults() {
     }
 
-    public static NoticeResolverRegistry createRegistry() {
+    public static NoticeResolverRegistry createRegistry(Scheduler scheduler) {
         return new NoticeResolverRegistry()
             .registerResolver(new ChatResolver())
             .registerResolver(new TitleResolver())
@@ -26,6 +29,7 @@ public final class NoticeResolverDefaults {
             .registerResolver(new TitleHideResolver())
             .registerResolver(new SoundAdventureResolver())
             .registerResolver(new ActionbarResolver())
+            .registerResolver(new BossBarResolver(new BossBarService(scheduler)))
         ;
     }
 
