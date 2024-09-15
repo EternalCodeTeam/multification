@@ -1,5 +1,6 @@
 package com.eternalcode.multification;
 
+import com.eternalcode.commons.scheduler.Scheduler;
 import com.eternalcode.multification.adventure.PlainComponentSerializer;
 import com.eternalcode.multification.locate.LocaleProvider;
 import com.eternalcode.multification.notice.resolver.NoticeResolverDefaults;
@@ -25,7 +26,6 @@ import org.jetbrains.annotations.NotNull;
 public abstract class Multification<VIEWER, TRANSLATION> {
 
     public static final ComponentSerializer<Component, Component, String> DEFAULT_COMPONENT_SERIALIZER = new PlainComponentSerializer();
-    public static final AsyncExecutor DEFAULT_EXECUTOR = runnable -> runnable.run();
     public static final Replacer<?> DEFAULT_REPLACER = (v, text) -> text;
     public static final LocaleProvider<?> LOCALE_PROVIDER = v -> Locale.ROOT;
 
@@ -34,7 +34,7 @@ public abstract class Multification<VIEWER, TRANSLATION> {
     @CheckReturnValue
     public NoticeBroadcast<VIEWER, TRANSLATION, ?> create() {
         return new NoticeBroadcastImpl<>(
-            this.asyncExecutor(),
+            this.scheduler(),
             this.translationProvider(),
             this.viewerProvider(),
             this.platformBroadcaster(),
@@ -75,9 +75,7 @@ public abstract class Multification<VIEWER, TRANSLATION> {
     }
 
     @NotNull
-    protected AsyncExecutor asyncExecutor() {
-        return DEFAULT_EXECUTOR;
-    }
+    protected abstract Scheduler scheduler();
 
     @SuppressWarnings("unchecked")
     @NotNull
