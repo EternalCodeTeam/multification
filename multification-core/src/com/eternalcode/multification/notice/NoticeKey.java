@@ -2,6 +2,7 @@ package com.eternalcode.multification.notice;
 
 import com.eternalcode.multification.notice.resolver.NoticeContent;
 import com.eternalcode.multification.notice.resolver.actionbar.ActionbarContent;
+import com.eternalcode.multification.notice.resolver.bossbar.BossBarContent;
 import com.eternalcode.multification.notice.resolver.chat.ChatContent;
 import com.eternalcode.multification.notice.resolver.sound.SoundAdventure;
 import com.eternalcode.multification.notice.resolver.title.TitleContent;
@@ -17,6 +18,7 @@ public interface NoticeKey<T extends NoticeContent> {
     NoticeKey<TitleTimes> TITLE_TIMES = NoticeKey.of("times", TitleTimes.class);
     NoticeKey<TitleHide> TITLE_HIDE = NoticeKey.of("hideTitle", TitleHide.class);
     NoticeKey<SoundAdventure> SOUND = NoticeKey.of("sound", SoundAdventure.class);
+    NoticeKey<BossBarContent> BOSS_BAR = NoticeKey.of("bossBar", BossBarContent.class);
 
     String key();
 
