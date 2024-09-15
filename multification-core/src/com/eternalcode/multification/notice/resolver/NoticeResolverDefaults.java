@@ -1,6 +1,5 @@
 package com.eternalcode.multification.notice.resolver;
 
-import com.eternalcode.commons.scheduler.Scheduler;
 import com.eternalcode.multification.notice.resolver.actionbar.ActionbarResolver;
 import com.eternalcode.multification.notice.resolver.bossbar.BossBarResolver;
 import com.eternalcode.multification.notice.resolver.bossbar.BossBarService;
