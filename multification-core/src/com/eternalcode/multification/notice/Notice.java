@@ -2,6 +2,7 @@ package com.eternalcode.multification.notice;
 
 import com.eternalcode.multification.notice.resolver.NoticeContent;
 import com.eternalcode.multification.notice.resolver.actionbar.ActionbarContent;
+import com.eternalcode.multification.notice.resolver.bossbar.BossBarContent;
 import com.eternalcode.multification.notice.resolver.chat.ChatContent;
 import com.eternalcode.multification.notice.resolver.title.TitleContent;
 import com.eternalcode.multification.notice.resolver.title.TitleHide;
@@ -12,9 +13,11 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalDouble;
 
 import com.eternalcode.multification.notice.resolver.sound.SoundAdventure;
 import com.eternalcode.multification.notice.resolver.title.TitleTimes;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 
@@ -185,6 +188,10 @@ public class Notice {
 
         public B sound(Key sound, Sound.Source category, float pitch, float volume) {
             return this.withPart(NoticeKey.SOUND, new SoundAdventure(sound, category, pitch, volume));
+        }
+
+        public B bossBar(BossBar.Color color, BossBar.Overlay overlay, Duration duration, double progress, String message) {
+            return this.withPart(NoticeKey.BOSS_BAR, new BossBarContent(color, overlay, duration, OptionalDouble.of(progress), message));
         }
 
     }

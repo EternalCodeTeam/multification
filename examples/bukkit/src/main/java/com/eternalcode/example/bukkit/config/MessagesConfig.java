@@ -3,8 +3,11 @@ package com.eternalcode.example.bukkit.config;
 import com.eternalcode.multification.bukkit.notice.BukkitNotice;
 import com.eternalcode.multification.notice.Notice;
 import net.dzikoysk.cdn.entity.Description;
+import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+
+import java.time.Duration;
 
 public class MessagesConfig {
     @Description("# Fly command message")
@@ -27,6 +30,10 @@ public class MessagesConfig {
     public Notice selfTeleportCommandMessage = BukkitNotice.builder()
         .actionBar("<green>You have been teleported to <yellow>{player}</yellow>.")
         .sound(Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 2.0F, 2.0F)
+        .build();
+
+    public Notice bossBarMessage = BukkitNotice.builder()
+        .bossBar(BossBar.Color.PINK, BossBar.Overlay.PROGRESS, Duration.ofSeconds(5), -1, "<green>Example boss bar message")
         .build();
 
 }

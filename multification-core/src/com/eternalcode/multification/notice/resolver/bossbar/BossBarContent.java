@@ -6,7 +6,7 @@ import net.kyori.adventure.bossbar.BossBar;
 import java.time.Duration;
 import java.util.OptionalDouble;
 
-public record BossBarContent(String message, OptionalDouble progress, BossBar.Color color, BossBar.Overlay overlay, Duration duration) implements NoticeContent {
+public record BossBarContent(BossBar.Color color, BossBar.Overlay overlay, Duration duration, OptionalDouble progress, String message) implements NoticeContent {
 
 
 }

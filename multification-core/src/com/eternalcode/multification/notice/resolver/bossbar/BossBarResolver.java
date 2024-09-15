@@ -81,7 +81,7 @@ public class BossBarResolver implements NoticeResolver<BossBarContent> {
         OptionalDouble progress = this.parseProgress(bossBarList);
         String message = String.join(" ", bossBarList.subList(progress.isPresent() ? 4 : 3, bossBarList.size()));
 
-        return Optional.of(new BossBarContent(message, progress, color, overlay, duration));
+        return Optional.of(new BossBarContent(color, overlay, duration, progress, message));
     }
 
     OptionalDouble parseProgress(List<String> bossBarList) {
