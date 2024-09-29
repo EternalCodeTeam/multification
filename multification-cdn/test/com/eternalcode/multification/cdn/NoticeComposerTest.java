@@ -9,6 +9,7 @@ import com.eternalcode.multification.notice.NoticeKey;
 import com.eternalcode.multification.notice.resolver.NoticeResolverDefaults;
 import com.eternalcode.multification.notice.resolver.NoticeResolverRegistry;
 import com.eternalcode.multification.notice.resolver.actionbar.ActionbarContent;
+import com.eternalcode.multification.notice.resolver.bossbar.BossBarContent;
 import com.eternalcode.multification.notice.resolver.chat.ChatContent;
 import com.eternalcode.multification.notice.resolver.title.TitleContent;
 import com.eternalcode.multification.notice.resolver.title.TitleHide;
@@ -21,7 +22,9 @@ import net.dzikoysk.cdn.CdnFactory;
 import net.dzikoysk.cdn.reflect.Visibility;
 import net.dzikoysk.cdn.source.Source;
 
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.key.Key;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -313,6 +316,39 @@ class NoticeComposerTest {
         assertNull(sound.category());
         assertEquals(1.0f, sound.volume());
         assertEquals(1.0f, sound.pitch());
+    }
+
+    static class ConfigBossBar {
+        Notice notice = Notice.builder()
+            .bossBar(BossBar.Color.PINK, BossBar.Overlay.PROGRESS, Duration.ofSeconds(5), 0.9, "<green>Example boss bar message")
+            .build();
+    }
+
+    @Test
+    @DisplayName("Should serialize bossbar section with all properties")
+    void serializeBossBarSectionWithAllProperties() {
+        ConfigBossBar configBossBar = assertRender(new ConfigBossBar(),
+            """
+                notice:
+                  bossbar:
+                    message: "<green>Example boss bar message"
+                    duration: "5s"
+                    color: "PINK"
+                    overlay: "PROGRESS"
+                    progress: 0.9
+                """);
+
+        assertEquals(1, configBossBar.notice.parts().size());
+        BossBarContent bossBar = assertInstanceOf(BossBarContent.class, configBossBar.notice.parts().get(0).content());
+        assertEquals(BossBar.Color.PINK, bossBar.color());
+        assertEquals(BossBar.Overlay.PROGRESS, bossBar.overlay());
+        assertEquals(Duration.ofSeconds(5), bossBar.duration());
+        assertThat(bossBar.progress())
+            .hasValue(0.9);
+
+        assertEquals("<green>Example boss bar message", bossBar.message());
+
+
     }
 
     @SuppressWarnings("unchecked")

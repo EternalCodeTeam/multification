@@ -1,5 +1,6 @@
 package com.eternalcode.multification.okaeri;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -14,6 +15,7 @@ import com.eternalcode.multification.notice.NoticePart;
 import com.eternalcode.multification.notice.resolver.NoticeResolverDefaults;
 import com.eternalcode.multification.notice.resolver.NoticeResolverRegistry;
 import com.eternalcode.multification.notice.resolver.actionbar.ActionbarContent;
+import com.eternalcode.multification.notice.resolver.bossbar.BossBarContent;
 import com.eternalcode.multification.notice.resolver.chat.ChatContent;
 import com.eternalcode.multification.notice.resolver.sound.SoundAdventure;
 import com.eternalcode.multification.notice.resolver.title.TitleContent;
@@ -22,6 +24,7 @@ import com.eternalcode.multification.notice.resolver.title.TitleTimes;
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.yaml.snakeyaml.YamlSnakeYamlConfigurer;
 import java.time.Duration;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -59,8 +62,8 @@ class NoticeSerializerTest {
     void serializeSimpleChatNoticeToOneLineEntry() {
         ConfigOneLineChat oneLineChat = assertRender(new ConfigOneLineChat(),
             """
-            notice: "Hello world"
-            """
+                notice: "Hello world"
+                """
         );
 
         assertEquals(1, oneLineChat.notice.parts().size());
@@ -75,6 +78,7 @@ class NoticeSerializerTest {
     public static class ConfigMultiLineChat extends OkaeriConfig {
         Notice notice = Notice.chat("First line", "Second line");
     }
+
     @Test
     @DisplayName("Should serialize simple chat notice to multiline entry")
     void serializeSimpleChatNoticeToMultilineEntry() {
@@ -97,6 +101,7 @@ class NoticeSerializerTest {
     public static class ConfigSimpleTitle extends OkaeriConfig {
         Notice notice = Notice.title("Hello world");
     }
+
     @Test
     @DisplayName("Should serialize simple title notice to title section")
     void serializeSimpleTitleNoticeToOneLineEntry() {
@@ -117,6 +122,7 @@ class NoticeSerializerTest {
     public static class ConfigFullTitle extends OkaeriConfig {
         Notice notice = Notice.title("Title", "Subtitle", Duration.ofSeconds(1), Duration.ofSeconds(2), Duration.ofSeconds(1));
     }
+
     @Test
     @DisplayName("Should serialize title subtitle with delay notice to title section")
     void serializeTitleSubtitleWithDelayNoticeToOneLineEntry() {
@@ -151,6 +157,7 @@ class NoticeSerializerTest {
     public static class ConfigSimpleActionBar extends OkaeriConfig {
         Notice notice = Notice.actionbar("Hello world");
     }
+
     @Test
     @DisplayName("Should serialize simple actionbar notice to actionbar section")
     void serializeSimpleActionBarNoticeToOneLineEntry() {
@@ -171,6 +178,7 @@ class NoticeSerializerTest {
     public static class ConfigHideTitle extends OkaeriConfig {
         Notice notice = Notice.hideTitle();
     }
+
     @Test
     @DisplayName("Should serialize hide title notice with hide title property")
     void serializeHideTitleNoticeWithHideTitleProperty() {
@@ -190,6 +198,7 @@ class NoticeSerializerTest {
     public static class ConfigSound extends OkaeriConfig {
         Notice notice = BukkitNotice.sound(Sound.BLOCK_ANVIL_LAND, SoundCategory.MASTER, 1.0f, 1.0f);
     }
+
     @Test
     @DisplayName("Should serialize sound notice with sound property")
     void serializeSoundNoticeWithSoundProperty() {
@@ -213,6 +222,7 @@ class NoticeSerializerTest {
     public static class ConfigSoundWithoutCategory extends OkaeriConfig {
         Notice notice = BukkitNotice.sound(Sound.BLOCK_ANVIL_LAND, 1.0f, 1.0f);
     }
+
     @Test
     @DisplayName("Should serialize sound notice without category property")
     void serializeSoundNoticeWithoutCategoryProperty() {
@@ -237,6 +247,7 @@ class NoticeSerializerTest {
     public static class ConfigSoundShort extends OkaeriConfig {
         Notice notice = BukkitNotice.sound(Sound.BLOCK_ANVIL_LAND);
     }
+
     @Test
     @DisplayName("Should serialize sound notice without volume and pitch")
     void serializeSoundNoticeWithoutVolumeAndPitch() {
@@ -263,6 +274,7 @@ class NoticeSerializerTest {
     public static class ConfigSoundAdventure extends OkaeriConfig {
         Notice notice = Notice.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.experience_orb.pickup"), net.kyori.adventure.sound.Sound.Source.MASTER, 1.0f, 1.0f);
     }
+
     @Test
     @DisplayName("Should serialize adventure sound notice with sound property")
     void serializeSoundNoticeWithSoundAdventureProperty() {
@@ -283,10 +295,10 @@ class NoticeSerializerTest {
         assertEquals(1.0f, sound.pitch());
     }
 
-    ///TODO zmien wszystkie klasy na public
     public static class ConfigSoundAdventureWithoutCategory extends OkaeriConfig {
         Notice notice = Notice.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.experience_orb.pickup"), 1.0f, 1.0f);
     }
+
     @Test
     @DisplayName("Should serialize adventure sound notice without category property")
     void serializeSoundNoticeWithoutCategoryAdventureProperty() {
@@ -307,6 +319,67 @@ class NoticeSerializerTest {
         assertEquals(1.0f, sound.pitch());
     }
 
+    static class ConfigBossBar extends OkaeriConfig {
+        Notice notice = Notice.builder()
+            .bossBar(BossBar.Color.PINK, BossBar.Overlay.PROGRESS, Duration.ofSeconds(5), 0.9, "<green>Example boss bar message")
+            .build();
+    }
+
+    @Test
+    @DisplayName("Should serialize bossbar section with all properties")
+    void serializeBossBarSectionWithAllProperties() {
+        ConfigBossBar configBossBar = assertRender(new ConfigBossBar(),
+            """
+                notice:
+                  bossbar:
+                    message: "<green>Example boss bar message"
+                    duration: "5s"
+                    color: "PINK"
+                    overlay: "PROGRESS"
+                    progress: '0.9'
+                """);
+
+        assertEquals(1, configBossBar.notice.parts().size());
+        BossBarContent bossBar = assertInstanceOf(BossBarContent.class, configBossBar.notice.parts().get(0).content());
+        assertEquals(BossBar.Color.PINK, bossBar.color());
+        assertEquals(BossBar.Overlay.PROGRESS, bossBar.overlay());
+        assertEquals(Duration.ofSeconds(5), bossBar.duration());
+        assertThat(bossBar.progress())
+            .hasValue(0.9);
+
+        assertEquals("<green>Example boss bar message", bossBar.message());
+    }
+
+    static class ConfigBossBarWithoutProgress extends OkaeriConfig {
+        Notice notice = Notice.builder()
+            .bossBar(BossBar.Color.PINK, BossBar.Overlay.PROGRESS, Duration.ofSeconds(5), "<green>Example boss bar message")
+            .build();
+    }
+
+    @Test
+    @DisplayName("Should serialize bossbar section without progress property")
+    void serializeBossBarSectionWithoutProgressProperty() {
+        ConfigBossBarWithoutProgress configBossBar = assertRender(new ConfigBossBarWithoutProgress(),
+            """
+                notice:
+                  bossbar:
+                    message: "<green>Example boss bar message"
+                    duration: "5s"
+                    color: "PINK"
+                    overlay: "PROGRESS"
+                """);
+
+        assertEquals(1, configBossBar.notice.parts().size());
+        BossBarContent bossBar = assertInstanceOf(BossBarContent.class, configBossBar.notice.parts().get(0).content());
+        assertEquals(BossBar.Color.PINK, bossBar.color());
+        assertEquals(BossBar.Overlay.PROGRESS, bossBar.overlay());
+        assertEquals(Duration.ofSeconds(5), bossBar.duration());
+        assertThat(bossBar.progress())
+            .hasValue(-1.0);
+
+        assertEquals("<green>Example boss bar message", bossBar.message());
+    }
+
     @SuppressWarnings("unchecked")
     private <T extends OkaeriConfig> T assertRender(T entity, String expected) {
         entity.withConfigurer(new YamlSnakeYamlConfigurer(), new MultificationSerdesPack(registry));
@@ -323,7 +396,7 @@ class NoticeSerializerTest {
 
     private String removeBlankNewLines(String string) {
         return string
-             .replaceAll("\"", "")
+            .replaceAll("\"", "")
             .replaceAll("\n+", "\n")
             .replaceAll("\n+$", "")
             .replaceAll("^\n+", "");

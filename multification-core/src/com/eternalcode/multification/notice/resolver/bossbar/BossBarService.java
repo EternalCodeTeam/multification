@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 
 public class BossBarService {
 
-    private final Duration REFRESH_DURATION = Duration.ofMillis(500);
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(8);
 
     void sendBossBar(
@@ -30,14 +29,15 @@ public class BossBarService {
         Instant expiration = now.plus(duration);
 
         if (content.progress().isEmpty()) {
-            updateProgress(expiration, duration, bossBar);
+            updateProgress(expiration, duration, bossBar, viewer);
         }
 
         this.scheduler.schedule(() -> viewer.hideBossBar(bossBar), duration.toMillis(), TimeUnit.MILLISECONDS);
     }
 
-    private void updateProgress(Instant expiration, Duration duration, BossBar bossBar) {
+    private void updateProgress(Instant expiration, Duration duration, BossBar bossBar, Audience viewer) {
         if (Instant.now().isAfter(expiration)) {
+            viewer.hideBossBar(bossBar);
             return;
         }
 
@@ -46,7 +46,7 @@ public class BossBarService {
 
         bossBar.progress(progress);
 
-        this.scheduler.schedule(() -> updateProgress(expiration, duration, bossBar), 500L, TimeUnit.MILLISECONDS);
+        this.scheduler.schedule(() -> updateProgress(expiration, duration, bossBar, viewer), 500L, TimeUnit.MILLISECONDS);
     }
 
 }

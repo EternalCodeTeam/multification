@@ -22,7 +22,7 @@ public class MessagesConfig {
     public Notice senderGiveCommandMessage = Notice.title("<green>You have given <yellow>{amount}x {item}</yellow> to <yellow>{player}</yellow>.");
     public Notice receiverGiveCommandMessage = BukkitNotice.builder()
         .title("<green>You have received <yellow>{amount}x {item}</yellow> from <yellow>{player}</yellow>.")
-        .subtitle("<pride:progress>Remember to say thank you!</pride>")
+        .subtitle("<pride:gay>Remember to say thank you!</pride>")
         .sound(Sound.ENTITY_ITEM_PICKUP)
         .build();
 
@@ -32,8 +32,15 @@ public class MessagesConfig {
         .sound(Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 2.0F, 2.0F)
         .build();
 
-    public Notice bossBarMessage = BukkitNotice.builder()
+    @Description("# TO REMOVE?????")
+    public Notice bossBarMessage = Notice.builder()
         .bossBar(BossBar.Color.PINK, BossBar.Overlay.PROGRESS, Duration.ofSeconds(5), -1, "<green>Example boss bar message")
         .build();
+
+    @Description("# Epic bossbar timer!!!")
+    public Notice bossbarTimer = Notice.builder()
+        .bossBar(BossBar.Color.RED, BossBar.Overlay.PROGRESS, Duration.ofSeconds(1), 0.5, "<red>Timer: <yellow>{time}")
+        .build();
+
 
 }
