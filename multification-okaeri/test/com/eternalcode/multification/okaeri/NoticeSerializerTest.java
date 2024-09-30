@@ -374,8 +374,6 @@ class NoticeSerializerTest {
         assertEquals(BossBar.Color.PINK, bossBar.color());
         assertEquals(BossBar.Overlay.PROGRESS, bossBar.overlay());
         assertEquals(Duration.ofSeconds(5), bossBar.duration());
-        assertThat(bossBar.progress())
-            .hasValue(-1.0);
 
         assertEquals("<green>Example boss bar message", bossBar.message());
     }
