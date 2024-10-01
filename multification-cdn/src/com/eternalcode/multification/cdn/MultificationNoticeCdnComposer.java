@@ -11,7 +11,9 @@ import com.eternalcode.multification.notice.resolver.NoticeSerdesResult.Multiple
 import com.eternalcode.multification.notice.resolver.chat.ChatContent;
 
 import com.eternalcode.multification.notice.NoticePart;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import net.dzikoysk.cdn.CdnSettings;
 import net.dzikoysk.cdn.CdnUtils;
@@ -22,6 +24,7 @@ import net.dzikoysk.cdn.model.Section;
 import net.dzikoysk.cdn.module.standard.StandardOperators;
 import net.dzikoysk.cdn.reflect.TargetType;
 import net.dzikoysk.cdn.serdes.Composer;
+import panda.std.Blank;
 import panda.std.Result;
 
 public class MultificationNoticeCdnComposer implements Composer<Notice> {
@@ -40,7 +43,7 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
 
     @Override
     public Result<? extends Element<?>, ? extends Exception> serialize(CdnSettings settings, List<String> description
-            , String key, TargetType type, Notice entity) {
+        , String key, TargetType type, Notice entity) {
         SerializeContext context = new SerializeContext(settings, description, key, type, entity);
 
         return this.serializeEmpty(context)
@@ -104,6 +107,11 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
                 continue;
             }
 
+            if (result instanceof NoticeSerdesResult.Section sectionResult) {
+                section.append(toNamedSection(key, List.of(), sectionResult.elements()));
+                continue;
+            }
+
             return Result.error(new UnsupportedOperationException("Unsupported notice type: " + part.noticeKey() + ": " + part.content()));
         }
 
@@ -124,6 +132,14 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
         for (String message : elements) {
             section.append(new Piece(StandardOperators.ARRAY + " " + CdnUtils.stringify(true, message)));
         }
+
+        return section;
+    }
+
+    private static Section toNamedSection(String key, List<String> description, Map<String, String> elements) {
+        Section section = new Section(description, key);
+
+        elements.forEach((k, v) -> section.append(new Entry(List.of(), k, CdnUtils.stringify(true, v))));
 
         return section;
     }
@@ -168,9 +184,18 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
            - "Hello, world!"
            action-bar: "Hello, world!"
          */
+
+        /*
+        example:
+            boss-bar:
+                color: WHITE
+                overlay: PROGRESS
+                message: "Hello, world!"
+         */
         if (context.source() instanceof Section section) {
             return this.deserializeSection(section);
         }
+
 
         return Result.error(new UnsupportedOperationException("Unsupported element type: " + context.source().getClass()));
     }
@@ -187,27 +212,20 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
 
             // actionbar: "Hello, world!"
             if (element instanceof Entry entry) {
-                String value = this.deserializePiece(entry.getValue());
-                String key = entry.getName();
+                Result<Blank, Exception> result = appendEntry(entry, builder);
 
-                NoticeSerdesResult.Single result = new NoticeSerdesResult.Single(value);
-                Optional<NoticeDeserializeResult<?>> optional = this.noticeRegistry.deserialize(key, result);
-
-                if (optional.isEmpty()) {
-                    return Result.error(new IllegalStateException("Unsupported notice type: " + key + ": " + value));
+                if (result.isErr()) {
+                    return result.project();
                 }
 
-                this.withPart(builder, optional.get());
                 continue;
             }
 
             if (element instanceof Section subSection) {
-                for (Element<?> subElement : subSection.getValue()) {
-                    if (!(subElement instanceof Piece piece)) {
-                        throw new IllegalStateException("Unsupported element type: " + subElement.getValue());
-                    }
+                Result<Blank, Exception> subElement = appendSection(subSection, builder);
 
-                    builder.chat(this.deserializePiece(piece));
+                if (subElement.isErr()) {
+                    return subElement.project();
                 }
 
                 continue;
@@ -217,6 +235,53 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
         }
 
         return Result.ok(builder.build());
+    }
+
+    private Result<Blank, Exception> appendEntry(Entry entry, Notice.Builder builder) {
+        String value = this.deserializePiece(entry.getValue());
+        String key = entry.getName();
+
+        NoticeSerdesResult.Single result = new NoticeSerdesResult.Single(value);
+        Optional<NoticeDeserializeResult<?>> optional = this.noticeRegistry.deserialize(key, result);
+
+        if (optional.isEmpty()) {
+            return Result.error(new IllegalStateException("Unsupported notice type: " + key + ": " + value));
+        }
+
+        this.withPart(builder, optional.get());
+        return Result.ok();
+    }
+
+    private  Result<Blank, Exception> appendSection(Section subSection, Notice.Builder builder) {
+        Map<String, String> elements = new LinkedHashMap<>();
+
+        for (Element<?> subElement : subSection.getValue()) {
+            if (subElement instanceof Entry entry) {
+                elements.put(entry.getName(), this.deserializePiece(entry.getValue()));
+                continue;
+            }
+
+            if (subElement instanceof Piece piece) {
+                builder.chat(this.deserializePiece(piece));
+                continue;
+            }
+
+            return Result.error(new UnsupportedOperationException("Unsupported element type: " + subElement.getClass() + " in section: " + subSection.getName()));
+        }
+
+        if (elements.isEmpty()) {
+            return Result.ok();
+        }
+
+        NoticeSerdesResult.Section result = new NoticeSerdesResult.Section(elements);
+        Optional<NoticeDeserializeResult<?>> optional = this.noticeRegistry.deserialize(subSection.getName(), result);
+
+        if (optional.isPresent()) {
+            this.withPart(builder, optional.get());
+            return Result.ok();
+        }
+
+        return Result.error(new IllegalStateException("Unsupported notice type: " + subSection.getName() + ": " + elements));
     }
 
     private <T extends NoticeContent> void withPart(Notice.Builder builder, NoticeDeserializeResult<T> result) {
@@ -233,7 +298,8 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
         return CdnUtils.destringify(value.trim());
     }
 
-    record DeserializeContext(CdnSettings settings, Element<?> source, TargetType type, Notice defaultValue, boolean entryAsRecord) {
+    record DeserializeContext(CdnSettings settings, Element<?> source, TargetType type, Notice defaultValue,
+                              boolean entryAsRecord) {
     }
 
 }

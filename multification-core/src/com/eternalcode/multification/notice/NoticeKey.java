@@ -18,7 +18,7 @@ public interface NoticeKey<T extends NoticeContent> {
     NoticeKey<TitleTimes> TITLE_TIMES = NoticeKey.of("times", TitleTimes.class);
     NoticeKey<TitleHide> TITLE_HIDE = NoticeKey.of("hideTitle", TitleHide.class);
     NoticeKey<SoundAdventure> SOUND = NoticeKey.of("sound", SoundAdventure.class);
-    NoticeKey<BossBarContent> BOSS_BAR = NoticeKey.of("bossBar", BossBarContent.class);
+    NoticeKey<BossBarContent> BOSS_BAR = NoticeKey.of("bossbar", BossBarContent.class);
 
     String key();
 

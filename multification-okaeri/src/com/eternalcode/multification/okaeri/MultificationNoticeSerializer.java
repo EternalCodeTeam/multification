@@ -17,6 +17,7 @@ import eu.okaeri.configs.serdes.ObjectSerializer;
 import eu.okaeri.configs.serdes.SerializationData;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
@@ -55,6 +56,10 @@ public class MultificationNoticeSerializer implements ObjectSerializer<Notice> {
 
             if (result instanceof Multiple multiple) {
                 data.add(part.noticeKey().key(), multiple.elements());
+            }
+
+            if (result instanceof NoticeSerdesResult.Section section) {
+                data.add(part.noticeKey().key(), section.elements());
             }
         }
     }
@@ -103,6 +108,16 @@ public class MultificationNoticeSerializer implements ObjectSerializer<Notice> {
                 this.withPart(builder, noticeResult);
                 continue;
             }
+
+            if (value instanceof Map<?, ?> mapValue) {
+                NoticeDeserializeResult<?> noticeResult = this.noticeRegistry.deserialize(key, new NoticeSerdesResult.Section((Map<String, String>) mapValue))
+                        .orElseThrow(() -> new UnsupportedOperationException(
+                                "Unsupported notice key: " + key + " with values: " + mapValue));
+
+                this.withPart(builder, noticeResult);
+                continue;
+            }
+
 
             throw new UnsupportedOperationException(
                     "Unsupported notice type: " + value.getClass() + " for key: " + key);
