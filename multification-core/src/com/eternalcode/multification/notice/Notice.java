@@ -104,6 +104,30 @@ public class Notice {
             .build();
     }
 
+    public static Notice bossBar(BossBar.Color color, BossBar.Overlay overlay, Duration duration, double progress, String message) {
+        return Notice.builder()
+            .bossBar(color, overlay, duration, progress, message)
+            .build();
+    }
+
+    public static Notice bossBar(BossBar.Color color, Duration duration, double progress, String message) {
+        return Notice.builder()
+            .bossBar(color, duration, progress, message)
+            .build();
+    }
+
+    public static Notice bossBar(BossBar.Color color, BossBar.Overlay overlay, Duration duration, String message) {
+        return Notice.builder()
+            .bossBar(color, overlay, duration, message)
+            .build();
+    }
+
+    public static Notice bossBar(BossBar.Color color, Duration duration, String message) {
+        return Notice.builder()
+            .bossBar(color, duration, message)
+            .build();
+    }
+
     public static Notice empty() {
         return new Notice(Collections.emptyMap());
     }
