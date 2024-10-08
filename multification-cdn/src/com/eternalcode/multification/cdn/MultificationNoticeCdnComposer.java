@@ -281,7 +281,7 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
             return Result.ok();
         }
 
-        return Result.error(new IllegalStateException("Unsupported notice type: " + subSection.getName() + ": " + elements));
+        return Result.error(new IllegalStateException("Unsupported notice type: " + subSection.getName()));
     }
 
     private <T extends NoticeContent> void withPart(Notice.Builder builder, NoticeDeserializeResult<T> result) {
