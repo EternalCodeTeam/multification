@@ -34,14 +34,14 @@ public abstract class Multification<VIEWER, TRANSLATION> {
     @CheckReturnValue
     public NoticeBroadcast<VIEWER, TRANSLATION, ?> create() {
         return new NoticeBroadcastImpl<>(
-                this.asyncExecutor(),
-                this.translationProvider(),
-                this.viewerProvider(),
-                this.platformBroadcaster(),
-                this.localeProvider(),
-                this.audienceConverter(),
-                this.globalReplacer(),
-                noticeRegistry
+            this.asyncExecutor(),
+            this.translationProvider(),
+            this.viewerProvider(),
+            this.platformBroadcaster(),
+            this.localeProvider(),
+            this.audienceConverter(),
+            this.globalReplacer(),
+            noticeRegistry
         );
     }
 
@@ -87,43 +87,43 @@ public abstract class Multification<VIEWER, TRANSLATION> {
 
     public void player(UUID player, NoticeProvider<TRANSLATION> extractor, Formatter... formatters) {
         this.create()
-                .player(player)
-                .notice(extractor)
-                .formatter(formatters)
-                .send();
+            .player(player)
+            .notice(extractor)
+            .formatter(formatters)
+            .send();
     }
 
     public void players(Iterable<UUID> players, NoticeProvider<TRANSLATION> extractor, Formatter... formatters) {
         this.create()
-                .players(players)
-                .notice(extractor)
-                .formatter(formatters)
-                .send();
+            .players(players)
+            .notice(extractor)
+            .formatter(formatters)
+            .send();
     }
 
     public void viewer(VIEWER viewer, NoticeProvider<TRANSLATION> extractor, Formatter... formatters) {
         this.create()
-                .viewer(viewer)
-                .notice(extractor)
-                .formatter(formatters)
-                .send();
+            .viewer(viewer)
+            .notice(extractor)
+            .formatter(formatters)
+            .send();
     }
 
 
     public void console(NoticeProvider<TRANSLATION> extractor, Formatter... formatters) {
         this.create()
-                .console()
-                .notice(extractor)
-                .formatter(formatters)
-                .send();
+            .console()
+            .notice(extractor)
+            .formatter(formatters)
+            .send();
     }
 
     public void all(NoticeProvider<TRANSLATION> extractor, Formatter... formatters) {
         this.create()
-                .all()
-                .notice(extractor)
-                .formatter(formatters)
-                .send();
+            .all()
+            .notice(extractor)
+            .formatter(formatters)
+            .send();
     }
 
     @ApiStatus.Internal
