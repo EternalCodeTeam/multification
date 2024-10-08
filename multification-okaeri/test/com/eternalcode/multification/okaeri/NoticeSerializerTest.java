@@ -408,7 +408,10 @@ class NoticeSerializerTest {
         assertEquals(1, configBossBar.notice.parts().size());
         BossBarContent bossBar = assertInstanceOf(BossBarContent.class, configBossBar.notice.parts().get(0).content());
         assertEquals(BossBar.Color.PINK, bossBar.color());
-        assertEquals(Optional.of(DEFAULT_OVERLAY), bossBar.overlay());
+
+        assertThat(bossBar.overlay())
+            .isEmpty();
+
         assertEquals(Duration.ofSeconds(5), bossBar.duration());
         assertThat(bossBar.progress())
             .hasValue(0.9);
@@ -439,7 +442,10 @@ class NoticeSerializerTest {
         assertEquals(1, configBossBar.notice.parts().size());
         BossBarContent bossBar = assertInstanceOf(BossBarContent.class, configBossBar.notice.parts().get(0).content());
         assertEquals(BossBar.Color.PINK, bossBar.color());
-        assertEquals(Optional.of(DEFAULT_OVERLAY), bossBar.overlay());
+
+        assertThat(bossBar.overlay())
+            .isEmpty();
+
         assertThat(bossBar.progress())
             .isEmpty();
         assertEquals(Duration.ofSeconds(5), bossBar.duration());
