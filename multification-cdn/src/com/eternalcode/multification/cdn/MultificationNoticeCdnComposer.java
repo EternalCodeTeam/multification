@@ -245,7 +245,7 @@ public class MultificationNoticeCdnComposer implements Composer<Notice> {
         Optional<NoticeDeserializeResult<?>> optional = this.noticeRegistry.deserialize(key, result);
 
         if (optional.isEmpty()) {
-            return Result.error(new IllegalStateException("Unsupported notice type: " + key + ": " + value));
+            return Result.error(new IllegalStateException("Unsupported notice type: " + key));
         }
 
         this.withPart(builder, optional.get());
