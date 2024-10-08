@@ -12,6 +12,6 @@ object Versions {
 
     const val SPIGOT_API = "1.19.4-R0.1-SNAPSHOT"
 
-    const val JETBRAINS_ANNOTATIONS = "24.1.0"
+    const val JETBRAINS_ANNOTATIONS = "26.0.0"
 
 }
