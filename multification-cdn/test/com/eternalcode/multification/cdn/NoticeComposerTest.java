@@ -17,6 +17,7 @@ import com.eternalcode.multification.notice.resolver.sound.SoundAdventure;
 import com.eternalcode.multification.notice.resolver.title.TitleTimes;
 import com.eternalcode.multification.notice.NoticePart;
 import java.time.Duration;
+import java.util.Optional;
 import net.dzikoysk.cdn.Cdn;
 import net.dzikoysk.cdn.CdnFactory;
 import net.dzikoysk.cdn.reflect.Visibility;
@@ -318,7 +319,7 @@ class NoticeComposerTest {
         assertEquals(1.0f, sound.pitch());
     }
 
-    static class ConfigBossBar {
+    static class ConfigBossBarWithAllProperties {
         Notice notice = Notice.builder()
             .bossBar(BossBar.Color.PINK, BossBar.Overlay.PROGRESS, Duration.ofSeconds(5), 0.9, "<green>Example boss bar message")
             .build();
@@ -327,7 +328,7 @@ class NoticeComposerTest {
     @Test
     @DisplayName("Should serialize bossbar section with all properties")
     void serializeBossBarSectionWithAllProperties() {
-        ConfigBossBar configBossBar = assertRender(new ConfigBossBar(),
+        ConfigBossBarWithAllProperties configBossBar = assertRender(new ConfigBossBarWithAllProperties(),
             """
                 notice:
                   bossbar:
@@ -341,14 +342,113 @@ class NoticeComposerTest {
         assertEquals(1, configBossBar.notice.parts().size());
         BossBarContent bossBar = assertInstanceOf(BossBarContent.class, configBossBar.notice.parts().get(0).content());
         assertEquals(BossBar.Color.PINK, bossBar.color());
-        assertEquals(BossBar.Overlay.PROGRESS, bossBar.overlay());
+        assertEquals(BossBar.Overlay.PROGRESS, bossBar.overlay().get());
         assertEquals(Duration.ofSeconds(5), bossBar.duration());
         assertThat(bossBar.progress())
             .hasValue(0.9);
 
         assertEquals("<green>Example boss bar message", bossBar.message());
 
+    }
 
+    static class ConfigBossBarWithoutProgress {
+        Notice notice = Notice.builder()
+            .bossBar(BossBar.Color.PINK, BossBar.Overlay.PROGRESS, Duration.ofSeconds(5), "<green>Example boss bar message")
+            .build();
+    }
+
+    @Test
+    @DisplayName("Should serialize bossbar section without progress")
+    void serializeBossBarSectionWithoutProgress() {
+
+
+
+        ConfigBossBarWithoutProgress configBossBar = assertRender(new ConfigBossBarWithoutProgress(),
+            """
+                notice:
+                  bossbar:
+                    message: "<green>Example boss bar message"
+                    duration: "5s"
+                    color: "PINK"
+                    overlay: "PROGRESS"
+                """);
+
+        assertEquals(1, configBossBar.notice.parts().size());
+        BossBarContent bossBar = assertInstanceOf(BossBarContent.class, configBossBar.notice.parts().get(0).content());
+        assertEquals(BossBar.Color.PINK, bossBar.color());
+        assertEquals(BossBar.Overlay.PROGRESS, bossBar.overlay().get());
+        assertEquals(Duration.ofSeconds(5), bossBar.duration());
+        assertThat(bossBar.progress())
+            .isEmpty();
+
+        assertEquals("<green>Example boss bar message", bossBar.message());
+    }
+
+    static class ConfigBossBarWithoutOverlay {
+        Notice notice = Notice.builder()
+            .bossBar(BossBar.Color.PINK, Duration.ofSeconds(5), 0.9, "<green>Example boss bar message")
+            .build();
+    }
+
+    @Test
+    @DisplayName("Should serialize bossbar section without overlay")
+    void serializeBossBarSectionWithoutOverlay() {
+
+        final BossBar.Overlay DEFAULT_OVERLAY = BossBar.Overlay.PROGRESS;
+
+        ConfigBossBarWithoutOverlay configBossBar = assertRender(new ConfigBossBarWithoutOverlay(),
+            """
+                notice:
+                  bossbar:
+                    message: "<green>Example boss bar message"
+                    duration: "5s"
+                    color: "PINK"
+                    progress: 0.9
+                """);
+
+        assertEquals(1, configBossBar.notice.parts().size());
+        BossBarContent bossBar = assertInstanceOf(BossBarContent.class, configBossBar.notice.parts().get(0).content());
+        assertEquals(BossBar.Color.PINK, bossBar.color());
+        assertEquals(Optional.of(DEFAULT_OVERLAY), bossBar.overlay());
+        assertEquals(Duration.ofSeconds(5), bossBar.duration());
+        assertThat(bossBar.progress())
+            .hasValue(0.9);
+
+        assertEquals("<green>Example boss bar message", bossBar.message());
+    }
+
+    static class ConfigBossBarWithoutProgressAndOverlay {
+        Notice notice = Notice.builder()
+            .bossBar(BossBar.Color.PINK, Duration.ofSeconds(5), "<green>Example boss bar message")
+            .build();
+    }
+
+    @Test
+    @DisplayName("Should serialize bossbar section without progress and overlay")
+    void serializeBossBarSectionWithoutProgressAndOverlay() {
+
+        final BossBar.Overlay DEFAULT_OVERLAY = BossBar.Overlay.PROGRESS;
+
+        ConfigBossBarWithoutProgressAndOverlay configBossBar = assertRender(new ConfigBossBarWithoutProgressAndOverlay(),
+            """
+                notice:
+                  bossbar:
+                    message: "<green>Example boss bar message"
+                    duration: "5s"
+                    color: "PINK"
+                """);
+
+        assertEquals(1, configBossBar.notice.parts().size());
+        BossBarContent bossBar = assertInstanceOf(BossBarContent.class, configBossBar.notice.parts().get(0).content());
+        assertEquals(BossBar.Color.PINK, bossBar.color());
+        assertEquals(Duration.ofSeconds(5), bossBar.duration());
+
+        assertEquals(Optional.of(DEFAULT_OVERLAY), bossBar.overlay());
+
+        assertThat(bossBar.progress())
+            .isEmpty();
+
+        assertEquals("<green>Example boss bar message", bossBar.message());
     }
 
     @SuppressWarnings("unchecked")

@@ -32,15 +32,9 @@ public class MessagesConfig {
         .sound(Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 2.0F, 2.0F)
         .build();
 
-    @Description("# TO REMOVE?????")
-    public Notice bossBarMessage = Notice.builder()
-        .bossBar(BossBar.Color.PINK, BossBar.Overlay.PROGRESS, Duration.ofSeconds(5), -1, "<green>Example boss bar message")
-        .build();
-
     @Description("# Epic bossbar timer!!!")
     public Notice bossbarTimer = Notice.builder()
-        .bossBar(BossBar.Color.RED, BossBar.Overlay.PROGRESS, Duration.ofSeconds(1), 0.5, "<red>Timer: <yellow>{time}")
+        .bossBar(BossBar.Color.RED, Duration.ofSeconds(1), "<red>Timer: <yellow>{time}")
         .build();
-
 
 }

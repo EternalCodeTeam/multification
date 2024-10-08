@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalDouble;
 
 import com.eternalcode.multification.notice.resolver.sound.SoundAdventure;
@@ -191,11 +192,19 @@ public class Notice {
         }
 
         public B bossBar(BossBar.Color color, BossBar.Overlay overlay, Duration duration, double progress, String message) {
-            return this.withPart(NoticeKey.BOSS_BAR, new BossBarContent(color, overlay, duration, OptionalDouble.of(progress), message));
+            return this.withPart(NoticeKey.BOSS_BAR, new BossBarContent(color, Optional.of(overlay), duration, OptionalDouble.of(progress), message));
+        }
+
+        public B bossBar(BossBar.Color color, Duration duration, double progress, String message) {
+            return this.withPart(NoticeKey.BOSS_BAR, new BossBarContent(color, Optional.empty(), duration, OptionalDouble.of(progress), message));
         }
 
         public B bossBar(BossBar.Color color, BossBar.Overlay overlay, Duration duration, String message) {
-            return this.withPart(NoticeKey.BOSS_BAR, new BossBarContent(color, overlay, duration, OptionalDouble.empty(), message));
+            return this.withPart(NoticeKey.BOSS_BAR, new BossBarContent(color, Optional.of(overlay), duration, OptionalDouble.empty(), message));
+        }
+
+        public B bossBar(BossBar.Color color, Duration duration, String message) {
+            return this.withPart(NoticeKey.BOSS_BAR, new BossBarContent(color, Optional.empty(), duration, OptionalDouble.empty(), message));
         }
 
     }

@@ -18,13 +18,6 @@ public class TeleportCommand {
         this.multification = multification;
     }
 
-    @Execute(name = "bossbar")
-    public void testBossBar() {
-        multification.create()
-            .notice(messages -> messages.bossBarMessage)
-            .send();
-    }
-
     @Execute
     public void teleportSelf(@Context Player sender, @Arg Player to) {
         multification.create()

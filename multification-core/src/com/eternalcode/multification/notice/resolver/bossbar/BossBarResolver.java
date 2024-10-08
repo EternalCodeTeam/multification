@@ -20,8 +20,7 @@ import java.util.OptionalDouble;
 public class BossBarResolver implements TextContentResolver<BossBarContent> {
 
     private static final String DEFAULT_COLOR = "WHITE";
-    private static final String DEFAULT_OVERLAY = "PROGRESS";
-    private static final String DEFAULT_DURATION = "5s";
+    private static final String DEFAULT_DURATION = "1s";
     private static final String DEFAULT_MESSAGE = "Default message";
 
     private final NoticeKey<BossBarContent> key;
@@ -49,8 +48,9 @@ public class BossBarResolver implements TextContentResolver<BossBarContent> {
         map.put("message", content.message());
         map.put("duration", DurationParser.TIME_UNITS.format(content.duration()));
         map.put("color", content.color().name());
-        map.put("overlay", content.overlay().name());
 
+        Optional<BossBar.Overlay> overlay = content.overlay();
+        overlay.ifPresent(value -> map.put("overlay", String.valueOf(value)));
         OptionalDouble progress = content.progress();
         if (progress.isPresent()) {
             map.put("progress", String.valueOf(progress.getAsDouble()));
@@ -66,9 +66,19 @@ public class BossBarResolver implements TextContentResolver<BossBarContent> {
         }
 
         BossBar.Color color = BossBar.Color.valueOf(sectionResult.elements().getOrDefault("color", DEFAULT_COLOR));
-        BossBar.Overlay overlay = BossBar.Overlay.valueOf(sectionResult.elements().getOrDefault("overlay", DEFAULT_OVERLAY));
         Duration duration = DurationParser.TIME_UNITS.parse(sectionResult.elements().getOrDefault("duration", DEFAULT_DURATION));
+
         OptionalDouble progress = this.parseProgress(sectionResult.elements().get("progress"));
+
+        Optional<BossBar.Overlay> overlay;
+
+        if (sectionResult.elements().get("overlay") != null) {
+            overlay = Optional.of(BossBar.Overlay.valueOf(sectionResult.elements().get("overlay")));
+        }
+        else {
+            overlay = Optional.empty();
+        }
+
         String message = sectionResult.elements().getOrDefault("message", DEFAULT_MESSAGE);
 
         return Optional.of(new BossBarContent(color, overlay, duration, progress, message));

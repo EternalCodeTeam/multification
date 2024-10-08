@@ -20,7 +20,7 @@ public class BossBarService {
             BossBarContent content,
             Audience viewer
     ) {
-        BossBar bossBar = BossBar.bossBar(serializer.deserialize(content.message()), (float) content.progress().orElse(1.0), content.color(), content.overlay());
+        BossBar bossBar = BossBar.bossBar(serializer.deserialize(content.message()), (float) content.progress().orElse(1.0), content.color(), content.overlay().orElse(BossBar.Overlay.PROGRESS));
         viewer.showBossBar(bossBar);
 
         Duration duration = content.duration();
