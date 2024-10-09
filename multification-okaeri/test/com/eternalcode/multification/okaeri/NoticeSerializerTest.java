@@ -319,6 +319,125 @@ class NoticeSerializerTest {
         assertEquals(1.0f, sound.pitch());
     }
 
+    public static class ConfigBossbarWOBuilder extends OkaeriConfig {
+        Notice notice = Notice.bossBar(BossBar.Color.PINK, BossBar.Overlay.PROGRESS, Duration.ofSeconds(5), 0.9, "<green>Example boss bar message");
+    }
+
+    @Test
+    @DisplayName("Should serialize bossbar w/o builder with all properties")
+    void serializeBossBarWOBuilderWithAllProperties() {
+        ConfigBossbarWOBuilder configBossBar = assertRender(new ConfigBossbarWOBuilder(),
+            """
+                notice:
+                  bossbar:
+                    message: "<green>Example boss bar message"
+                    duration: "5s"
+                    color: "PINK"
+                    overlay: "PROGRESS"
+                    progress: '0.9'
+                """);
+
+        assertEquals(1, configBossBar.notice.parts().size());
+        BossBarContent bossBar = assertInstanceOf(BossBarContent.class, configBossBar.notice.parts().get(0).content());
+        assertEquals(BossBar.Color.PINK, bossBar.color());
+        assertEquals(BossBar.Overlay.PROGRESS, bossBar.overlay().get());
+        assertEquals(Duration.ofSeconds(5), bossBar.duration());
+        assertThat(bossBar.progress())
+            .hasValue(0.9);
+
+        assertEquals("<green>Example boss bar message", bossBar.message());
+    }
+
+
+    public static class ConfigBossbarWithoutProgressWOBuilder extends OkaeriConfig {
+        Notice notice = Notice.bossBar(BossBar.Color.PINK, BossBar.Overlay.NOTCHED_6, Duration.ofSeconds(5), "<green>Example boss bar message");
+    }
+
+    @Test
+    @DisplayName("Should serialize bossbar w/o builder and progress property")
+    void serializeBossBarWOBuilderWithoutProgressProperty() {
+        ConfigBossbarWithoutProgressWOBuilder configBossBar = assertRender(new ConfigBossbarWithoutProgressWOBuilder(),
+            """
+                notice:
+                  bossbar:
+                    message: "<green>Example boss bar message"
+                    duration: "5s"
+                    color: "PINK"
+                    overlay: "NOTCHED_6"
+                """);
+
+        assertEquals(1, configBossBar.notice.parts().size());
+        BossBarContent bossBar = assertInstanceOf(BossBarContent.class, configBossBar.notice.parts().get(0).content());
+        assertEquals(BossBar.Color.PINK, bossBar.color());
+        assertEquals(BossBar.Overlay.NOTCHED_6, bossBar.overlay().get());
+        assertEquals(Duration.ofSeconds(5), bossBar.duration());
+        assertThat(bossBar.progress())
+            .isEmpty();
+
+        assertEquals("<green>Example boss bar message", bossBar.message());
+    }
+
+    public static class ConfigBossbarWithoutOverlayWOBuilder extends OkaeriConfig {
+        Notice notice = Notice.bossBar(BossBar.Color.RED, Duration.ofSeconds(5), 0.9, "<green>Example boss bar message");
+    }
+
+    @Test
+    @DisplayName("Should serialize bossbar w/o builder and overlay property")
+    void serializeBossBarWOBuilderWithoutOverlayProperty() {
+        ConfigBossbarWithoutOverlayWOBuilder configBossBar = assertRender(new ConfigBossbarWithoutOverlayWOBuilder(),
+            """
+                notice:
+                  bossbar:
+                    message: "<green>Example boss bar message"
+                    duration: "5s"
+                    color: "RED"
+                    progress: '0.9'
+                """);
+
+        assertEquals(1, configBossBar.notice.parts().size());
+        BossBarContent bossBar = assertInstanceOf(BossBarContent.class, configBossBar.notice.parts().get(0).content());
+        assertEquals(BossBar.Color.RED, bossBar.color());
+
+        assertThat(bossBar.overlay())
+            .isEmpty();
+
+        assertThat(bossBar.progress())
+            .hasValue(0.9);
+        assertEquals(Duration.ofSeconds(5), bossBar.duration());
+
+        assertEquals("<green>Example boss bar message", bossBar.message());
+    }
+
+    public static class ConfigBossbarWithoutProgressAndOverlayWOBuilder extends OkaeriConfig {
+        Notice notice = Notice.bossBar(BossBar.Color.PINK, Duration.ofSeconds(5), "<green>Example boss bar message");
+    }
+
+    @Test
+    @DisplayName("Should serialize bossbar w/o builder and progress and overlay properties")
+    void serializeBossBarWOBuilderWithoutProgressAndOverlayProperties() {
+        ConfigBossbarWithoutProgressAndOverlayWOBuilder configBossBar = assertRender(new ConfigBossbarWithoutProgressAndOverlayWOBuilder(),
+            """
+                notice:
+                  bossbar:
+                    message: "<green>Example boss bar message"
+                    duration: "5s"
+                    color: "PINK"
+                """);
+
+        assertEquals(1, configBossBar.notice.parts().size());
+        BossBarContent bossBar = assertInstanceOf(BossBarContent.class, configBossBar.notice.parts().get(0).content());
+        assertEquals(BossBar.Color.PINK, bossBar.color());
+
+        assertThat(bossBar.overlay())
+            .isEmpty();
+
+        assertThat(bossBar.progress())
+            .isEmpty();
+        assertEquals(Duration.ofSeconds(5), bossBar.duration());
+
+        assertEquals("<green>Example boss bar message", bossBar.message());
+    }
+
     static class ConfigBossBar extends OkaeriConfig {
         Notice notice = Notice.builder()
             .bossBar(BossBar.Color.PINK, BossBar.Overlay.PROGRESS, Duration.ofSeconds(5), 0.9, "<green>Example boss bar message")
