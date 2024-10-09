@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class MultificationTest {
@@ -100,6 +101,7 @@ class MultificationTest {
     }
 
     @Test
+    @DisplayName("Should send messages to all viewers")
     void test() {
         MyMultification myMultification = new MyMultification();
         UUID CUSTOM_PLAYER = UUID.randomUUID();

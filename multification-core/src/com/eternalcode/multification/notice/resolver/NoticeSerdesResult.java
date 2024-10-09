@@ -1,6 +1,7 @@
 package com.eternalcode.multification.notice.resolver;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public sealed interface NoticeSerdesResult {
@@ -29,6 +30,13 @@ public sealed interface NoticeSerdesResult {
         @Override
         public List<String> anyElements() {
             return elements;
+        }
+    }
+
+    record Section(Map<String, String> elements) implements NoticeSerdesResult {
+        @Override
+        public List<String> anyElements() {
+            return List.of();
         }
     }
 

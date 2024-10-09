@@ -10,4 +10,5 @@ repositories {
     maven("https://repo.panda-lang.org/releases/") // expressible
     maven("https://repo.stellardrift.ca/repository/snapshots/")
     maven("https://storehouse.okaeri.eu/repository/maven-public/") // okaeri configs
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") // adventure snapshots
 }
