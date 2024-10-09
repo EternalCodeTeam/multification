@@ -50,13 +50,13 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
     protected final List<Formatter> formatters = new ArrayList<>();
 
     public NoticeBroadcastImpl(
-            AsyncExecutor asyncExecutor,
-            TranslationProvider<TRANSLATION> translationProvider,
-            ViewerProvider<VIEWER> viewerProvider,
-            PlatformBroadcaster platformBroadcaster,
-            LocaleProvider<VIEWER> localeProvider,
-            AudienceConverter<VIEWER> audienceConverter, Replacer<VIEWER> replacer,
-            NoticeResolverRegistry noticeRegistry
+        AsyncExecutor asyncExecutor,
+        TranslationProvider<TRANSLATION> translationProvider,
+        ViewerProvider<VIEWER> viewerProvider,
+        PlatformBroadcaster platformBroadcaster,
+        LocaleProvider<VIEWER> localeProvider,
+        AudienceConverter<VIEWER> audienceConverter, Replacer<VIEWER> replacer,
+        NoticeResolverRegistry noticeRegistry
     ) {
         this.asyncExecutor = asyncExecutor;
         this.translationProvider = translationProvider;
