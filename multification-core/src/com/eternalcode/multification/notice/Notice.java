@@ -2,6 +2,7 @@ package com.eternalcode.multification.notice;
 
 import com.eternalcode.multification.notice.resolver.NoticeContent;
 import com.eternalcode.multification.notice.resolver.actionbar.ActionbarContent;
+import com.eternalcode.multification.notice.resolver.bossbar.BossBarContent;
 import com.eternalcode.multification.notice.resolver.chat.ChatContent;
 import com.eternalcode.multification.notice.resolver.title.TitleContent;
 import com.eternalcode.multification.notice.resolver.title.TitleHide;
@@ -12,9 +13,12 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
 
 import com.eternalcode.multification.notice.resolver.sound.SoundAdventure;
 import com.eternalcode.multification.notice.resolver.title.TitleTimes;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 
@@ -97,6 +101,30 @@ public class Notice {
     public static Notice sound(Key sound, float volume, float pitch) {
         return Notice.builder()
             .sound(sound, pitch, volume)
+            .build();
+    }
+
+    public static Notice bossBar(BossBar.Color color, BossBar.Overlay overlay, Duration duration, double progress, String message) {
+        return Notice.builder()
+            .bossBar(color, overlay, duration, progress, message)
+            .build();
+    }
+
+    public static Notice bossBar(BossBar.Color color, Duration duration, double progress, String message) {
+        return Notice.builder()
+            .bossBar(color, duration, progress, message)
+            .build();
+    }
+
+    public static Notice bossBar(BossBar.Color color, BossBar.Overlay overlay, Duration duration, String message) {
+        return Notice.builder()
+            .bossBar(color, overlay, duration, message)
+            .build();
+    }
+
+    public static Notice bossBar(BossBar.Color color, Duration duration, String message) {
+        return Notice.builder()
+            .bossBar(color, duration, message)
             .build();
     }
 
@@ -185,6 +213,22 @@ public class Notice {
 
         public B sound(Key sound, Sound.Source category, float pitch, float volume) {
             return this.withPart(NoticeKey.SOUND, new SoundAdventure(sound, category, pitch, volume));
+        }
+
+        public B bossBar(BossBar.Color color, BossBar.Overlay overlay, Duration duration, double progress, String message) {
+            return this.withPart(NoticeKey.BOSS_BAR, new BossBarContent(color, Optional.of(overlay), duration, OptionalDouble.of(progress), message));
+        }
+
+        public B bossBar(BossBar.Color color, Duration duration, double progress, String message) {
+            return this.withPart(NoticeKey.BOSS_BAR, new BossBarContent(color, Optional.empty(), duration, OptionalDouble.of(progress), message));
+        }
+
+        public B bossBar(BossBar.Color color, BossBar.Overlay overlay, Duration duration, String message) {
+            return this.withPart(NoticeKey.BOSS_BAR, new BossBarContent(color, Optional.of(overlay), duration, OptionalDouble.empty(), message));
+        }
+
+        public B bossBar(BossBar.Color color, Duration duration, String message) {
+            return this.withPart(NoticeKey.BOSS_BAR, new BossBarContent(color, Optional.empty(), duration, OptionalDouble.empty(), message));
         }
 
     }

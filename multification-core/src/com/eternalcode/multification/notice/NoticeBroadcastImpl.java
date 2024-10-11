@@ -322,7 +322,7 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
         }
 
     }
-    
+
     @SuppressWarnings("unchecked")
     protected B getThis() {
         return (B) this;

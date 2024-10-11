@@ -1,6 +1,8 @@
 package com.eternalcode.multification.notice.resolver;
 
 import com.eternalcode.multification.notice.resolver.actionbar.ActionbarResolver;
+import com.eternalcode.multification.notice.resolver.bossbar.BossBarResolver;
+import com.eternalcode.multification.notice.resolver.bossbar.BossBarService;
 import com.eternalcode.multification.notice.resolver.chat.ChatResolver;
 import com.eternalcode.multification.notice.resolver.sound.SoundAdventureResolver;
 import com.eternalcode.multification.notice.resolver.title.SubtitleResolver;
@@ -26,6 +28,7 @@ public final class NoticeResolverDefaults {
             .registerResolver(new TitleHideResolver())
             .registerResolver(new SoundAdventureResolver())
             .registerResolver(new ActionbarResolver())
+            .registerResolver(new BossBarResolver(new BossBarService()))
         ;
     }
 

@@ -3,8 +3,11 @@ package com.eternalcode.example.bukkit.config;
 import com.eternalcode.multification.bukkit.notice.BukkitNotice;
 import com.eternalcode.multification.notice.Notice;
 import net.dzikoysk.cdn.entity.Description;
+import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+
+import java.time.Duration;
 
 public class MessagesConfig {
     @Description("# Fly command message")
@@ -19,7 +22,7 @@ public class MessagesConfig {
     public Notice senderGiveCommandMessage = Notice.title("<green>You have given <yellow>{amount}x {item}</yellow> to <yellow>{player}</yellow>.");
     public Notice receiverGiveCommandMessage = BukkitNotice.builder()
         .title("<green>You have received <yellow>{amount}x {item}</yellow> from <yellow>{player}</yellow>.")
-        .subtitle("<pride:progress>Remember to say thank you!</pride>")
+        .subtitle("<pride:gay>Remember to say thank you!</pride>")
         .sound(Sound.ENTITY_ITEM_PICKUP)
         .build();
 
@@ -27,6 +30,11 @@ public class MessagesConfig {
     public Notice selfTeleportCommandMessage = BukkitNotice.builder()
         .actionBar("<green>You have been teleported to <yellow>{player}</yellow>.")
         .sound(Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 2.0F, 2.0F)
+        .build();
+
+    @Description("# Epic bossbar timer!!!")
+    public Notice bossbarTimer = Notice.builder()
+        .bossBar(BossBar.Color.RED, Duration.ofSeconds(1), "<red>Timer: <yellow>{time}")
         .build();
 
 }
