@@ -333,7 +333,7 @@ class NoticeComposerTest {
     }
 
     @Test
-    @DisplayName("Should serialize bossbar section w/o builder with all properties")
+    @DisplayName("Should serialize bossbar section without builder with all properties")
     void serializeBossBarSectionWithAllPropertiesWOBuilder() {
         ConfigBossbarWOBuilder configBossBar = assertRender(new ConfigBossbarWOBuilder(),
             """
@@ -363,7 +363,7 @@ class NoticeComposerTest {
     }
 
     @Test
-    @DisplayName("Should serialize bossbar section w/o builder and progress")
+    @DisplayName("Should serialize bossbar section without builder and progress")
     void serializeBossBarSectionWithoutProgressWOBuilder() {
         ConfigBossbarWOProgressWOBuilder configBossBar = assertRender(new ConfigBossbarWOProgressWOBuilder(),
             """
@@ -391,7 +391,7 @@ class NoticeComposerTest {
     }
 
     @Test
-    @DisplayName("Should serialize bossbar section w/o builder and overlay")
+    @DisplayName("Should serialize bossbar section without builder and overlay")
     void serializeBossBarSectionWithoutOverlayWOBuilder() {
         ConfigBossbarWithoutOverlayWOBuilder configBossBar = assertRender(new ConfigBossbarWithoutOverlayWOBuilder(),
             """
@@ -421,7 +421,7 @@ class NoticeComposerTest {
     }
 
     @Test
-    @DisplayName("Should serialize bossbar section w/o builder, progress and overlay")
+    @DisplayName("Should serialize bossbar section without builder, progress and overlay")
     void serializeBossBarSectionWithoutProgressAndOverlayWOBuilder() {
         ConfigBossbarWithoutProgressAndOverlayWOBuilder configBossBar = assertRender(new ConfigBossbarWithoutProgressAndOverlayWOBuilder(),
             """
@@ -485,7 +485,7 @@ class NoticeComposerTest {
     }
 
     @Test
-    @DisplayName("Should serialize bossbar section w/o progress")
+    @DisplayName("Should serialize bossbar section without progress")
     void serializeBossBarSectionWithoutProgress() {
         ConfigBossBarWithoutProgress configBossBar = assertRender(new ConfigBossBarWithoutProgress(),
             """
@@ -515,7 +515,7 @@ class NoticeComposerTest {
     }
 
     @Test
-    @DisplayName("Should serialize bossbar section w/o overlay")
+    @DisplayName("Should serialize bossbar section without overlay")
     void serializeBossBarSectionWithoutOverlay() {
         ConfigBossBarWithoutOverlay configBossBar = assertRender(new ConfigBossBarWithoutOverlay(),
             """
@@ -548,7 +548,7 @@ class NoticeComposerTest {
     }
 
     @Test
-    @DisplayName("Should serialize bossbar section w/o progress and overlay")
+    @DisplayName("Should serialize bossbar section without progress and overlay")
     void serializeBossBarSectionWithoutProgressAndOverlay() {
         ConfigBossBarWithoutProgressAndOverlay configBossBar = assertRender(new ConfigBossBarWithoutProgressAndOverlay(),
             """

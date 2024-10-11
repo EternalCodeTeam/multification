@@ -324,7 +324,7 @@ class NoticeSerializerTest {
     }
 
     @Test
-    @DisplayName("Should serialize bossbar w/o builder with all properties")
+    @DisplayName("Should serialize bossbar without builder with all properties")
     void serializeBossBarWOBuilderWithAllProperties() {
         ConfigBossbarWOBuilder configBossBar = assertRender(new ConfigBossbarWOBuilder(),
             """
@@ -354,7 +354,7 @@ class NoticeSerializerTest {
     }
 
     @Test
-    @DisplayName("Should serialize bossbar w/o builder and progress property")
+    @DisplayName("Should serialize bossbar without builder and progress property")
     void serializeBossBarWOBuilderWithoutProgressProperty() {
         ConfigBossbarWithoutProgressWOBuilder configBossBar = assertRender(new ConfigBossbarWithoutProgressWOBuilder(),
             """
@@ -382,7 +382,7 @@ class NoticeSerializerTest {
     }
 
     @Test
-    @DisplayName("Should serialize bossbar w/o builder and overlay property")
+    @DisplayName("Should serialize bossbar without builder and overlay property")
     void serializeBossBarWOBuilderWithoutOverlayProperty() {
         ConfigBossbarWithoutOverlayWOBuilder configBossBar = assertRender(new ConfigBossbarWithoutOverlayWOBuilder(),
             """
@@ -413,7 +413,7 @@ class NoticeSerializerTest {
     }
 
     @Test
-    @DisplayName("Should serialize bossbar w/o builder and progress and overlay properties")
+    @DisplayName("Should serialize bossbar without builder and progress and overlay properties")
     void serializeBossBarWOBuilderWithoutProgressAndOverlayProperties() {
         ConfigBossbarWithoutProgressAndOverlayWOBuilder configBossBar = assertRender(new ConfigBossbarWithoutProgressAndOverlayWOBuilder(),
             """
