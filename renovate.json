@@ -45,7 +45,7 @@
   "pruneStaleBranches": true,
   "prCreation": "not-pending",
   "commitMessagePrefix": "[Renovate]",
-  "prTitle": "GH-{{ prNumber }} - {{ depName }} update to {{ newVersion }}",
+  "prTitle": "{{ depName }} update to {{ newVersion }}",
   "dependencyDashboard": true,
   "rollbackPrs": true
 }
