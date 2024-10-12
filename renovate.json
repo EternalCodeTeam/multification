@@ -29,7 +29,7 @@
       "excludePackagePatterns": ["org.spigotmc*"],
       "updateTypes": ["major"],
       "automerge": false,
-      "labels": ["🔄 major update"]
+      "labels": ["🔄 dependencies"]
     },
     {
       "groupName": "spigot dependencies",
@@ -38,7 +38,7 @@
         "org.spigotmc*"
       ],
       "automerge": false,
-      "labels": ["🔄 spigot dependencies"]
+      "labels": ["🔄 dependencies"]
     }
   ],
   "separateMajorMinor": true,
