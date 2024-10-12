@@ -1,6 +1,51 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
-  ]
+    "config:base"
+  ],
+  "groupName": "all dependencies",
+  "groupSlug": "all",
+  "lockFileMaintenance": {
+    "enabled": false
+  },
+  "packageRules": [
+    {
+      "groupName": "all minor and patch dependencies",
+      "groupSlug": "minor-patch",
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "excludePackagePatterns": ["org.spigotmc*"],
+      "updateTypes": ["minor", "patch"],
+      "automerge": true,
+      "labels": ["🔄 dependencies"]
+    },
+    {
+      "groupName": "all major dependencies",
+      "groupSlug": "major",
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "excludePackagePatterns": ["org.spigotmc*"],
+      "updateTypes": ["major"],
+      "automerge": false,
+      "labels": ["🔄 major update"]
+    },
+    {
+      "groupName": "spigot dependencies",
+      "groupSlug": "spigotmc",
+      "matchPackagePatterns": [
+        "org.spigotmc*"
+      ],
+      "automerge": false,
+      "labels": ["🔄 spigot dependencies"]
+    }
+  ],
+  "separateMajorMinor": true,
+  "pruneStaleBranches": true,
+  "prCreation": "not-pending",
+  "commitMessagePrefix": "[Renovate]",
+  "prTitle": "GH-{{ prNumber }} - {{ depName }} update to {{ newVersion }}",
+  "dependencyDashboard": true,
+  "rollbackPrs": true
 }
