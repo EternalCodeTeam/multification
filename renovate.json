@@ -17,8 +17,7 @@
       ],
       "excludePackagePatterns": ["org.spigotmc*"],
       "updateTypes": ["minor", "patch"],
-      "automerge": true,
-      "labels": ["🔄 dependencies"]
+      "automerge": true
     },
     {
       "groupName": "all major dependencies",
@@ -28,8 +27,7 @@
       ],
       "excludePackagePatterns": ["org.spigotmc*"],
       "updateTypes": ["major"],
-      "automerge": false,
-      "labels": ["🔄 dependencies"]
+      "automerge": false
     },
     {
       "groupName": "spigot dependencies",
@@ -37,15 +35,10 @@
       "matchPackagePatterns": [
         "org.spigotmc*"
       ],
-      "automerge": false,
-      "labels": ["🔄 dependencies"]
+      "automerge": false
     }
   ],
   "separateMajorMinor": true,
   "pruneStaleBranches": true,
-  "prCreation": "not-pending",
-  "commitMessagePrefix": "[Renovate]",
-  "prTitle": "{{ depName }} update to {{ newVersion }}",
-  "dependencyDashboard": true,
-  "rollbackPrs": true
+  "commitMessagePrefix": "[Renovate]"
 }
