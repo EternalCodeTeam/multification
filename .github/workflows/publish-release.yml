@@ -1,8 +1,7 @@
-name: Publish Multification Release
+name: Publish Multification
 on:
   release:
     branches: [ master ]
-    types: [ published ]
 jobs:
   publish:
     runs-on: ubuntu-latest
