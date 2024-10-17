@@ -2,7 +2,7 @@
 object Versions {
 
     const val ADVENTURE_PLATFORM_BUKKIT = "4.3.3"
-    const val ADVENTURE_API = "4.18.0-SNAPSHOT"
+    const val ADVENTURE_API = "4.17.0"
     const val CDN = "1.14.5"
 
     const val MOCKITO_CORE = "5.14.2"
