@@ -231,10 +231,6 @@ public class Notice {
             return this.withPart(NoticeKey.BOSS_BAR, new BossBarContent(color, Optional.empty(), duration, OptionalDouble.empty(), message));
         }
 
-        public B bossBar(BossBar.Color color, BossBar.Overlay overlay, Duration duration, String message) {
-            return this.withPart(NoticeKey.BOSS_BAR, new BossBarContent(color, overlay, duration, OptionalDouble.empty(), message));
-        }
-
     }
 
 }
