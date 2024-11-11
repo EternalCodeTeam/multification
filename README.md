@@ -1,6 +1,6 @@
 <div align="center">
   
-![](/assets/readme-banner.png)
+![Multification Banner](/assets/readme-banner.png)
 ### Multification
 Powerful library for sending custom notifications based on adventure.
 
