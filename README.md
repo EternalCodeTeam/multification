@@ -1,8 +1,8 @@
 <div align="center">
   
 ![](/assets/readme-banner.png)
-# Multification
-#### Powerful library for sending custom notifications based on adventure.
+### Multification
+Powerful library for sending custom notifications based on adventure.
 
 [![Patreon](https://raw.githubusercontent.com/intergrav/devins-badges/v3/assets/cozy/donate/patreon-plural_vector.svg)](https://www.patreon.com/eternalcode)
 [![Website](https://raw.githubusercontent.com/intergrav/devins-badges/v3/assets/cozy/documentation/website_vector.svg)](https://eternalcode.pl/)
@@ -13,10 +13,9 @@
 
 </div>
 
-# About Multification
+## About
 
-Multification allows you to easily create configurable notifications and messages inside your plugin.
-The library provides a lot of features such as:
+Multification makes it simple to create customizable notifications and messages within your plugin. It offers a range of features, including:
 
 - 💭 Chat messages
 - 📕 Title & Subtitle
