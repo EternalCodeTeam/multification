@@ -1,7 +1,8 @@
 <div align="center">
   
 ![](/assets/readme-banner.png)
-# Supports cdn and okaeri configs
+# Multification
+#### Powerful library for sending custom notifications based on adventure.
 
 [![Patreon](https://raw.githubusercontent.com/intergrav/devins-badges/v3/assets/cozy/donate/patreon-plural_vector.svg)](https://www.patreon.com/eternalcode)
 [![Website](https://raw.githubusercontent.com/intergrav/devins-badges/v3/assets/cozy/documentation/website_vector.svg)](https://eternalcode.pl/)
@@ -12,31 +13,39 @@
 
 </div>
 
-# Introduction
+# About Multification
 
-Multification is a spigot-based library that allows you to easily create configurable notifications and messages inside your plugin.
-The library supports sending notifications via one or multiple options:
-- Customizable messages,
-- Action bar notifications,
-- Title and subtitle,
-- Bossbar notifications,
-- and sounds,
+Multification allows you to easily create configurable notifications and messages inside your plugin.
+The library provides a lot of features such as:
 
-messages can be sent to:
-- Multiple players,
-- One player,
-- Console
+- 💭 Chat messages
+- 📕 Title & Subtitle
+- 🎬 ActionBar
+- 🍫 BossBar
+- 🔊 Sounds
+- 🎨 Adventure support
+- 🌈 MiniMessage support (including gradients, hex colors, hover, click and more)
+- 📥 Placeholders
+- 🛠️ Formatter support
+- 🌎 Flexible messages providing (easy to implement i18n)
+- 📦 Configuration support (CDN, Okaeri Configs)
+- Cross-platform support (currently we support Bukkit, but it's easy to add support for other adventure-based platforms)
 
-Your messages can also contain placeholders :P
+Messages can be sent to any audience, such as players or the console.
 
-## Setup
+## Getting Started
 
 To use the library, you need to add the following repository and dependency to your `build.gradle` file:
 
-```gradle
-implementation("com.eternalcode:multification-bukkit:1.1.4")
-implementation("com.eternalcode:multification-cdn:1.1.4")
+```kts
+maven("https://repo.eternalcode.pl/releases")
 ```
+
+```kts
+implementation("com.eternalcode:multification-bukkit:1.1.4")
+```
+
+> **Note:** If you want to use the library with other platforms, then you need to use the `multification-core` dependency.
 
 Then create a new instance of the `Multification` class and use it to send notifications:
 
@@ -77,25 +86,109 @@ public class YourMultification extends BukkitMultification<MessagesConfig> {
 }
 ```
 
-Then on enable, you can create a new instance of the `YourMultification` class and use it to send notifications:
+Then in init method such as `onEnable`,
+you can create a new instance of the `YourMultification` class and use it to send notifications:
 
 ```java
-    private AudienceProvider audienceProvider = BukkitAudiences.create(this);
-    MiniMessage miniMessage = MiniMessage.miniMessage();
-    
-    MessagesConfig messagesConfig = new MessagesConfig();
-    YourMultification multification = new YourMultification(messagesConfig, audienceProvider, miniMessage);
+AudienceProvider audienceProvider = BukkitAudiences.create(this);
+MiniMessage miniMessage = MiniMessage.miniMessage();
+
+MessagesConfig messagesConfig = new MessagesConfig();
+YourMultification multification = new YourMultification(messagesConfig, audienceProvider, miniMessage);
 ```
 
 After that, you can use the `multification` instance to send notifications:
 
 ```java
-    multification.create()
-        .player(player.getUniqueId())
-        .notice(messages -> messages.yourMessage)
-        .send();
+multification.create()
+    .player(player.getUniqueId())
+    .notice(messages -> messages.yourMessage)
+    .send();
 ```
 
-Setting up configuration is easy both in cdn and Okaeri Configs. To add messages to the configuration, create variable in config with class `Notice` or `BukkitNotice`. You can also use builder. After plugin deploy you can find messages in configuration file.
+## Configuration Support
 
-### To see more examples open the [example plugin module](https://github.com/EternalCodeTeam/multification/tree/master/examples/bukkit).
+Multification currently supports two configuration libraries:
+- [CDN](https://github.com/dzikoysk/cdn) _Simple and fast property-based configuration library for JVM apps_
+- [Okaeri Configs](https://github.com/OkaeriPoland/okaeri-configs) _Simple Java/POJO config library written with love and Lombok_
+
+To use the Multification library with one of the configuration libraries, you need to:
+
+### [CDN](https://github.com/dzikoysk/cdn)
+
+#### (CDN) 1. Add dependency to your `build.gradle` file:
+```gradle
+implementation("com.eternalcode:multification-cdn:1.1.4")
+implementation("net.dzikoysk:cdn:1.14.5")
+```
+
+#### (CDN) 2. Create configuration class:
+```java
+public class MessagesConfig {
+    @Description("# My first message")
+    public Notice firstMessage = Notice.chat("<gradient:red:blue>Multification is awesome!");
+}
+```
+
+#### (CDN) 3. Create a new instance of the `Cdn` with the `MultificationNoticeCdnComposer`:
+```java
+Cdn cdn = CdnFactory.createYamlLike()
+    .getSettings()
+    .withComposer(Notice.class, new MultificationNoticeCdnComposer(multification.getNoticeRegistry()))
+    .build();
+```
+
+#### (CDN) 4. Load the configuration:
+
+To load and create the config file, use the following code in the init method such as `onEnable`:
+
+```java
+MessagesConfig messages = new MessagesConfig();
+Resource resource = Source.of(this.dataFolder, "messages.yml");
+        
+cdn.load(resource, messages)
+    .orThrow(cause -> cause);
+
+cdn.render(config, resource)
+    .orThrow(cause -> cause);
+```
+
+Checkout example with CDN! [example plugin](https://github.com/EternalCodeTeam/multification/tree/master/examples/bukkit).
+
+### [Okaeri Configs](https://github.com/OkaeriPoland/okaeri-configs)
+
+#### (Okaeri) 1. Add the following dependency to your `build.gradle` file:
+
+```gradle
+implementation("com.eternalcode:multification-okaeri:1.1.4")
+```
+
+Probably also you will need to add additional dependencies for your platform, e.g. :
+```gradle
+implementation("eu.okaeri:okaeri-configs-serdes-commons:5.0.5")
+implementation("eu.okaeri:okaeri-configs-serdes-bukkit:5.0.5")
+implementation("eu.okaeri:okaeri-configs-yaml-bukkit:5.0.5")
+```
+See [Okaeri Configs](https://github.com/OkaeriPoland/okaeri-configs) for more information.
+
+#### (Okaeri) 2. Create configuration class:
+
+```java
+public class MessagesConfig extends OkaeriConfig {
+    @Comment("My first message")
+    public Notice firstMessage = Notice.chat("<gradient:red:blue>Multification is awesome!");
+}
+```
+
+#### (Okaeri) 3. Load the configuration:
+
+```java
+MessagesConfig config = (MessagesConfig) ConfigManager.create(MessagesConfig.class)
+    .withConfigurer(new MultificationSerdesPack(multification.getNoticeRegistry()))
+    .withConfigurer(new SerdesCommons(), new YamlBukkitConfigurer(), new SerdesBukkit()) // specify configurers for your platform
+    .withBindFile(new File(dataFolder, "messages.yml"))
+    .withRemoveOrphans(true) // automatic removal of undeclared keys
+    .saveDefaults() // save file if does not exists
+    .load(true);
+```
+
