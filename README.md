@@ -23,9 +23,9 @@ The library supports sending notifications via one or multiple options:
 - and sounds,
 
 messages can be sent to:
-- multiple players,
-- one player,
-- or the console.
+- Multiple players,
+- One player,
+- Console
 
 Your messages can also contain placeholders :P
 
