@@ -14,7 +14,7 @@
 
 # Introduction
 
-Multification is a spigot-library that allows you to easily create configurable notifications and messages inside your minecraft plugin.
+Multification is a spigot-based library that allows you to easily create configurable notifications and messages inside your plugin.
 The library supports sending notifications via one or multiple options:
 - customizable messages,
 - action bar notifications,
