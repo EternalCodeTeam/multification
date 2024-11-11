@@ -15,7 +15,7 @@ Powerful library for sending custom notifications based on adventure.
 
 ## About
 
-Multification makes it simple to create customizable notifications and messages within your plugin. It offers a range of features, including:
+Multification makes it simple to create customizable notifications and messages within large plugins that require handling a high volume of messages (while the setup may not be easy, it’s worthwhile for extensive plugins). It offers a range of features, including:
 
 - 💭 Chat messages
 - 📕 Title & Subtitle
