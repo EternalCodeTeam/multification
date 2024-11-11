@@ -16,10 +16,10 @@
 
 Multification is a spigot-based library that allows you to easily create configurable notifications and messages inside your plugin.
 The library supports sending notifications via one or multiple options:
-- customizable messages,
-- action bar notifications,
-- title and subtitle,
-- boss bar notifications,
+- Customizable messages,
+- Action bar notifications,
+- Title and subtitle,
+- Bossbar notifications,
 - and sounds,
 
 messages can be sent to:
