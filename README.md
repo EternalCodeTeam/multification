@@ -96,6 +96,6 @@ After that, you can use the `multification` instance to send notifications:
         .send();
 ```
 
-Setting up configuration is easy both in cdn and okaeri configs. To add messages to the configuration, create variable in config with class `Notice` or `BukktiNotice`. You can also use builder. After plugin deploy you can find messages in configuration file.
+Setting up configuration is easy both in cdn and Okaeri Configs. To add messages to the configuration, create variable in config with class `Notice` or `BukkitNotice`. You can also use builder. After plugin deploy you can find messages in configuration file.
 
 ### To see more examples open the [example plugin module](https://github.com/EternalCodeTeam/multification/tree/master/examples/bukkit).
