@@ -22,7 +22,7 @@ public class MessagesConfig {
     public Notice senderGiveCommandMessage = Notice.title("<green>You have given <yellow>{amount}x {item}</yellow> to <yellow>{player}</yellow>.");
     public Notice receiverGiveCommandMessage = BukkitNotice.builder()
         .title("<green>You have received <yellow>{amount}x {item}</yellow> from <yellow>{player}</yellow>.")
-        .subtitle("<pride:gay>Remember to say thank you!</pride>")
+        .subtitle("<pride:pride>Remember to say thank you!</pride>")
         .sound(Sound.ENTITY_ITEM_PICKUP)
         .build();
 
