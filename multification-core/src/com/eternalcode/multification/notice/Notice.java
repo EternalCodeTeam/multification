@@ -20,6 +20,7 @@ import com.eternalcode.multification.notice.resolver.sound.SoundAdventure;
 import com.eternalcode.multification.notice.resolver.title.TitleTimes;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.KeyPattern;
 import net.kyori.adventure.sound.Sound;
 
 public class Notice {
@@ -92,15 +93,31 @@ public class Notice {
             .build();
     }
 
-    public static Notice sound(Key sound, Sound.Source category, float volume, float pitch) {
-        return Notice.builder()
-            .sound(sound, category, pitch, volume)
-            .build();
+    public static Notice sound(@KeyPattern String sound) {
+        return sound(Key.key(sound), SoundAdventure.PITCH_UNSET, SoundAdventure.VOLUME_UNSET);
+    }
+
+    public static Notice sound(@KeyPattern String sound, float volume, float pitch) {
+        return sound(Key.key(sound), volume, pitch);
+    }
+
+    public static Notice sound(@KeyPattern String sound, Sound.Source category, float volume, float pitch) {
+        return sound(Key.key(sound), category, volume, pitch);
+    }
+
+    public static Notice sound(Key sound) {
+        return sound(sound, SoundAdventure.PITCH_UNSET, SoundAdventure.VOLUME_UNSET);
     }
 
     public static Notice sound(Key sound, float volume, float pitch) {
         return Notice.builder()
             .sound(sound, pitch, volume)
+            .build();
+    }
+
+    public static Notice sound(Key sound, Sound.Source category, float volume, float pitch) {
+        return Notice.builder()
+            .sound(sound, category, pitch, volume)
             .build();
     }
 
@@ -207,8 +224,24 @@ public class Notice {
             return this.withPart(NoticeKey.TITLE_TIMES, new TitleTimes(in, stay, out));
         }
 
+        public B sound(@KeyPattern String sound) {
+            return this.sound(Key.key(sound), SoundAdventure.PITCH_UNSET, SoundAdventure.VOLUME_UNSET);
+        }
+
+        public B sound(@KeyPattern String sound, float pitch, float volume) {
+            return this.sound(Key.key(sound), pitch, volume);
+        }
+
+        public B sound(@KeyPattern String sound, Sound.Source category, float pitch, float volume) {
+            return this.sound(Key.key(sound), category, pitch, volume);
+        }
+
+        public B sound(Key sound) {
+            return this.sound(sound, SoundAdventure.PITCH_UNSET, SoundAdventure.VOLUME_UNSET);
+        }
+
         public B sound(Key sound, float pitch, float volume) {
-            return this.withPart(NoticeKey.SOUND, new SoundAdventure(sound, null, pitch, volume));
+            return this.sound(sound, null, pitch, volume);
         }
 
         public B sound(Key sound, Sound.Source category, float pitch, float volume) {

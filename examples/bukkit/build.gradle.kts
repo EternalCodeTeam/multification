@@ -1,8 +1,8 @@
 plugins {
     id("java")
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "9.0.0-beta4"
     id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
-    id("xyz.jpenilla.run-paper") version "2.3.0"
+    id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
 version = "1.0.0-SNAPSHOT"
@@ -42,8 +42,8 @@ tasks.shadowJar {
     archiveFileName.set("$pluginName v${project.version}.jar")
 
     listOf(
-        "com.eternalcode.multification",
-        "net.dzikoysk.cdn",
+//        "com.eternalcode.multification",
+//        "net.dzikoysk.cdn",
         "panda.std",
         "panda.utilities",
         "net.kyori",
@@ -56,5 +56,5 @@ sourceSets.test {
 }
 
 tasks.runServer {
-    minecraftVersion("1.20.4")
+    minecraftVersion("1.21.4")
 }

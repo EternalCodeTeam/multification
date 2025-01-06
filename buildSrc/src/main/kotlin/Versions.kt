@@ -10,7 +10,7 @@ object Versions {
     const val ASSERTJ_CORE = "3.27.2"
     const val AWAITILITY = "4.2.2"
 
-    const val SPIGOT_API = "1.19.4-R0.1-SNAPSHOT"
+    const val SPIGOT_API = "1.21.4-R0.1-SNAPSHOT"
 
     const val JETBRAINS_ANNOTATIONS = "26.0.1"
 

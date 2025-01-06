@@ -1,8 +1,6 @@
 package com.eternalcode.multification.cdn;
 
 import com.eternalcode.multification.bukkit.notice.BukkitNotice;
-import com.eternalcode.multification.bukkit.notice.BukkitNoticeKey;
-import com.eternalcode.multification.bukkit.notice.resolver.sound.SoundBukkit;
 import com.eternalcode.multification.bukkit.notice.resolver.sound.SoundBukkitResolver;
 import com.eternalcode.multification.notice.Notice;
 import com.eternalcode.multification.notice.NoticeKey;
@@ -25,14 +23,20 @@ import net.dzikoysk.cdn.source.Source;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.key.Key;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 @SuppressWarnings("FieldMayBeFinal")
 class NoticeComposerTest {
@@ -45,6 +49,28 @@ class NoticeComposerTest {
         .withComposer(Notice.class, new MultificationNoticeCdnComposer(registry))
         .withMemberResolver(Visibility.PACKAGE_PRIVATE)
         .build();
+
+    @BeforeAll
+    static void setup() {
+        MockedStatic<Bukkit> bukkit = Mockito.mockStatic(Bukkit.class);
+        bukkit.when(() -> Bukkit.getRegistry(Mockito.any())).thenAnswer(bukkitInvocation -> {
+            Class<?> type = bukkitInvocation.getArgument(0);
+            Registry<Sound> mock = Mockito.mock(Registry.class);
+
+            if (type == Sound.class) {
+                Mockito.when(mock.getOrThrow(Mockito.any())).thenAnswer(registryInvocation -> {
+                    NamespacedKey key = registryInvocation.getArgument(0);
+                    Sound sound = Mockito.mock(Sound.class);
+                    Mockito.when(sound.name())
+                        .thenReturn(key.getKey());
+
+                    return sound;
+                });
+            }
+
+            return mock;
+        });
+    }
 
     static class ConfigEmpty {
         Notice notice = Notice.empty();
@@ -214,16 +240,16 @@ class NoticeComposerTest {
         ConfigSound configSound = assertRender(new ConfigSound(),
             """
                 notice:
-                  sound: "BLOCK_ANVIL_LAND MASTER 1.0 1.0"
+                  sound: "block.anvil.land MASTER 1.0 1.0"
                 """);
 
         assertEquals(1, configSound.notice.parts().size());
 
         NoticePart<?> part = configSound.notice.parts().get(0);
-        SoundBukkit sound = assertInstanceOf(SoundBukkit.class, part.content());
-        assertEquals(BukkitNoticeKey.SOUND, part.noticeKey());
-        assertEquals(Sound.BLOCK_ANVIL_LAND, sound.sound());
-        assertEquals(SoundCategory.MASTER, sound.category());
+        SoundAdventure sound = assertInstanceOf(SoundAdventure.class, part.content());
+        assertEquals(NoticeKey.SOUND, part.noticeKey());
+        assertEquals("block.anvil.land", sound.sound().value());
+        assertEquals(net.kyori.adventure.sound.Sound.Source.MASTER, sound.category());
         assertEquals(1.0f, sound.volume());
         assertEquals(1.0f, sound.pitch());
     }
@@ -238,15 +264,15 @@ class NoticeComposerTest {
         ConfigSoundWithoutCategory configSoundWithoutCategory = assertRender(new ConfigSoundWithoutCategory(),
             """
                 notice:
-                  sound: "BLOCK_ANVIL_LAND 1.0 1.0"
+                  sound: "block.anvil.land 1.0 1.0"
                 """);
 
         assertEquals(1, configSoundWithoutCategory.notice.parts().size());
 
         NoticePart<?> part = configSoundWithoutCategory.notice.parts().get(0);
-        SoundBukkit sound = assertInstanceOf(SoundBukkit.class, part.content());
-        assertEquals(BukkitNoticeKey.SOUND, part.noticeKey());
-        assertEquals(Sound.BLOCK_ANVIL_LAND, sound.sound());
+        SoundAdventure sound = assertInstanceOf(SoundAdventure.class, part.content());
+        assertEquals(NoticeKey.SOUND, part.noticeKey());
+        assertEquals("block.anvil.land", sound.sound().value());
         assertNull(sound.category());
         assertEquals(1.0f, sound.volume());
         assertEquals(1.0f, sound.pitch());
@@ -263,15 +289,15 @@ class NoticeComposerTest {
         ConfigSoundShort configSoundShort = assertRender(new ConfigSoundShort(),
             """
                 notice:
-                  sound: "BLOCK_ANVIL_LAND"
+                  sound: "block.anvil.land"
                 """);
 
         assertEquals(1, configSoundShort.notice.parts().size());
 
         NoticePart<?> part = configSoundShort.notice.parts().get(0);
-        SoundBukkit sound = assertInstanceOf(SoundBukkit.class, part.content());
-        assertEquals(BukkitNoticeKey.SOUND, part.noticeKey());
-        assertEquals(Sound.BLOCK_ANVIL_LAND, sound.sound());
+        SoundAdventure sound = assertInstanceOf(SoundAdventure.class, part.content());
+        assertEquals(NoticeKey.SOUND, part.noticeKey());
+        assertEquals("block.anvil.land", sound.sound().value());
         assertNull(sound.category());
         assertEquals(1.0f, sound.volumeOrDefault());
         assertEquals(1.0f, sound.pitchOrDefault());
@@ -326,6 +352,32 @@ class NoticeComposerTest {
         assertNull(sound.category());
         assertEquals(1.0f, sound.volume());
         assertEquals(1.0f, sound.pitch());
+    }
+
+    public static class ConfigSoundAdventureShort {
+        Notice notice = Notice.sound("ambient.basalt_deltas.additions");
+    }
+
+    @Test
+    @DisplayName("Should serialize sound notice without volume and pitch")
+    void serializeSoundAdventureNoticeWithoutVolumeAndPitch() {
+        ConfigSoundAdventureShort config = assertRender(new ConfigSoundAdventureShort(),
+            """
+                notice:
+                  sound: "ambient.basalt_deltas.additions"
+                """);
+
+        assertEquals(1, config.notice.parts().size());
+
+        NoticePart<?> part = config.notice.parts().get(0);
+        SoundAdventure sound = assertInstanceOf(SoundAdventure.class, part.content());
+        assertEquals(NoticeKey.SOUND, part.noticeKey());
+        assertEquals("ambient.basalt_deltas.additions", sound.sound().value());
+        assertNull(sound.category());
+        assertEquals(1.0f, sound.volumeOrDefault());
+        assertEquals(1.0f, sound.pitchOrDefault());
+        assertEquals(-1.0f, sound.volume());
+        assertEquals(-1.0f, sound.pitch());
     }
 
     static class ConfigBossbarWOBuilder {
