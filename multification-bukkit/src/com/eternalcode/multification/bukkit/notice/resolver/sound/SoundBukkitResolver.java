@@ -26,7 +26,7 @@ public class SoundBukkitResolver implements NoticeResolver<SoundBukkit> {
 
     @Override
     public void send(Audience audience, ComponentSerializer<Component, Component, String> componentSerializer, SoundBukkit content) {
-        String soundKey = content.sound().getKey().getKey();
+        String soundKey = SoundAccessor.key(content.sound()).getKey();
         Sound sound = Sound.sound(
             Key.key(soundKey),
             Sound.Source.valueOf(content.toKyoriCategory().name()),
