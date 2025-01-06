@@ -91,8 +91,7 @@ public class MultificationNoticeSerializer implements ObjectSerializer<Notice> {
 
             if (value instanceof String stringValue) {
                 NoticeDeserializeResult<?> noticeResult = this.noticeRegistry.deserialize(key, new Single(stringValue))
-                        .orElseThrow(() -> new UnsupportedOperationException(
-                                "Unsupported notice key: " + key + " with value: " + stringValue));
+                    .orElseThrow(() -> new UnsupportedOperationException("Unsupported notice key: " + key + " with value: " + stringValue));
 
                 this.withPart(builder, noticeResult);
                 continue;
@@ -102,8 +101,7 @@ public class MultificationNoticeSerializer implements ObjectSerializer<Notice> {
                 List<String> messages = data.getAsList(key, String.class);
 
                 NoticeDeserializeResult<?> noticeResult = this.noticeRegistry.deserialize(key, new Multiple(messages))
-                        .orElseThrow(() -> new UnsupportedOperationException(
-                                "Unsupported notice key: " + key + " with values: " + messages));
+                    .orElseThrow(() -> new UnsupportedOperationException("Unsupported notice key: " + key + " with values: " + messages));
 
                 this.withPart(builder, noticeResult);
                 continue;
@@ -111,16 +109,13 @@ public class MultificationNoticeSerializer implements ObjectSerializer<Notice> {
 
             if (value instanceof Map<?, ?> mapValue) {
                 NoticeDeserializeResult<?> noticeResult = this.noticeRegistry.deserialize(key, new NoticeSerdesResult.Section((Map<String, String>) mapValue))
-                        .orElseThrow(() -> new UnsupportedOperationException(
-                                "Unsupported notice key: " + key + " with values: " + mapValue));
+                    .orElseThrow(() -> new UnsupportedOperationException("Unsupported notice key: " + key + " with values: " + mapValue));
 
                 this.withPart(builder, noticeResult);
                 continue;
             }
 
-
-            throw new UnsupportedOperationException(
-                    "Unsupported notice type: " + value.getClass() + " for key: " + key);
+            throw new UnsupportedOperationException("Unsupported notice type: " + value.getClass() + " for key: " + key);
         }
 
         return builder.build();

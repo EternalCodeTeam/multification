@@ -4,6 +4,8 @@ import com.eternalcode.multification.cdn.MultificationNoticeCdnComposer;
 import com.eternalcode.multification.notice.Notice;
 import com.eternalcode.multification.notice.resolver.NoticeResolverRegistry;
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 import net.dzikoysk.cdn.Cdn;
 import net.dzikoysk.cdn.CdnFactory;
 import net.dzikoysk.cdn.reflect.Visibility;
@@ -12,6 +14,7 @@ public class ConfigurationManager {
 
     private final Cdn cdn;
     private final File dataFolder;
+    private final Set<ReloadableConfig> configs = new HashSet<>();
 
     public ConfigurationManager(File dataFolder, NoticeResolverRegistry resolverRegistry) {
         this.dataFolder = dataFolder;
@@ -30,7 +33,19 @@ public class ConfigurationManager {
         this.cdn.render(config, Source.of(this.dataFolder, fileName))
             .orThrow(RuntimeException::new);
 
+        this.configs.add(new ReloadableConfig(fileName, config));
+
         return config;
+    }
+
+    public void reload() {
+        for (ReloadableConfig config : configs) {
+            this.cdn.load(Source.of(this.dataFolder, config.fileName()), config.instance())
+                .orThrow(RuntimeException::new);
+        }
+    }
+
+    private record ReloadableConfig(String fileName, Object instance) {
     }
 
 }

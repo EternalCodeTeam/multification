@@ -12,6 +12,7 @@ import net.kyori.adventure.text.serializer.ComponentSerializer;
 
 public class SoundAdventureResolver implements NoticeResolver<SoundAdventure> {
 
+    private static final String MUSIC = "%s";
     private static final String MUSIC_WITH_CATEGORY = "%s %s %s %s";
     private static final String MUSIC_WITHOUT_CATEGORY = "%s %s %s";
 
@@ -28,17 +29,16 @@ public class SoundAdventureResolver implements NoticeResolver<SoundAdventure> {
 
     @Override
     public void send(Audience audience, ComponentSerializer<Component, Component, String> componentSerializer, SoundAdventure content) {
-        if (content.category() == null) {
-            audience.playSound(Sound.sound(content.sound(), Sound.Source.MASTER, content.volume(), content.pitch()));
-            return;
-        }
-
-        audience.playSound(Sound.sound(content.sound(), content.category(), content.volume(), content.pitch()));
+        audience.playSound(Sound.sound(content.sound(), content.categoryOrDefault(), content.volumeOrDefault(), content.pitchOrDefault()));
     }
 
     @Override
     public NoticeSerdesResult serialize(SoundAdventure content) {
         if (content.category() == null) {
+            if (content.pitch() == SoundAdventure.PITCH_UNSET || content.volume() == SoundAdventure.VOLUME_UNSET) {
+                return new NoticeSerdesResult.Single(String.format(MUSIC, content.sound().value()));
+            }
+
             return new NoticeSerdesResult.Single(String.format(MUSIC_WITHOUT_CATEGORY,
                 content.sound().value(),
                 content.pitch(),
@@ -63,6 +63,10 @@ public class SoundAdventureResolver implements NoticeResolver<SoundAdventure> {
         }
 
         String[] music = firstElement.get().split(" ");
+
+        if (music.length == 1) {
+            return Optional.of(new SoundAdventure(Key.key(Key.MINECRAFT_NAMESPACE, music[0]), null, SoundAdventure.PITCH_UNSET, SoundAdventure.VOLUME_UNSET));
+        }
 
         if (music.length < 3 || music.length > 4) {
             throw new IllegalStateException("Invalid music format: " + firstElement.get());
