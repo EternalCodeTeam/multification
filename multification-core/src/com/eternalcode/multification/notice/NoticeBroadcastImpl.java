@@ -119,7 +119,7 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
     @Override
     @CheckReturnValue
     public B onlinePlayers(String permission) {
-        this.viewers.addAll(this.viewerProvider.onlinePlayers());
+        this.viewers.addAll(this.viewerProvider.onlinePlayers(permission));
         return this.getThis();
     }
 
