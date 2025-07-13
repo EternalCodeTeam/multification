@@ -57,6 +57,18 @@ class MultificationTest {
         }
 
         @Override
+        public Collection<Viewer> onlinePlayers(String permission) {
+            List<Viewer> playersWithPermission = new ArrayList<>();
+            for (Viewer viewer : ONLINE) {
+                // Simulating permission check
+                if (viewer.uuid.equals(ROLLCZI_UUID) || viewer.uuid.equals(LUCKI_UUID)) {
+                    playersWithPermission.add(viewer);
+                }
+            }
+            return playersWithPermission;
+        }
+
+        @Override
         public Collection<Viewer> all() {
             List<Viewer> list = new ArrayList<>();
             list.add(console());

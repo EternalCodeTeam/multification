@@ -118,6 +118,13 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
 
     @Override
     @CheckReturnValue
+    public B onlinePlayers(String permission) {
+        this.viewers.addAll(this.viewerProvider.onlinePlayers());
+        return this.getThis();
+    }
+
+    @Override
+    @CheckReturnValue
     public B noticeChat(TextMessageProvider<TRANSLATION> extractor) {
         this.notifications.add(translation -> Notice.chat(extractor.extract(translation)));
         return this.getThis();
