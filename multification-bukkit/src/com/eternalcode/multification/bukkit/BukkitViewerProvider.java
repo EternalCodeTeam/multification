@@ -25,6 +25,17 @@ class BukkitViewerProvider implements ViewerProvider<CommandSender> {
     }
 
     @Override
+    public Collection<CommandSender> onlinePlayers(String permission) {
+        Collection<CommandSender> playersWithPermission = new ArrayList<>();
+        for (CommandSender player : Bukkit.getOnlinePlayers()) {
+            if (player.hasPermission(permission)) {
+                playersWithPermission.add(player);
+            }
+        }
+        return Collections.unmodifiableCollection(playersWithPermission);
+    }
+
+    @Override
     public Collection<CommandSender> all() {
         Collection<CommandSender> viewers = new ArrayList<>(this.onlinePlayers());
         viewers.add(this.console());

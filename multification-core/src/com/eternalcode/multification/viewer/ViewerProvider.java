@@ -11,6 +11,8 @@ public interface ViewerProvider<VIEWER> {
 
     Collection<VIEWER> onlinePlayers();
 
+    Collection<VIEWER> onlinePlayers(String permission);
+
     Collection<VIEWER> all();
 
 }

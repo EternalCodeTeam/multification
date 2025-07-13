@@ -34,6 +34,9 @@ public interface NoticeBroadcast<VIEWER, TRANSLATION, B extends NoticeBroadcast<
     B onlinePlayers();
 
     @CheckReturnValue
+    B onlinePlayers(String permission);
+
+    @CheckReturnValue
     B notice(Notice notification);
 
     @CheckReturnValue
