@@ -41,7 +41,7 @@ maven("https://repo.eternalcode.pl/releases")
 ```
 
 ```kts
-implementation("com.eternalcode:multification-bukkit:1.1.4")
+implementation("com.eternalcode:multification-bukkit:1.2.2")
 ```
 
 > **Note:** If you want to use the library with other platforms, then you need to use the `multification-core` dependency.
