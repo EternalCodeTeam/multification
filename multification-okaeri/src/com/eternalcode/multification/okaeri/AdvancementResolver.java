@@ -1,16 +1,16 @@
-package main.java.com.eternalcode.multification.packetevents;
+package com.eternalcode.multification.okaeri;
 
 import com.eternalcode.multification.notice.NoticeKey;
 import com.eternalcode.multification.notice.resolver.NoticeSerdesResult;
-import com.eternalcode.multification.notice.resolver.advancement.AdvancementContent;
-import com.eternalcode.multification.notice.resolver.advancement.AdvancementFrameType;
-import com.eternalcode.multification.notice.resolver.advancement.PacketEventsNoticeKey;
 import com.eternalcode.multification.notice.resolver.text.TextContentResolver;
+import com.eternalcode.multification.packetevents.notice.PacketEventsNoticeKey;
 import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.protocol.advancements.*;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
 import com.github.retrooper.packetevents.protocol.item.type.ItemType;
 import com.github.retrooper.packetevents.protocol.item.type.ItemTypes;
 import com.github.retrooper.packetevents.protocol.player.User;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerAdvancementsUpdate;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
@@ -52,67 +52,68 @@ public class AdvancementResolver implements TextContentResolver<AdvancementConte
         }
 
         // Generate unique advancement key for this toast
-        String advancementKey = "toast_" + UUID.randomUUID().toString().replace("-", "");
+        String advancementKey = "minecraft:toast_" + UUID.randomUUID().toString().replace("-", "");
 
         Component titleComponent = serializer.deserialize(content.title());
         Component descComponent = serializer.deserialize(content.description());
 
         ItemStack icon = this.createIcon(content.iconOrDefault());
-        int flags = 0x01; // SHOW_TOAST flag
 
-        WrapperPlayServerAdvancements.AdvancementDisplay display = new WrapperPlayServerAdvancements.AdvancementDisplay(
+        // Create advancement display with toast flag
+        AdvancementDisplay display = new AdvancementDisplay(
                 titleComponent,
                 descComponent,
                 icon,
-                this.toFrameTypeOrdinal(content.frameTypeOrDefault()),
-                flags,
-                Optional.empty(),
-                0.0f,
-                0.0f
+                this.toFrameType(content.frameTypeOrDefault()),
+                true,  // showToast
+                false, // announceToChat
+                true   // hidden
         );
 
-        WrapperPlayServerAdvancements.Advancement advancement = new WrapperPlayServerAdvancements.Advancement(
-                Optional.empty(),
-                Optional.of(display),
-                new ArrayList<>(),
-                Optional.empty()
+        // Create advancement with display
+        Advancement advancement = new Advancement(
+                null,  // parent
+                display,
+                Collections.emptyList(),  // criteria
+                Collections.emptyList()   // requirements
         );
 
-        Map<String, WrapperPlayServerAdvancements.Advancement> advancements = new HashMap<>();
+        Map<String, Advancement> advancements = new HashMap<>();
         advancements.put(advancementKey, advancement);
 
         // Packet 1: Add advancement to client
-        WrapperPlayServerAdvancements addPacket = new WrapperPlayServerAdvancements(
-                false,
+        WrapperPlayServerAdvancementsUpdate addPacket = new WrapperPlayServerAdvancementsUpdate(
+                false,  // reset
                 advancements,
-                new ArrayList<>(),
-                new HashMap<>()
+                Collections.emptyList(),  // identifiersToRemove
+                Collections.emptyMap()    // progressMap
         );
         user.sendPacket(addPacket);
 
         // Packet 2: Grant criteria to trigger toast display
-        Map<String, WrapperPlayServerAdvancements.AdvancementProgress> progressMap = new HashMap<>();
+        Map<String, AdvancementProgress> progressMap = new HashMap<>();
         Map<String, Long> criteria = new HashMap<>();
         criteria.put("trigger", System.currentTimeMillis());
 
-        progressMap.put(advancementKey, new WrapperPlayServerAdvancements.AdvancementProgress(criteria));
+        progressMap.put(advancementKey, new AdvancementProgress(criteria));
 
-        WrapperPlayServerAdvancements grantPacket = new WrapperPlayServerAdvancements(
+        WrapperPlayServerAdvancementsUpdate grantPacket = new WrapperPlayServerAdvancementsUpdate(
                 false,
-                new HashMap<>(),
-                new ArrayList<>(),
+                Collections.emptyMap(),
+                Collections.emptyList(),
                 progressMap
         );
         user.sendPacket(grantPacket);
 
+        // Packet 3: Remove advancement after delay (cleanup)
         Bukkit.getScheduler().runTaskLater(
                 this.plugin,
                 () -> {
-                    WrapperPlayServerAdvancements removePacket = new WrapperPlayServerAdvancements(
+                    WrapperPlayServerAdvancementsUpdate removePacket = new WrapperPlayServerAdvancementsUpdate(
                             false,
-                            new HashMap<>(),
+                            Collections.emptyMap(),
                             Collections.singletonList(advancementKey),
-                            new HashMap<>()
+                            Collections.emptyMap()
                     );
                     user.sendPacket(removePacket);
                 },
@@ -201,17 +202,16 @@ public class AdvancementResolver implements TextContentResolver<AdvancementConte
     }
 
     /**
-     * Converts AdvancementFrameType enum to protocol ordinal.
-     * PacketEvents uses int ordinal instead of enum for FrameType.
+     * Converts AdvancementFrameType enum to PacketEvents FrameType.
      *
      * @param frameType the frame type enum
-     * @return protocol ordinal (0 = TASK, 1 = CHALLENGE, 2 = GOAL)
+     * @return PacketEvents FrameType
      */
-    private int toFrameTypeOrdinal(AdvancementFrameType frameType) {
+    private FrameType toFrameType(AdvancementFrameType frameType) {
         return switch (frameType) {
-            case TASK -> 0;       // Yellow frame (normal achievement)
-            case CHALLENGE -> 1;  // Purple frame (challenge)
-            case GOAL -> 2;       // Rounded frame (goal)
+            case TASK -> FrameType.TASK;           // Yellow frame (normal achievement)
+            case CHALLENGE -> FrameType.CHALLENGE; // Purple frame (challenge)
+            case GOAL -> FrameType.GOAL;           // Rounded frame (goal)
         };
     }
 }
