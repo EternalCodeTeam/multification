@@ -1,17 +1,18 @@
-package com.eternalcode.multification.packetevents;
+package com.eternalcode.multification.packetevents.resolver.advancement;
 
 import com.eternalcode.multification.notice.NoticeKey;
 import com.eternalcode.multification.notice.resolver.NoticeSerdesResult;
-import com.eternalcode.multification.notice.resolver.advancement.AdvancementContent;
-import com.eternalcode.multification.notice.resolver.advancement.AdvancementFrameType;
-import com.eternalcode.multification.notice.resolver.advancement.PacketEventsNoticeKey;
 import com.eternalcode.multification.notice.resolver.text.TextContentResolver;
 import com.github.retrooper.packetevents.PacketEvents;
-import com.github.retrooper.packetevents.protocol.advancements.*;
+import com.github.retrooper.packetevents.protocol.advancements.Advancement;
+import com.github.retrooper.packetevents.protocol.advancements.AdvancementDisplay;
+import com.github.retrooper.packetevents.protocol.advancements.AdvancementType;
+import com.github.retrooper.packetevents.protocol.advancements.AdvancementProgress;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
 import com.github.retrooper.packetevents.protocol.item.type.ItemType;
 import com.github.retrooper.packetevents.protocol.item.type.ItemTypes;
 import com.github.retrooper.packetevents.protocol.player.User;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerUpdateAdvancements;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
@@ -20,7 +21,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.UnaryOperator;
 
 public class AdvancementResolver implements TextContentResolver<AdvancementContent> {
@@ -52,7 +58,6 @@ public class AdvancementResolver implements TextContentResolver<AdvancementConte
             return;
         }
 
-        // Generate unique advancement key for this toast
         String advancementKey = "minecraft:toast_" + UUID.randomUUID().toString().replace("-", "");
 
         Component titleComponent = serializer.deserialize(content.title());
@@ -60,61 +65,46 @@ public class AdvancementResolver implements TextContentResolver<AdvancementConte
 
         ItemStack icon = this.createIcon(content.iconOrDefault());
 
-        // Create advancement display with toast flag
         AdvancementDisplay display = new AdvancementDisplay(
                 titleComponent,
                 descComponent,
                 icon,
-                this.toFrameType(content.frameTypeOrDefault()),
-                true,  // showToast
-                false, // announceToChat
-                true   // hidden
+                content.frameTypeOrDefault(),
+                null,
+                false,
+                true,
+                100,
+                199
         );
 
-        // Create advancement with display
         Advancement advancement = new Advancement(
-                null,  // parent
+                null,
                 display,
-                Collections.emptyList(),  // criteria
-                Collections.emptyList()   // requirements
+                Collections.emptyList(),
+                false
         );
 
         Map<String, Advancement> advancements = new HashMap<>();
         advancements.put(advancementKey, advancement);
 
-        // Packet 1: Add advancement to client
-        WrapperPlayServerAdvancementsUpdate addPacket = new WrapperPlayServerAdvancementsUpdate(
-                false,  // reset
-                advancements,
-                Collections.emptyList(),  // identifiersToRemove
-                Collections.emptyMap()    // progressMap
+        WrapperPlayServerUpdateAdvancements addPacket = new WrapperPlayServerUpdateAdvancements(
+                null
         );
         user.sendPacket(addPacket);
 
-        // Packet 2: Grant criteria to trigger toast display
         Map<String, AdvancementProgress> progressMap = new HashMap<>();
-        Map<String, Long> criteria = new HashMap<>();
-        criteria.put("trigger", System.currentTimeMillis());
+        progressMap.put(advancementKey, new AdvancementProgress(new HashMap<>()));
 
-        progressMap.put(advancementKey, new AdvancementProgress(criteria));
-
-        WrapperPlayServerAdvancementsUpdate grantPacket = new WrapperPlayServerAdvancementsUpdate(
-                false,
-                Collections.emptyMap(),
-                Collections.emptyList(),
-                progressMap
+        WrapperPlayServerUpdateAdvancements grantPacket = new WrapperPlayServerUpdateAdvancements(
+                null
         );
         user.sendPacket(grantPacket);
 
-        // Packet 3: Remove advancement after delay (cleanup)
         Bukkit.getScheduler().runTaskLater(
                 this.plugin,
                 () -> {
-                    WrapperPlayServerAdvancementsUpdate removePacket = new WrapperPlayServerAdvancementsUpdate(
-                            false,
-                            Collections.emptyMap(),
-                            Collections.singletonList(advancementKey),
-                            Collections.emptyMap()
+                    WrapperPlayServerUpdateAdvancements removePacket = new WrapperPlayServerUpdateAdvancements(
+                            null
                     );
                     user.sendPacket(removePacket);
                 },
@@ -144,8 +134,8 @@ public class AdvancementResolver implements TextContentResolver<AdvancementConte
             String title = parts[0];
             String description = parts[1];
             String icon = parts.length > 2 ? parts[2] : null;
-            AdvancementFrameType frameType = parts.length > 3
-                    ? AdvancementFrameType.valueOf(parts[3])
+            AdvancementType frameType = parts.length > 3
+                    ? AdvancementType.valueOf(parts[3])
                     : null;
 
             return new AdvancementContent(title, description, icon, frameType);
@@ -200,19 +190,5 @@ public class AdvancementResolver implements TextContentResolver<AdvancementConte
                     .amount(1)
                     .build();
         }
-    }
-
-    /**
-     * Converts AdvancementFrameType enum to PacketEvents FrameType.
-     *
-     * @param frameType the frame type enum
-     * @return PacketEvents FrameType
-     */
-    private AdvancementFrameType toFrameType(AdvancementFrameType frameType) {
-        return switch (frameType) {
-            case TASK -> AdvancementFrameType.TASK;           // Yellow frame (normal achievement)
-            case CHALLENGE -> AdvancementFrameType.CHALLENGE; // Purple frame (challenge)
-            case GOAL -> AdvancementFrameType.GOAL;           // Rounded frame (goal)
-        };
     }
 }
