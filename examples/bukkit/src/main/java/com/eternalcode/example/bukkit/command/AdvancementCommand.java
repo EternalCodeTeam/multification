@@ -1,23 +1,29 @@
 package com.eternalcode.example.bukkit.command;
 
 import com.eternalcode.example.bukkit.multification.YourMultification;
+import com.eternalcode.multification.notice.Notice;
 import com.eternalcode.multification.packetevents.notice.PacketEventsNotice;
+import com.eternalcode.multification.packetevents.notice.resolver.AdvancementFrameType;
 import dev.rollczi.litecommands.annotations.command.Command;
 import dev.rollczi.litecommands.annotations.context.Context;
 import dev.rollczi.litecommands.annotations.execute.Execute;
 import dev.rollczi.litecommands.annotations.permission.Permission;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.time.Duration;
+import org.bukkit.plugin.Plugin;
 
 @Command(name = "testadvancements")
 @Permission("example.testadvancements")
 public class AdvancementCommand {
 
     private final YourMultification multification;
+    private final Plugin plugin;
 
-    public AdvancementCommand(YourMultification multification) {
+    public AdvancementCommand(YourMultification multification, Plugin plugin) {
         this.multification = multification;
+        this.plugin = plugin;
     }
 
     @Execute(name = "simple")
@@ -39,7 +45,7 @@ public class AdvancementCommand {
                         "<dark_purple>Epic Challenge",
                         "Hold down Left Button",
                         "DIAMOND_SWORD",
-                        AdvancementType.CHALLENGE,
+                        AdvancementFrameType.CHALLENGE,
                         Duration.ofSeconds(5)
                 ))
                 .send();
@@ -53,7 +59,7 @@ public class AdvancementCommand {
                         "<gold>Reach the Goal",
                         "Destroy the tree",
                         "OAK_SAPLING",
-                        AdvancementType.GOAL,
+                        AdvancementFrameType.GOAL,
                         "minecraft:textures/gui/advancements/backgrounds/stone.png"
                 ))
                 .send();
@@ -68,7 +74,7 @@ public class AdvancementCommand {
                                 "<red>Custom Toast",
                                 "<gray>With all options configured",
                                 "GOLD_INGOT",
-                                AdvancementType.TASK,
+                                AdvancementFrameType.TASK,
                                 "minecraft:textures/gui/advancements/backgrounds/adventure.png",
                                 true,  // showToast
                                 true,  // hidden
@@ -84,7 +90,7 @@ public class AdvancementCommand {
     void executeTranslated(@Context Player player) {
         this.multification.create()
                 .viewer(player)
-                .notice(messages -> messages.welcomeAdvancement)
+                .notice(Notice.chat("<green>Hello, {player}! This is a translated message."))
                 .placeholder("{player}", player.getName())
                 .send();
     }
@@ -99,28 +105,27 @@ public class AdvancementCommand {
                         "<yellow>Wait for it...",
                         "More coming soon!",
                         "CLOCK",
-                        AdvancementType.TASK,
+                        AdvancementFrameType.TASK,
                         Duration.ofSeconds(2)
                 ))
                 .send();
 
-        // Schedule next ones
-        org.bukkit.Bukkit.getScheduler().runTaskLater(
-                org.bukkit.Bukkit.getPluginManager().getPlugin("ExamplePlugin"),
+        Bukkit.getScheduler().runTaskLater(
+                this.plugin,
                 () -> executeChallenge(player),
-                40L // 2 seconds
+                40L
         );
 
-        org.bukkit.Bukkit.getScheduler().runTaskLater(
-                org.bukkit.Bukkit.getPluginManager().getPlugin("ExamplePlugin"),
+        Bukkit.getScheduler().runTaskLater(
+                this.plugin,
                 () -> executeGoal(player),
                 80L
         );
 
-        org.bukkit.Bukkit.getScheduler().runTaskLater(
-                org.bukkit.Bukkit.getPluginManager().getPlugin("ExamplePlugin"),
+        Bukkit.getScheduler().runTaskLater(
+                this.plugin,
                 () -> executeCustom(player),
-                120L // 6 seconds
+                120L
         );
     }
 }

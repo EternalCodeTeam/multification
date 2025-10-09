@@ -1,5 +1,3 @@
-import gradle.kotlin.dsl.accessors._729aa7c1588b83738f7ec34c0a320432.api
-
 plugins {
     id("java")
     id("com.gradleup.shadow") version "9.0.0-beta4"
@@ -13,6 +11,7 @@ repositories {
     mavenCentral()
     maven("https://repo.panda-lang.org/releases/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://repo.codemc.io/repository/maven-releases/") // packetevents
     maven("https://repo.stellardrift.ca/repository/snapshots/")
 }
 
@@ -29,7 +28,7 @@ dependencies {
     implementation(project(":multification-cdn"))
     implementation(project(":multification-packetevents"))
 
-    api("com.github.retrooper:packetevents-spigot:${Versions.PACKETEVENTS}")
+    compileOnly("com.github.retrooper:packetevents-spigot:${Versions.PACKETEVENTS}")
 }
 
 val pluginName = "ExamplePlugin"
@@ -61,5 +60,9 @@ sourceSets.test {
 }
 
 tasks.runServer {
-    minecraftVersion("1.21.4")
+    minecraftVersion("1.21.8")
+
+    downloadPlugins {
+        downloadPlugins.url("https://cdn.modrinth.com/data/HYKaKraK/versions/Kee6pozk/packetevents-spigot-2.9.5.jar")
+    }
 }

@@ -2,8 +2,8 @@ package com.eternalcode.multification.packetevents.notice;
 
 import com.eternalcode.multification.notice.Notice;
 import com.eternalcode.multification.packetevents.notice.resolver.AdvancementContent;
+import com.eternalcode.multification.packetevents.notice.resolver.AdvancementFrameType;
 import com.eternalcode.multification.packetevents.notice.resolver.PacketEventsNoticeKey;
-import com.github.retrooper.packetevents.protocol.advancements.AdvancementType;
 
 import java.time.Duration;
 
@@ -21,19 +21,19 @@ public class PacketEventsNotice {
                 .build();
     }
 
-    public static Notice advancement(String title, String description, String icon, AdvancementType frameType) {
+    public static Notice advancement(String title, String description, String icon, AdvancementFrameType frameType) {
         return PacketEventsNotice.builder()
                 .advancement(title, description, icon, frameType)
                 .build();
     }
 
-    public static Notice advancement(String title, String description, String icon, AdvancementType frameType, String background) {
+    public static Notice advancement(String title, String description, String icon, AdvancementFrameType frameType, String background) {
         return PacketEventsNotice.builder()
                 .advancement(title, description, icon, frameType, background)
                 .build();
     }
 
-    public static Notice advancement(String title, String description, String icon, AdvancementType frameType, Duration showTime) {
+    public static Notice advancement(String title, String description, String icon, AdvancementFrameType frameType, Duration showTime) {
         return PacketEventsNotice.builder()
                 .advancement(title, description, icon, frameType, showTime)
                 .build();
@@ -53,15 +53,15 @@ public class PacketEventsNotice {
             return this.advancement(title, description, icon, null, null, true, true, 0.0f, 0.0f, null);
         }
 
-        public Builder advancement(String title, String description, String icon, AdvancementType frameType) {
+        public Builder advancement(String title, String description, String icon, AdvancementFrameType frameType) {
             return this.advancement(title, description, icon, frameType, null, true, true, 0.0f, 0.0f, null);
         }
 
-        public Builder advancement(String title, String description, String icon, AdvancementType frameType, String background) {
+        public Builder advancement(String title, String description, String icon, AdvancementFrameType frameType, String background) {
             return this.advancement(title, description, icon, frameType, background, true, true, 0.0f, 0.0f, null);
         }
 
-        public Builder advancement(String title, String description, String icon, AdvancementType frameType, Duration showTime) {
+        public Builder advancement(String title, String description, String icon, AdvancementFrameType frameType, Duration showTime) {
             return this.advancement(title, description, icon, frameType, null, true, true, 0.0f, 0.0f, showTime);
         }
 
@@ -69,7 +69,7 @@ public class PacketEventsNotice {
                 String title,
                 String description,
                 String icon,
-                AdvancementType frameType,
+                AdvancementFrameType frameType,
                 String background,
                 boolean showToast,
                 boolean hidden,

@@ -8,14 +8,12 @@ import com.github.retrooper.packetevents.protocol.advancements.Advancement;
 import com.github.retrooper.packetevents.protocol.advancements.AdvancementDisplay;
 import com.github.retrooper.packetevents.protocol.advancements.AdvancementHolder;
 import com.github.retrooper.packetevents.protocol.advancements.AdvancementProgress;
-import com.github.retrooper.packetevents.protocol.advancements.AdvancementType;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
 import com.github.retrooper.packetevents.protocol.item.type.ItemType;
 import com.github.retrooper.packetevents.protocol.item.type.ItemTypes;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.resources.ResourceLocation;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerUpdateAdvancements;
-import java.time.Duration;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -26,7 +24,16 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.UnaryOperator;
 
 public class AdvancementResolver implements TextContentResolver<AdvancementContent> {
@@ -64,14 +71,13 @@ public class AdvancementResolver implements TextContentResolver<AdvancementConte
         Component descComponent = serializer.deserialize(content.description());
 
         ItemStack icon = this.createIcon(content.iconOrDefault());
-
         ResourceLocation background = this.parseBackground(content.background());
 
         AdvancementDisplay display = new AdvancementDisplay(
                 titleComponent,
                 descComponent,
                 icon,
-                content.frameTypeOrDefault(),
+                content.frameTypeOrDefault().toPacketEventsType(),
                 background,
                 content.showToast(),
                 content.hidden(),
@@ -160,8 +166,8 @@ public class AdvancementResolver implements TextContentResolver<AdvancementConte
             String title = parts[0];
             String description = parts[1];
             String icon = parts.length > 2 && !parts[2].isEmpty() ? parts[2] : null;
-            AdvancementType frameType = parts.length > 3 && !parts[3].isEmpty()
-                    ? AdvancementType.valueOf(parts[3])
+            AdvancementFrameType frameType = parts.length > 3 && !parts[3].isEmpty()
+                    ? AdvancementFrameType.valueOf(parts[3])
                     : null;
             String background = parts.length > 4 && !parts[4].isEmpty() ? parts[4] : null;
             boolean showToast = parts.length > 5 ? Boolean.parseBoolean(parts[5]) : AdvancementContent.DEFAULT_SHOW_TOAST;
@@ -205,13 +211,6 @@ public class AdvancementResolver implements TextContentResolver<AdvancementConte
         );
     }
 
-    /**
-     * Creates an ItemStack icon from material name string.
-     * Falls back to GRASS_BLOCK if material is invalid.
-     *
-     * @param materialName the material name (e.g., "OAK_SAPLING", "DIAMOND")
-     * @return ItemStack with the specified material type
-     */
     private ItemStack createIcon(@NotNull String materialName) {
         try {
             ItemType materialType = ItemTypes.getByName(materialName);
@@ -232,25 +231,14 @@ public class AdvancementResolver implements TextContentResolver<AdvancementConte
         }
     }
 
-    /**
-     * Parses ResourceLocation from string format "namespace:path".
-     * Examples:
-     * - "minecraft:textures/gui/advancements/backgrounds/stone.png"
-     * - "mypack:custom/background.png"
-     *
-     * @param backgroundString the background string in format "namespace:path"
-     * @return ResourceLocation or null if string is null/invalid
-     */
     private ResourceLocation parseBackground(@Nullable String backgroundString) {
         if (backgroundString == null || backgroundString.isEmpty()) {
             return null;
         }
 
-        // Split by colon to get namespace and path
         String[] parts = backgroundString.split(":", 2);
 
         if (parts.length != 2) {
-            // Invalid format, default to minecraft namespace
             return new ResourceLocation("minecraft", backgroundString);
         }
 
