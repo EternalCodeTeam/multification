@@ -1,6 +1,6 @@
 package com.eternalcode.multification.packetevents.notice.resolver;
 
-public enum AdvancementType {
+public enum AdvancementFrameType {
 
     TASK,
     CHALLENGE,
