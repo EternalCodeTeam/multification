@@ -1,16 +1,17 @@
-package com.eternalcode.multification.okaeri;
+package com.eternalcode.multification.packetevents;
 
 import com.eternalcode.multification.notice.NoticeKey;
 import com.eternalcode.multification.notice.resolver.NoticeSerdesResult;
+import com.eternalcode.multification.notice.resolver.advancement.AdvancementContent;
+import com.eternalcode.multification.notice.resolver.advancement.AdvancementFrameType;
+import com.eternalcode.multification.notice.resolver.advancement.PacketEventsNoticeKey;
 import com.eternalcode.multification.notice.resolver.text.TextContentResolver;
-import com.eternalcode.multification.packetevents.notice.PacketEventsNoticeKey;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.advancements.*;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
 import com.github.retrooper.packetevents.protocol.item.type.ItemType;
 import com.github.retrooper.packetevents.protocol.item.type.ItemTypes;
 import com.github.retrooper.packetevents.protocol.player.User;
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerAdvancementsUpdate;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
@@ -207,11 +208,11 @@ public class AdvancementResolver implements TextContentResolver<AdvancementConte
      * @param frameType the frame type enum
      * @return PacketEvents FrameType
      */
-    private FrameType toFrameType(AdvancementFrameType frameType) {
+    private AdvancementFrameType toFrameType(AdvancementFrameType frameType) {
         return switch (frameType) {
-            case TASK -> FrameType.TASK;           // Yellow frame (normal achievement)
-            case CHALLENGE -> FrameType.CHALLENGE; // Purple frame (challenge)
-            case GOAL -> FrameType.GOAL;           // Rounded frame (goal)
+            case TASK -> AdvancementFrameType.TASK;           // Yellow frame (normal achievement)
+            case CHALLENGE -> AdvancementFrameType.CHALLENGE; // Purple frame (challenge)
+            case GOAL -> AdvancementFrameType.GOAL;           // Rounded frame (goal)
         };
     }
 }
