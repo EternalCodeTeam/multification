@@ -26,7 +26,6 @@ dependencies {
 
     implementation(project(":multification-bukkit"))
     implementation(project(":multification-cdn"))
-    implementation(project(":multification-packetevents"))
 
     compileOnly("com.github.retrooper:packetevents-spigot:${Versions.PACKETEVENTS}")
 }
