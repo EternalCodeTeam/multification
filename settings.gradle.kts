@@ -4,8 +4,6 @@ include("multification-core")
 include("multification-cdn")
 include("multification-okaeri")
 include("multification-bukkit")
+include("multification-packetevents")
 
 include("examples:bukkit")
-
-include("multification-packetevents")
-include("multification-bukkit-packetevents")
