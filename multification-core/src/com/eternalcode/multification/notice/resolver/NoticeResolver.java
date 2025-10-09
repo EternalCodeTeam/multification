@@ -2,6 +2,7 @@ package com.eternalcode.multification.notice.resolver;
 
 import com.eternalcode.multification.notice.NoticeKey;
 import java.util.Optional;
+import java.util.UUID;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.ComponentSerializer;

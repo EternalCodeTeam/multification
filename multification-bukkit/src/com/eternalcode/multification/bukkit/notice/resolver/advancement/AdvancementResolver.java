@@ -50,15 +50,15 @@ public class AdvancementResolver implements TextContentResolver<AdvancementConte
 
     @Override
     public void send(Audience audience, ComponentSerializer<Component, Component, String> serializer, AdvancementContent content) {
-        if (!(audience instanceof Player player)) {
-            return;
-        }
+        // TODO: handle player from this audience shit
+        Player player = null;
 
         User user = PacketEvents.getAPI().getPlayerManager().getUser(player);
+
         if (user == null) {
+            System.out.println("PacketEvents user is null for player: " + audience);
             return;
         }
-
         String advancementKeyString = "toast_" + UUID.randomUUID().toString().replace("-", "");
         Key advancementKey = Key.key(this.plugin.getName().toLowerCase(), advancementKeyString);
 
@@ -81,7 +81,7 @@ public class AdvancementResolver implements TextContentResolver<AdvancementConte
         );
 
         Advancement advancement = new Advancement(
-                null,
+                background,
                 display,
                 Collections.emptyList(),
                 false
@@ -111,6 +111,8 @@ public class AdvancementResolver implements TextContentResolver<AdvancementConte
                 false
         );
         user.sendPacket(grantPacket);
+
+        System.out.println(content);
 
         long delayTicks = content.showTimeOrDefault().toMillis() / 50;
 

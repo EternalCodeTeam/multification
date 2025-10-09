@@ -10,9 +10,9 @@ import dev.rollczi.litecommands.annotations.execute.Execute;
 import dev.rollczi.litecommands.annotations.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.time.Duration;
-import org.bukkit.plugin.Plugin;
 
 @Command(name = "testadvancements")
 @Permission("example.testadvancements")
@@ -28,6 +28,7 @@ public class AdvancementCommand {
 
     @Execute(name = "simple")
     void executeSimple(@Context Player player) {
+        // Using simple helper method
         this.multification.create()
                 .viewer(player)
                 .notice(PacketEventsNotice.advancement(
@@ -37,57 +38,99 @@ public class AdvancementCommand {
                 .send();
     }
 
+    @Execute(name = "withicon")
+    void executeWithIcon(@Context Player player) {
+        // Using helper method with icon
+        this.multification.create()
+                .viewer(player)
+                .notice(PacketEventsNotice.advancement(
+                        "<yellow>Achievement Unlocked",
+                        "You found a diamond!",
+                        "DIAMOND"
+                ))
+                .send();
+    }
+
     @Execute(name = "challenge")
     void executeChallenge(@Context Player player) {
+        // Using helper method with frame type
         this.multification.create()
                 .viewer(player)
                 .notice(PacketEventsNotice.advancement(
                         "<dark_purple>Epic Challenge",
-                        "Hold down Left Button",
-                        "DIAMOND_SWORD",
-                        AdvancementFrameType.CHALLENGE,
-                        Duration.ofSeconds(5)
+                        "Defeat the Ender Dragon",
+                        "DRAGON_HEAD",
+                        AdvancementFrameType.CHALLENGE
                 ))
                 .send();
     }
 
     @Execute(name = "goal")
     void executeGoal(@Context Player player) {
+        // Using builder for more customization
         this.multification.create()
                 .viewer(player)
-                .notice(PacketEventsNotice.advancement(
-                        "<gold>Reach the Goal",
-                        "Destroy the tree",
-                        "OAK_SAPLING",
-                        AdvancementFrameType.GOAL,
-                        "minecraft:textures/gui/advancements/backgrounds/stone.png"
-                ))
+                .notice(PacketEventsNotice.builder()
+                        .title("<gold>Reach the Goal")
+                        .description("Plant 100 trees")
+                        .icon("OAK_SAPLING")
+                        .frameType(AdvancementFrameType.GOAL)
+                        .background("minecraft:textures/gui/advancements/backgrounds/stone.png")
+                        .buildAdvancement())
+                .send();
+    }
+
+    @Execute(name = "timed")
+    void executeTimed(@Context Player player) {
+        // Using builder with show time
+        this.multification.create()
+                .viewer(player)
+                .notice(PacketEventsNotice.builder()
+                        .title("<aqua>Quick Message")
+                        .description("This will disappear in 3 seconds")
+                        .icon("CLOCK")
+                        .frameType(AdvancementFrameType.TASK)
+                        .showTime(Duration.ofSeconds(3))
+                        .buildAdvancement())
                 .send();
     }
 
     @Execute(name = "custom")
     void executeCustom(@Context Player player) {
+        // Using builder with full customization
         this.multification.create()
                 .viewer(player)
                 .notice(PacketEventsNotice.builder()
-                        .advancement(
-                                "<red>Custom Toast",
-                                "<gray>With all options configured",
-                                "GOLD_INGOT",
-                                AdvancementFrameType.TASK,
-                                "minecraft:textures/gui/advancements/backgrounds/adventure.png",
-                                true,  // showToast
-                                true,  // hidden
-                                0.0f,  // x
-                                0.0f,  // y
-                                Duration.ofSeconds(3)  // showTime
-                        )
-                        .build())
+                        .title("<red>Custom Toast")
+                        .description("<gray>With all options configured")
+                        .icon("GOLD_INGOT")
+                        .frameType(AdvancementFrameType.TASK)
+                        .background("minecraft:textures/gui/advancements/backgrounds/adventure.png")
+                        .position(0.0f, 0.0f)
+                        .showTime(Duration.ofSeconds(5))
+                        .showToast(true)
+                        .hidden(true)
+                        .buildAdvancement())
+                .send();
+    }
+
+    @Execute(name = "positioned")
+    void executePositioned(@Context Player player) {
+        // Custom position example
+        this.multification.create()
+                .viewer(player)
+                .notice(PacketEventsNotice.builder()
+                        .title("<blue>Centered Message")
+                        .description("This appears in the center")
+                        .icon("COMPASS")
+                        .position(0.5f, 0.5f)
+                        .buildAdvancement())
                 .send();
     }
 
     @Execute(name = "translated")
     void executeTranslated(@Context Player player) {
+        // Chat message with placeholder
         this.multification.create()
                 .viewer(player)
                 .notice(Notice.chat("<green>Hello, {player}! This is a translated message."))
@@ -97,35 +140,32 @@ public class AdvancementCommand {
 
     @Execute(name = "all")
     void executeAll(@Context Player player) {
+        // Show simple first
         executeSimple(player);
 
-        this.multification.create()
-                .viewer(player)
-                .notice(PacketEventsNotice.advancement(
-                        "<yellow>Wait for it...",
-                        "More coming soon!",
-                        "CLOCK",
-                        AdvancementFrameType.TASK,
-                        Duration.ofSeconds(2)
-                ))
-                .send();
+        // Schedule more advancements
+        Bukkit.getScheduler().runTaskLater(
+                this.plugin,
+                () -> executeWithIcon(player),
+                40L // 2 seconds
+        );
 
         Bukkit.getScheduler().runTaskLater(
                 this.plugin,
                 () -> executeChallenge(player),
-                40L
+                80L // 4 seconds
         );
 
         Bukkit.getScheduler().runTaskLater(
                 this.plugin,
                 () -> executeGoal(player),
-                80L
+                120L // 6 seconds
         );
 
         Bukkit.getScheduler().runTaskLater(
                 this.plugin,
                 () -> executeCustom(player),
-                120L
+                160L // 8 seconds
         );
     }
 }
