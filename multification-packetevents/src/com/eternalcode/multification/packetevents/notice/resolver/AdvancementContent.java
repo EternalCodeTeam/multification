@@ -1,7 +1,8 @@
-package com.eternalcode.multification.packetevents.resolver.advancement;
+package com.eternalcode.multification.packetevents.notice.resolver;
 
 import com.eternalcode.multification.notice.resolver.text.TextContent;
 import com.github.retrooper.packetevents.protocol.advancements.AdvancementType;
+import java.time.Duration;
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,7 +15,8 @@ public record AdvancementContent(
         boolean showToast,
         boolean hidden,
         float x,
-        float y
+        float y,
+        @Nullable Duration showTime
 ) implements TextContent {
 
     public static final String DEFAULT_ICON = "GRASS_BLOCK";
@@ -23,9 +25,10 @@ public record AdvancementContent(
     public static final boolean DEFAULT_HIDDEN = true;
     public static final float DEFAULT_X = 0.0f;
     public static final float DEFAULT_Y = 0.0f;
+    public static final Duration DEFAULT_SHOW_TIME = Duration.ofSeconds(1);
 
     public AdvancementContent(String title, String description, @Nullable String icon, @Nullable AdvancementType frameType) {
-        this(title, description, icon, frameType, null, DEFAULT_SHOW_TOAST, DEFAULT_HIDDEN, DEFAULT_X, DEFAULT_Y);
+        this(title, description, icon, frameType, null, DEFAULT_SHOW_TOAST, DEFAULT_HIDDEN, DEFAULT_X, DEFAULT_Y, null);
     }
 
     @Override
@@ -39,5 +42,9 @@ public record AdvancementContent(
 
     public AdvancementType frameTypeOrDefault() {
         return this.frameType != null ? this.frameType : DEFAULT_FRAME;
+    }
+
+    public Duration showTimeOrDefault() {
+        return this.showTime != null ? this.showTime : DEFAULT_SHOW_TIME;
     }
 }

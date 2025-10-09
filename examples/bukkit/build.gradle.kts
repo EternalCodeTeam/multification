@@ -1,3 +1,5 @@
+import gradle.kotlin.dsl.accessors._729aa7c1588b83738f7ec34c0a320432.api
+
 plugins {
     id("java")
     id("com.gradleup.shadow") version "9.0.0-beta4"
@@ -23,8 +25,11 @@ dependencies {
     // implementation("com.eternalcode:multification-bukkit:1.0.3") // <-- uncomment in your project
     // implementation("com.eternalcode:multification-cdn:1.0.3") // <-- uncomment in your project
 
-    implementation(project(":multification-bukkit")) // don't use this line in your build.gradle
-    implementation(project(":multification-cdn")) // don't use this line in your build.gradle
+    implementation(project(":multification-bukkit"))
+    implementation(project(":multification-cdn"))
+    implementation(project(":multification-packetevents"))
+
+    api("com.github.retrooper:packetevents-spigot:${Versions.PACKETEVENTS}")
 }
 
 val pluginName = "ExamplePlugin"
