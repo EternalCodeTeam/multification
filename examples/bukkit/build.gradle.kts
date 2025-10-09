@@ -11,6 +11,7 @@ repositories {
     mavenCentral()
     maven("https://repo.panda-lang.org/releases/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://repo.codemc.io/repository/maven-releases/") // packetevents
     maven("https://repo.stellardrift.ca/repository/snapshots/")
 }
 
@@ -23,8 +24,10 @@ dependencies {
     // implementation("com.eternalcode:multification-bukkit:1.0.3") // <-- uncomment in your project
     // implementation("com.eternalcode:multification-cdn:1.0.3") // <-- uncomment in your project
 
-    implementation(project(":multification-bukkit")) // don't use this line in your build.gradle
-    implementation(project(":multification-cdn")) // don't use this line in your build.gradle
+    implementation(project(":multification-bukkit"))
+    implementation(project(":multification-cdn"))
+
+    compileOnly("com.github.retrooper:packetevents-spigot:${Versions.PACKETEVENTS}")
 }
 
 val pluginName = "ExamplePlugin"
@@ -56,5 +59,9 @@ sourceSets.test {
 }
 
 tasks.runServer {
-    minecraftVersion("1.21.4")
+    minecraftVersion("1.21.8")
+
+    downloadPlugins {
+        downloadPlugins.url("https://cdn.modrinth.com/data/HYKaKraK/versions/Kee6pozk/packetevents-spigot-2.9.5.jar")
+    }
 }

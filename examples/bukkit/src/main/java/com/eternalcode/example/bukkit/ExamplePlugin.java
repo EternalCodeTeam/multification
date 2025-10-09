@@ -1,5 +1,6 @@
 package com.eternalcode.example.bukkit;
 
+import com.eternalcode.example.bukkit.command.AdvancementCommand;
 import com.eternalcode.example.bukkit.command.GiveCommand;
 import com.eternalcode.example.bukkit.command.ReloadCommand;
 import com.eternalcode.example.bukkit.command.TeleportCommand;
@@ -41,6 +42,7 @@ public class ExamplePlugin extends JavaPlugin {
                 new FlyCommand(multification),
                 new GiveCommand(multification),
                 new ReloadCommand(configurationManager, multification),
+                new AdvancementCommand(multification, this),
                 new TimerCommand(new TimerManager(this.getServer().getScheduler(), this, multification))
             )
             .build();

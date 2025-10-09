@@ -10,4 +10,7 @@ dependencies {
 
     compileOnly("org.spigotmc:spigot-api:${Versions.SPIGOT_API}")
     testImplementation("org.spigotmc:spigot-api:${Versions.SPIGOT_API}")
+
+    compileOnly("com.github.retrooper:packetevents-spigot:${Versions.PACKETEVENTS}")
+    testImplementation("com.github.retrooper:packetevents-spigot:${Versions.PACKETEVENTS}")
 }

@@ -9,20 +9,20 @@ public class BukkitNotice {
 
     public static Notice sound(Sound sound, SoundCategory category, float volume, float pitch) {
         return BukkitNotice.builder()
-            .sound(sound, category, pitch, volume)
-            .build();
+                .sound(sound, category, pitch, volume)
+                .build();
     }
 
     public static Notice sound(Sound sound, float volume, float pitch) {
         return BukkitNotice.builder()
-            .sound(sound, pitch, volume)
-            .build();
+                .sound(sound, pitch, volume)
+                .build();
     }
 
     public static Notice sound(Sound sound) {
         return BukkitNotice.builder()
-            .sound(sound)
-            .build();
+                .sound(sound)
+                .build();
     }
 
     public static BukkitNotice.Builder builder() {
