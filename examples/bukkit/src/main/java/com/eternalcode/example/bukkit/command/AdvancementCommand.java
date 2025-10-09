@@ -2,8 +2,8 @@ package com.eternalcode.example.bukkit.command;
 
 import com.eternalcode.example.bukkit.multification.YourMultification;
 import com.eternalcode.multification.notice.Notice;
-import com.eternalcode.multification.packetevents.notice.PacketEventsNotice;
-import com.eternalcode.multification.packetevents.notice.resolver.AdvancementFrameType;
+import com.eternalcode.multification.bukkit.notice.resolver.advancement.PacketEventsNotice;
+import com.eternalcode.multification.bukkit.notice.resolver.advancement.AdvancementFrameType;
 import dev.rollczi.litecommands.annotations.command.Command;
 import dev.rollczi.litecommands.annotations.context.Context;
 import dev.rollczi.litecommands.annotations.execute.Execute;

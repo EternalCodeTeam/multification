@@ -1,4 +1,4 @@
-package com.eternalcode.multification.packetevents.notice.resolver;
+package com.eternalcode.multification.bukkit.notice.resolver.advancement;
 
 import com.eternalcode.multification.notice.NoticeKey;
 import com.eternalcode.multification.notice.resolver.NoticeContent;
