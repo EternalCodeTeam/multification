@@ -1,9 +1,6 @@
 package com.eternalcode.multification.bukkit.notice.resolver.advancement;
 
 import com.eternalcode.multification.notice.Notice;
-import com.eternalcode.multification.packetevents.notice.resolver.AdvancementContent;
-import com.eternalcode.multification.packetevents.notice.resolver.AdvancementFrameType;
-import com.eternalcode.multification.packetevents.notice.resolver.PacketEventsNoticeKey;
 
 import java.time.Duration;
 

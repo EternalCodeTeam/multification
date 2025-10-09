@@ -1,7 +1,9 @@
 package com.eternalcode.multification.bukkit;
 
 import com.eternalcode.multification.Multification;
+import com.eternalcode.multification.bukkit.notice.resolver.advancement.AdvancementResolver;
 import com.eternalcode.multification.bukkit.notice.resolver.sound.SoundBukkitResolver;
+import com.eternalcode.multification.bukkit.util.PacketEventsUtil;
 import com.eternalcode.multification.executor.AsyncExecutor;
 import com.eternalcode.multification.locate.LocaleProvider;
 import com.eternalcode.multification.viewer.ViewerProvider;
@@ -17,7 +19,13 @@ public abstract class BukkitMultification<TRANSLATION> extends Multification<Com
 
     protected BukkitMultification() {
         super();
+
+        // TODO: add special registration method for it?
         this.noticeRegistry.registerResolver(new SoundBukkitResolver());
+
+        if (PacketEventsUtil.isPacketEventsLoaded()) {
+            this.noticeRegistry.registerResolver(new AdvancementResolver());
+        }
     }
 
     @Override

@@ -21,6 +21,7 @@ import net.kyori.adventure.text.serializer.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,17 +41,11 @@ public class AdvancementResolver implements TextContentResolver<AdvancementConte
 
     private static final String FORMAT = "%s|%s|%s|%s|%s|%b|%b|%f|%f|%s";
 
-    private final NoticeKey<AdvancementContent> key;
-    private final Plugin plugin;
-
-    public AdvancementResolver(Plugin plugin) {
-        this.key = PacketEventsNoticeKey.ADVANCEMENT;
-        this.plugin = plugin;
-    }
+    private final Plugin plugin = JavaPlugin.getProvidingPlugin(AdvancementResolver.class);
 
     @Override
     public NoticeKey<AdvancementContent> noticeKey() {
-        return this.key;
+        return PacketEventsNoticeKey.ADVANCEMENT;
     }
 
     @Override
