@@ -6,3 +6,6 @@ include("multification-okaeri")
 include("multification-bukkit")
 
 include("examples:bukkit")
+
+include("multification-packetevents")
+include("multification-bukkit-packetevents")

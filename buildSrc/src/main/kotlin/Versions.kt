@@ -12,6 +12,8 @@ object Versions {
 
     const val SPIGOT_API = "1.21.4-R0.1-SNAPSHOT"
 
+    const val PACKETEVENTS = "2.9.5"
+
     const val JETBRAINS_ANNOTATIONS = "26.0.2-1"
 
 }
