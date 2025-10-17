@@ -42,11 +42,14 @@ public class BossBarService {
         }
 
         Duration remaining = Duration.between(Instant.now(), expiration);
-        float progress = 1 - (float) remaining.getSeconds() / duration.getSeconds();
+        double totalMillis = duration.toMillis();
+        double remainingMillis = Math.max(0, remaining.toMillis());
+        float progress = (float) (remainingMillis / totalMillis);
+        progress = Math.max(0.0f, Math.min(1.0f, progress));
 
         bossBar.progress(progress);
 
-        this.scheduler.schedule(() -> updateProgress(expiration, duration, bossBar, viewer), 500L, TimeUnit.MILLISECONDS);
+        this.scheduler.schedule(() -> updateProgress(expiration, duration, bossBar, viewer), 100L, TimeUnit.MILLISECONDS);
     }
 
 }
