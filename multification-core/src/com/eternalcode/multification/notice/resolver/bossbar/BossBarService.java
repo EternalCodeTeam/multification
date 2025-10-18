@@ -15,6 +15,31 @@ public class BossBarService {
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(8);
 
+    // Configurable update interval in milliseconds (used for scheduling progress updates)
+    private final long updateIntervalMillis;
+
+    // Default constructor: reads system property 'multification.bossbar.update-interval-ms' or falls back to 100ms
+    public BossBarService() {
+        this(getUpdateIntervalFromSystemProperty());
+    }
+
+    // Constructor allowing explicit configuration (useful for tests or programmatic configuration)
+    public BossBarService(long updateIntervalMillis) {
+        this.updateIntervalMillis = Math.max(1L, updateIntervalMillis);
+    }
+
+    private static long getUpdateIntervalFromSystemProperty() {
+        final String key = "multification.bossbar.update-interval-ms";
+        final long fallback = 100L;
+        String value = System.getProperty(key);
+        if (value == null) return fallback;
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException ex) {
+            return fallback;
+        }
+    }
+
     void sendBossBar(
             ComponentSerializer<Component, Component, String> serializer,
             BossBarContent content,
@@ -42,14 +67,21 @@ public class BossBarService {
         }
 
         Duration remaining = Duration.between(Instant.now(), expiration);
-        double totalMillis = duration.toMillis();
-        double remainingMillis = Math.max(0, remaining.toMillis());
-        float progress = (float) (remainingMillis / totalMillis);
-        progress = Math.max(0.0f, Math.min(1.0f, progress));
+        double totalMillis = Math.max(0.0, duration.toMillis());
+        double remainingMillis = Math.max(0.0, remaining.toMillis());
+
+        float progress;
+        if (totalMillis <= 0.0) {
+            progress = 0.0f;
+        } else {
+            double fraction = remainingMillis / totalMillis;
+            progress = (float) fraction;
+            progress = Math.max(0.0f, Math.min(1.0f, progress));
+        }
 
         bossBar.progress(progress);
 
-        this.scheduler.schedule(() -> updateProgress(expiration, duration, bossBar, viewer), 100L, TimeUnit.MILLISECONDS);
+        this.scheduler.schedule(() -> updateProgress(expiration, duration, bossBar, viewer), this.updateIntervalMillis, TimeUnit.MILLISECONDS);
     }
 
 }
