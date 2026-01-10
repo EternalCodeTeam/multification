@@ -138,15 +138,9 @@ After that, you can use the `multification` instance to send notifications:
 
 ```java
 multification.create()
-    .
-
-player(player.getUniqueId())
-        .
-
-notice(messages ->messages.yourMessage)
-        .
-
-send();
+  .player(player.getUniqueId())
+  .notice(messages ->messages.yourMessage)
+  .send();
 ```
 
 ## Configuration Support
@@ -194,19 +188,8 @@ To load and create the config file, use the following code in the init method su
 MessagesConfig messages = new MessagesConfig();
 Resource resource = Source.of(this.dataFolder, "messages.yml");
         
-cdn.
-
-load(resource, messages)
-    .
-
-orThrow(cause ->cause);
-
-        cdn.
-
-render(config, resource)
-    .
-
-orThrow(cause ->cause);
+cdn.load(resource, messages).orThrow(cause ->cause);
+cdn.render(config, resource).orThrow(cause ->cause);
 ```
 
 Checkout example with
