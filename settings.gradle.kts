@@ -9,3 +9,4 @@ include("multification-velocity")
 
 include("examples:bukkit")
 include("examples:paper")
+include("examples:velocity")
