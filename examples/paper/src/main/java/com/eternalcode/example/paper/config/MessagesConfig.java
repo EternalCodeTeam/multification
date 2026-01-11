@@ -38,6 +38,7 @@ public class MessagesConfig {
             .bossBar(BossBar.Color.RED, Duration.ofSeconds(1), "<red>Timer: <yellow>{time}")
             .build();
 
+    @Description("# Reload command message")
     public Notice reloadMessage = Notice.builder()
             .chat("<pride:pride>Configuration has been reloaded!")
             .sound("minecraft:ambient.basalt_deltas.additions", 1.0F, 1.0F)
