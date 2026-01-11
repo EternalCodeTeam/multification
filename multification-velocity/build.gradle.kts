@@ -5,6 +5,11 @@ plugins {
     `multification-publish`
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
 dependencies {
     api(project(":multification-core"))
     compileOnly("com.velocitypowered:velocity-api:${Versions.VELOCITY_API}")
