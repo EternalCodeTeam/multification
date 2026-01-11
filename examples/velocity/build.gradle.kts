@@ -16,7 +16,7 @@ dependencies {
     compileOnly("com.velocitypowered:velocity-api:${Versions.VELOCITY_API}")
     annotationProcessor("com.velocitypowered:velocity-api:${Versions.VELOCITY_API}")
 
-    implementation("dev.rollczi:litecommands-velocity:3.4.1")
+    implementation("dev.rollczi:litecommands-velocity:3.10.6")
     // implementation("com.eternalcode:multification-velocity:1.2.3") // <-- uncomment in your project
     // implementation("com.eternalcode:multification-cdn:1.2.3") // <-- uncomment in your project
 
