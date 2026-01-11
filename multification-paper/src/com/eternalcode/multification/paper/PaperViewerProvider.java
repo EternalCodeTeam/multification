@@ -30,7 +30,6 @@ class PaperViewerProvider implements ViewerProvider<CommandSender> {
     public Collection<CommandSender> all() {
         return Bukkit.getOnlinePlayers()
                 .stream()
-                .filter(Player::isOnline)
                 .map(player -> (CommandSender) player)
                 .collect(Collectors.toList());
     }
@@ -39,7 +38,6 @@ class PaperViewerProvider implements ViewerProvider<CommandSender> {
     public Collection<CommandSender> onlinePlayers() {
         return Bukkit.getOnlinePlayers()
                 .stream()
-                .filter(Player::isOnline)
                 .map(player -> (CommandSender) player)
                 .collect(Collectors.toList());
     }
@@ -52,7 +50,6 @@ class PaperViewerProvider implements ViewerProvider<CommandSender> {
 
         return Bukkit.getOnlinePlayers()
                 .stream()
-                .filter(Player::isOnline)
                 .filter(player -> player.hasPermission(permission))
                 .map(player -> (CommandSender) player)
                 .collect(Collectors.toList());

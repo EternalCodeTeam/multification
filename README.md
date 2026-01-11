@@ -237,23 +237,6 @@ MessagesConfig config = (MessagesConfig) ConfigManager.create(MessagesConfig.cla
         .load(true);
 ```
 
-## 📚 Documentation
-
-For complete documentation, guides, and examples, visit our [documentation](/docs):
-
-- **[Getting Started](/docs/installation)** - Installation and setup
-- **[Basic Usage](/docs/basic-usage)** - Learn the fundamentals
-- **[Configuration](/docs/configuration)** - CDN & Okaeri integration
-- **[Advanced Features](/docs/advanced)** - i18n, custom formatters, platform adapters
-- **[Platform Comparison](/docs/platform-comparison)** - Paper vs Bukkit
-- **[API Reference](/docs/api-reference)** - Complete API documentation
-- **[Examples](/docs/examples)** - Working code examples
-- **[FAQ](/docs/faq)** - Common questions and troubleshooting
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
 ## 📄 License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
@@ -267,4 +250,4 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ---
 
-Made with ❤️ by [EternalCode Team](https://github.com/EternalCodeTeam)
+Made with ❤️ by [EternalCodeTeam](https://github.com/EternalCodeTeam)
