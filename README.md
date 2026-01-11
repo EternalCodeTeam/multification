@@ -38,12 +38,12 @@ Messages can be sent to any audience, such as players or the console.
 
 ## Supported Platforms
 
-| Platform          | Module                 | Java Version | Adventure API         | Status                 |
-|-------------------|------------------------|--------------|-----------------------|------------------------|
-| **Paper**         | `multification-paper`  | Java 21      | Native (built-in)     | ✅ Recommended          |
-| **Bukkit/Spigot** | `multification-bukkit` | Java 8+      | External adapter      | ✅ Supported            |
-| **Velocity**      | `multification-bukkit` | Java 21+     | Native                | ❌ Soon                 |
-| **Core**          | `multification-core`   | Java 8+      | Custom implementation | ✅ For custom platforms |
+| Platform          | Module                   | Java Version | Adventure API         | Status                  |
+|-------------------|--------------------------|--------------|-----------------------|-------------------------|
+| **Paper**         | `multification-paper`    | Java 21      | Native (built-in)     | ✅ Supported             |
+| **Bukkit/Spigot** | `multification-bukkit`   | Java 8+      | External adapter      | ✅ Supported             |
+| **Velocity**      | `multification-velocity` | Java 21+     | Native                | ✅ Supported             |
+| **Core**          | `multification-core`     | Java 8+      | Custom implementation | 🔨 For custom platforms |
 
 > **💡 Recommendation:** Use `multification-paper` for Paper servers (1.19.4+) to leverage native Adventure API without
 > external dependencies.
