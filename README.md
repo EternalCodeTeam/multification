@@ -175,9 +175,9 @@ public class MessagesConfig {
 
 ```java
 Cdn cdn = CdnFactory.createYamlLike()
-        .getSettings()
-        .withComposer(Notice.class, new MultificationNoticeCdnComposer(multification.getNoticeRegistry()))
-        .build();
+      .getSettings()
+      .withComposer(Notice.class, new MultificationNoticeCdnComposer(multification.getNoticeRegistry()))
+      .build();
 ```
 
 #### (CDN) 4. Load the configuration:
@@ -227,32 +227,12 @@ public class MessagesConfig extends OkaeriConfig {
 ```java
 MessagesConfig config = (MessagesConfig) ConfigManager.create(MessagesConfig.class)
         .withConfigurer(new MultificationSerdesPack(multification.getNoticeRegistry()))
-        .withConfigurer(
-                new SerdesCommons(),
-                new YamlBukkitConfigurer(),
-                new SerdesBukkit()) // specify configurers for your platform
+        .withConfigurer(new SerdesCommons(), new YamlBukkitConfigurer(), new SerdesBukkit()) // specify configurers for your platform
         .withBindFile(new File(dataFolder, "messages.yml"))
         .withRemoveOrphans(true) // automatic removal of undeclared keys
         .saveDefaults() // save file if does not exists
         .load(true);
 ```
-
-## 📚 Documentation
-
-For complete documentation, guides, and examples, visit our [documentation](/docs):
-
-- **[Getting Started](/docs/installation)** - Installation and setup
-- **[Basic Usage](/docs/basic-usage)** - Learn the fundamentals
-- **[Configuration](/docs/configuration)** - CDN & Okaeri integration
-- **[Advanced Features](/docs/advanced)** - i18n, custom formatters, platform adapters
-- **[Platform Comparison](/docs/platform-comparison)** - Paper vs Bukkit
-- **[API Reference](/docs/api-reference)** - Complete API documentation
-- **[Examples](/docs/examples)** - Working code examples
-- **[FAQ](/docs/faq)** - Common questions and troubleshooting
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
 ## 📄 License
 
@@ -267,4 +247,4 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ---
 
-Made with ❤️ by [EternalCode Team](https://github.com/EternalCodeTeam)
+Made with ❤️ by [EternalCodeTeam](https://github.com/EternalCodeTeam)
