@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -78,13 +77,10 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
     @Override
     @CheckReturnValue
     public B players(Iterable<UUID> players) {
-        Set<VIEWER> viewers = new HashSet<>();
-
         for (UUID player : players) {
-            viewers.add(this.viewerProvider.player(player));
+            this.viewers.add(this.viewerProvider.player(player));
         }
 
-        this.viewers.addAll(viewers);
         return this.getThis();
     }
 
@@ -258,11 +254,10 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
                 continue;
             }
 
+            Set<VIEWER> languageViewers = viewersIndex.getViewers(language);
             TranslatedFormatter translatedFormatter = this.prepareFormatterForLanguage(language);
 
             for (Notice notice : notificationsForLang) {
-                Set<VIEWER> languageViewers = viewersIndex.getViewers(language);
-
                 for (VIEWER viewer : languageViewers) {
                     Audience audience = audienceConverter.convert(viewer);
 
@@ -298,23 +293,42 @@ public class NoticeBroadcastImpl<VIEWER, TRANSLATION, B extends NoticeBroadcast<
         });
     }
 
+    private final Map<Locale, TranslatedFormatter> formatterCache = new HashMap<>();
+
     protected TranslatedFormatter prepareFormatterForLanguage(Locale language) {
+        TranslatedFormatter cached = formatterCache.get(language);
+        if (cached != null && !cached.isDirty()) {
+            return cached;
+        }
+
         TRANSLATION translation = this.translationProvider.provide(language);
         Formatter translatedFormatter = new Formatter();
 
         for (Map.Entry<String, TextMessageProvider<TRANSLATION>> entry : this.placeholders.entrySet()) {
-            translatedFormatter.register(entry.getKey(), () -> entry.getValue().extract(translation));
+            String value = entry.getValue().extract(translation);
+            translatedFormatter.register(entry.getKey(), value);
         }
 
-        return new TranslatedFormatter(translatedFormatter);
+        TranslatedFormatter formatter = new TranslatedFormatter(translatedFormatter);
+        formatterCache.put(language, formatter);
+        return formatter;
     }
 
     protected class TranslatedFormatter {
 
         protected final Formatter translatedPlaceholders;
+        private final int expectedFormatterCount;
+        private final int expectedPlaceholderCount;
 
         protected TranslatedFormatter(Formatter translatedPlaceholders) {
             this.translatedPlaceholders = translatedPlaceholders;
+            this.expectedFormatterCount = NoticeBroadcastImpl.this.formatters.size();
+            this.expectedPlaceholderCount = NoticeBroadcastImpl.this.placeholders.size();
+        }
+
+        protected boolean isDirty() {
+            return NoticeBroadcastImpl.this.formatters.size() != expectedFormatterCount
+                    || NoticeBroadcastImpl.this.placeholders.size() != expectedPlaceholderCount;
         }
 
         public String format(String text, VIEWER viewer) {
