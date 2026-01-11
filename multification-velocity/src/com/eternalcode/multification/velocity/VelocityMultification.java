@@ -5,7 +5,6 @@ import com.eternalcode.multification.executor.AsyncExecutor;
 import com.eternalcode.multification.locate.LocaleProvider;
 import com.eternalcode.multification.viewer.ViewerProvider;
 import com.velocitypowered.api.command.CommandSource;
-import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,10 +13,10 @@ public abstract class VelocityMultification<TRANSLATION> extends Multification<C
     public static final LocaleProvider<CommandSource> DEFAULT_LOCALE_PROVIDER = new VelocityLocaleProvider();
 
     private final ProxyServer server;
-    private final Plugin plugin;
+    private final Object plugin;
     private final ViewerProvider<CommandSource> defaultViewerProvider;
 
-    protected VelocityMultification(ProxyServer server, Plugin plugin) {
+    protected VelocityMultification(ProxyServer server, Object plugin) {
         super();
         this.server = server;
         this.plugin = plugin;

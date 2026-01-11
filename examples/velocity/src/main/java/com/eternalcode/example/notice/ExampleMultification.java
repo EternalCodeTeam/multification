@@ -6,7 +6,6 @@ import com.eternalcode.multification.adventure.AudienceConverter;
 import com.eternalcode.multification.translation.TranslationProvider;
 import com.eternalcode.multification.velocity.VelocityMultification;
 import com.velocitypowered.api.command.CommandSource;
-import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -18,7 +17,7 @@ public class ExampleMultification extends VelocityMultification<MessagesConfig> 
     private final MessagesConfig messagesConfig;
     private final MiniMessage miniMessage;
 
-    public ExampleMultification(Plugin plugin, ProxyServer server, MessagesConfig messagesConfig) {
+    public ExampleMultification(Object plugin, ProxyServer server, MessagesConfig messagesConfig) {
         super(server, plugin);
         this.messagesConfig = messagesConfig;
         this.miniMessage = MiniMessage.miniMessage();

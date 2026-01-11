@@ -14,7 +14,11 @@ public class PlayerConnectListener {
 
     @Subscribe
     void onPlayerConnect(ServerConnectedEvent event) {
-        this.multification.all(messagesConfig -> messagesConfig.joinedTheServer);
+        this.multification.create()
+                .all()
+                .notice(messagesConfig -> messagesConfig.joinedTheServer)
+                .placeholder("<server>", event.getServer().getServerInfo().getName())
+                .send();
     }
 
 }

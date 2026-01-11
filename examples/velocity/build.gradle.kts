@@ -43,5 +43,5 @@ sourceSets.test {
 }
 
 tasks.runVelocity {
-    velocityVersion("1.21.11")
+    velocityVersion("${Versions.VELOCITY_API}")
 }

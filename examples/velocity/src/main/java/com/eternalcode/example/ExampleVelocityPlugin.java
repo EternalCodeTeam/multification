@@ -41,7 +41,7 @@ public class ExampleVelocityPlugin {
     @Subscribe
     void onProxyInitialize(ProxyInitializeEvent event) {
         MessagesConfig messagesConfig = new MessagesConfig();
-        ExampleMultification multification = new ExampleMultification((Plugin) this, this.server, messagesConfig);
+        ExampleMultification multification = new ExampleMultification(this, this.server, messagesConfig);
 
         ConfigurationManager configurationManager = new ConfigurationManager(this.dataDirectory.toFile(),
                 multification.getNoticeRegistry());
