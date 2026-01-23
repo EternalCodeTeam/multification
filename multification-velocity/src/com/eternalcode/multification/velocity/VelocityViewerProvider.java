@@ -5,6 +5,7 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,10 +32,7 @@ public class VelocityViewerProvider implements ViewerProvider<CommandSource> {
 
     @Override
     public Collection<CommandSource> onlinePlayers() {
-        return server.getAllPlayers()
-                .stream()
-                .map(player -> (CommandSource) player)
-                .collect(Collectors.toList());
+        return new ArrayList<>(server.getAllPlayers());
     }
 
     @Override
