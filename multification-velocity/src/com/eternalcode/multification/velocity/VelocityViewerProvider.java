@@ -26,7 +26,7 @@ public class VelocityViewerProvider implements ViewerProvider<CommandSource> {
 
     @Override
     public CommandSource player(UUID uuid) {
-        return this.server.getplayer(uuid).orElse(null);
+        return this.server.getPlayer(uuid).orElse(null);
     }
 
     @Override
