@@ -35,12 +35,12 @@ Messages can be sent to any audience, such as players or the console.
 
 ## Supported Platforms
 
-| Platform          | Module                 | Java Version | Adventure API         | Status                 |
-|-------------------|------------------------|--------------|-----------------------|------------------------|
-| **Paper**         | `multification-paper`  | Java 21      | Native (built-in)     | ✅ Recommended          |
-| **Bukkit/Spigot** | `multification-bukkit` | Java 8+      | External adapter      | ✅ Supported            |
-| **Velocity**      | `multification-velocity` | Java 21+     | Native                | ❌ Soon                 |
-| **Core**          | `multification-core`   | Java 8+      | Custom implementation | ✅ For custom platforms |
+| Platform          | Module                   | Java Version | Adventure API         | Status                  |
+|-------------------|--------------------------|--------------|-----------------------|-------------------------|
+| **Paper**         | `multification-paper`    | Java 21      | Native (built-in)     | ✅ Supported             |
+| **Bukkit/Spigot** | `multification-bukkit`   | Java 8+      | External adapter      | ✅ Supported             |
+| **Velocity**      | `multification-velocity` | Java 21+     | Native                | ✅ Supported             |
+| **Core**          | `multification-core`     | Java 8+      | Custom implementation | 🔨 For custom platforms |
 
 > **💡 Recommendation:** Use `multification-paper` for Paper servers (1.19.4+) to leverage native Adventure API without
 > external dependencies.
@@ -172,9 +172,9 @@ public class MessagesConfig {
 
 ```java
 Cdn cdn = CdnFactory.createYamlLike()
-      .getSettings()
-      .withComposer(Notice.class, new MultificationNoticeCdnComposer(multification.getNoticeRegistry()))
-      .build();
+        .getSettings()
+        .withComposer(Notice.class, new MultificationNoticeCdnComposer(multification.getNoticeRegistry()))
+        .build();
 ```
 
 #### (CDN) 4. Load the configuration:
@@ -224,7 +224,10 @@ public class MessagesConfig extends OkaeriConfig {
 ```java
 MessagesConfig config = (MessagesConfig) ConfigManager.create(MessagesConfig.class)
         .withConfigurer(new MultificationSerdesPack(multification.getNoticeRegistry()))
-        .withConfigurer(new SerdesCommons(), new YamlBukkitConfigurer(), new SerdesBukkit()) // specify configurers for your platform
+        .withConfigurer(
+                new SerdesCommons(),
+                new YamlBukkitConfigurer(),
+                new SerdesBukkit()) // specify configurers for your platform
         .withBindFile(new File(dataFolder, "messages.yml"))
         .withRemoveOrphans(true) // automatic removal of undeclared keys
         .saveDefaults() // save file if does not exists
