@@ -7,6 +7,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT_JUPITER}")
     testImplementation("org.junit.jupiter:junit-jupiter-params:${Versions.JUNIT_JUPITER}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT_JUPITER}")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:${Versions.JUNIT_JUPITER}")
     testImplementation("org.assertj:assertj-core:${Versions.ASSERTJ_CORE}")
     testImplementation("org.awaitility:awaitility:${Versions.AWAITILITY}")
 }
