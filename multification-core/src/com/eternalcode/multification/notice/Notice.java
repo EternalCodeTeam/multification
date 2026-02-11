@@ -26,14 +26,17 @@ import net.kyori.adventure.sound.Sound;
 public class Notice {
 
     private final Map<NoticeKey<?>, NoticePart<?>> parts = new LinkedHashMap<>();
+    private List<NoticePart<?>> cachedParts;
 
     protected Notice(Map<NoticeKey<?>, NoticePart<?>> parts) {
         this.parts.putAll(parts);
     }
 
     public List<NoticePart<?>> parts() {
-        return this.parts.values().stream()
-            .toList();
+        if (cachedParts == null) {
+            cachedParts = List.copyOf(this.parts.values());
+        }
+        return cachedParts;
     }
 
     public static <T extends NoticeContent> Notice of(NoticeKey<T> key, T content) {
@@ -261,7 +264,8 @@ public class Notice {
         }
 
         public B bossBar(BossBar.Color color, Duration duration, String message) {
-            return this.withPart(NoticeKey.BOSS_BAR, new BossBarContent(color, Optional.empty(), duration, OptionalDouble.empty(), message));
+            return this.withPart(NoticeKey.BOSS_BAR,
+                    new BossBarContent(color, Optional.empty(), duration, OptionalDouble.empty(), message));
         }
 
     }
