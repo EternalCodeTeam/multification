@@ -5,6 +5,7 @@ import com.eternalcode.multification.translation.TranslationProvider;
 import com.eternalcode.multification.viewer.ViewerProvider;
 import com.eternalcode.multification.adventure.AudienceConverter;
 import com.eternalcode.multification.notice.Notice;
+import java.time.Duration;
 import com.eternalcode.multification.shared.Replacer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -139,6 +141,27 @@ class MultificationTest {
 
         assertThat(AudienceMock.getMessages(Viewer.CONSOLE.uuid()))
             .containsExactly(DEFAULT_MESSAGE, OTHER_MESSAGE, "-INNER- -GLOBAL-");
+    }
+
+    @Test
+    @DisplayName("Should serialize and deserialize notice as json")
+    void shouldSerializeAndDeserializeNoticeAsJson() {
+        MyMultification multification = new MyMultification();
+        Notice notice = Notice.builder()
+            .chat("line-1", "line-2")
+            .actionBar("action")
+            .title("title", "subtitle")
+            .times(Duration.ofSeconds(1), Duration.ofSeconds(2), Duration.ofSeconds(3))
+            .build();
+
+        String raw = multification.serialize(notice);
+        Notice restored = multification.deserialize(raw);
+
+        assertThat(raw)
+            .contains("\"chat\"")
+            .contains("\"actionbar\"")
+            .contains("\"times\"");
+        assertEquals(notice.parts(), restored.parts());
     }
 
 }
