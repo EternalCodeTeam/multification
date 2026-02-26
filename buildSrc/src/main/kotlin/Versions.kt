@@ -13,6 +13,7 @@ object Versions {
     const val VELOCITY_API = "3.4.0"
 
     const val JETBRAINS_ANNOTATIONS = "26.1.0"
+    const val GSON = "2.13.2"
 
 
 }
