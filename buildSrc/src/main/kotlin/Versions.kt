@@ -4,7 +4,7 @@ object Versions {
     const val ADVENTURE_API = "4.26.1"
     const val CDN = "1.14.9"
 
-    const val MOCKITO_CORE = "5.21.0"
+    const val MOCKITO_CORE = "5.22.0"
     const val JUNIT_JUPITER = "6.0.3"
     const val ASSERTJ_CORE = "3.27.7"
     const val AWAITILITY = "4.3.0"
