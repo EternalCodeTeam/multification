@@ -9,6 +9,7 @@ import com.eternalcode.multification.translation.TranslationProvider;
 import com.eternalcode.multification.viewer.ViewerProvider;
 import com.eternalcode.multification.adventure.AudienceConverter;
 import com.eternalcode.multification.executor.AsyncExecutor;
+import com.eternalcode.multification.notice.Notice;
 import com.eternalcode.multification.notice.NoticeBroadcast;
 import com.eternalcode.multification.notice.NoticeBroadcastImpl;
 import com.eternalcode.multification.notice.provider.NoticeProvider;
@@ -124,6 +125,14 @@ public abstract class Multification<VIEWER, TRANSLATION> {
             .notice(extractor)
             .formatter(formatters)
             .send();
+    }
+
+    public String serialize(Notice notice) {
+        return notice.serialize(this.noticeRegistry);
+    }
+
+    public Notice deserialize(String raw) {
+        return Notice.deserialize(raw, this.noticeRegistry);
     }
 
     @ApiStatus.Internal
