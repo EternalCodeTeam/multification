@@ -1,6 +1,6 @@
 plugins {
     `multification-java`
-    `multification-java-17`
+    `multification-java-21`
     `multification-java-unit-test`
     `multification-repositories`
     `multification-publish`
