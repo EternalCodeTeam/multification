@@ -1,6 +1,8 @@
 package com.eternalcode.multification.notice;
 
 import com.eternalcode.multification.notice.resolver.NoticeContent;
+import com.eternalcode.multification.notice.resolver.NoticeResolverDefaults;
+import com.eternalcode.multification.notice.resolver.NoticeResolverRegistry;
 import com.eternalcode.multification.notice.resolver.actionbar.ActionbarContent;
 import com.eternalcode.multification.notice.resolver.bossbar.BossBarContent;
 import com.eternalcode.multification.notice.resolver.chat.ChatContent;
@@ -24,6 +26,8 @@ import net.kyori.adventure.key.KeyPattern;
 import net.kyori.adventure.sound.Sound;
 
 public class Notice {
+
+    private static final NoticeResolverRegistry DEFAULT_NOTICE_REGISTRY = NoticeResolverDefaults.createRegistry();
 
     private final Map<NoticeKey<?>, NoticePart<?>> parts = new LinkedHashMap<>();
 
@@ -147,6 +151,22 @@ public class Notice {
 
     public static Notice empty() {
         return new Notice(Collections.emptyMap());
+    }
+
+    public String serialize() {
+        return serialize(DEFAULT_NOTICE_REGISTRY);
+    }
+
+    public String serialize(NoticeResolverRegistry noticeRegistry) {
+        return NoticeJsonCodec.serialize(this, noticeRegistry);
+    }
+
+    public static Notice deserialize(String raw) {
+        return deserialize(raw, DEFAULT_NOTICE_REGISTRY);
+    }
+
+    public static Notice deserialize(String raw, NoticeResolverRegistry noticeRegistry) {
+        return NoticeJsonCodec.deserialize(raw, noticeRegistry);
     }
 
     public static Builder builder() {
