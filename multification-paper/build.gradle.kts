@@ -12,6 +12,6 @@ java {
 
 dependencies {
     api(project(":multification-core"))
-    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
-    testImplementation("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:26.1.2.build.64-stable")
+    testImplementation("io.papermc.paper:paper-api:26.1.2.build.64-stable")
 }
