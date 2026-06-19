@@ -58,7 +58,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.eternalcode:multification-paper:1.2.3")
+    implementation("com.eternalcode:multification-paper:1.2.4")
 }
 ```
 
@@ -70,7 +70,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.eternalcode:multification-bukkit:1.2.3")
+    implementation("com.eternalcode:multification-bukkit:1.2.4")
 }
 ```
 
@@ -155,8 +155,8 @@ To use the Multification library with one of the configuration libraries, you ne
 #### (CDN) 1. Add dependency to your `build.gradle` file:
 
 ```gradle
-implementation("com.eternalcode:multification-cdn:1.1.4")
-implementation("net.dzikoysk:cdn:1.14.5")
+implementation("com.eternalcode:multification-cdn:1.2.4")
+implementation("net.dzikoysk:cdn:1.14.9")
 ```
 
 #### (CDN) 2. Create configuration class:
@@ -197,7 +197,7 @@ CDN! [example plugin](https://github.com/EternalCodeTeam/multification/tree/mast
 #### (Okaeri) 1. Add the following dependency to your `build.gradle` file:
 
 ```gradle
-implementation("com.eternalcode:multification-okaeri:1.1.4")
+implementation("com.eternalcode:multification-okaeri:1.2.4")
 ```
 
 Probably also you will need to add additional dependencies for your platform, e.g. :
