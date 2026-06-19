@@ -45,8 +45,7 @@ public class NoticeResolverRegistry {
                 if (deserializeResult != null) {
                     return Optional.of(deserializeResult);
                 }
-            }
-            catch (Throwable exception) {
+            } catch (Exception exception) {
                 illegalArgumentException.addSuppressed(exception);
             }
         }
