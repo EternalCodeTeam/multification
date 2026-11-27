@@ -7,7 +7,7 @@ object Versions {
     const val MOCKITO_CORE = "5.23.0"
     const val JUNIT_JUPITER = "6.0.3"
     const val ASSERTJ_CORE = "3.27.7"
-    const val AWAITILITY = "4.3.0"
+    const val AWAITILITY = "4.4.0"
 
     const val SPIGOT_API = "1.21.4-R0.1-SNAPSHOT"
     const val VELOCITY_API = "3.4.0"
